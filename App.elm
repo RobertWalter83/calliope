@@ -11,7 +11,8 @@ import Material.Icon as Icon
 import Material.Layout as Layout
 import Material.Options as Options exposing (css, when)
 import Material.Button as Button exposing (..)
-import Task exposing(..)
+import Task exposing (..)
+
 
 -- MODEL
 
@@ -21,6 +22,7 @@ type alias AppState =
     , viewSelected : Int
     , project : Project
     , titleEditable : Bool
+    , refreshEditorContent : Bool
     }
 
 
@@ -30,6 +32,7 @@ type Msg
     | ToggleEditableTitle
     | EditTitle String
     | ConfigureAce
+    | GetEditorContent String
 
 
 type View
@@ -58,6 +61,7 @@ init =
       , viewSelected = 0
       , project = Calliope.defaultProject
       , titleEditable = False
+      , refreshEditorContent = False
       }
     , Layout.sub0 Mdl
     )
@@ -109,7 +113,7 @@ viewMain appState =
                 renderWelcome appState
 
             Dialog ->
-                Calliope.renderDialog appState.project
+                Calliope.renderDialog appState.project appState.refreshEditorContent
 
             Structure ->
                 Calliope.renderStructure appState.project
@@ -168,20 +172,23 @@ btnEditTitle stIcon mdl =
 -- UPDATE
 
 
-port configureAce : String -> Cmd a
+port configureAce : String -> Cmd m
+
 
 update : Msg -> AppState -> ( AppState, Cmd Msg )
 update msg appState =
     case msg of
         SelectView i ->
             let
-              cmd = 
-                if ((indexToView i) == Dialog)
-                then (fx ConfigureAce) --configureAce "ace/theme/monokai"
-                else Cmd.none 
+                ( refresh, cmd ) =
+                    if ((indexToView i) == Dialog) then
+                        ( True, (fx ConfigureAce) )
+                        --configureAce "ace/theme/monokai"
+                    else
+                        ( False, Cmd.none )
             in
-            ( { appState | viewSelected = i }, cmd )
-        
+                ( { appState | viewSelected = i, refreshEditorContent = refresh }, cmd )
+
         Mdl msg ->
             Material.update Mdl msg appState
 
@@ -191,12 +198,17 @@ update msg appState =
         EditTitle titleNew ->
             wrapWithCmdNone { appState | project = updateProjectTitle appState.project titleNew }
 
-        ConfigureAce -> 
-          (appState, configureAce "ace/theme/monokai")
+        ConfigureAce ->
+            ( appState, configureAce "ace/theme/monokai" )
+
+        GetEditorContent content ->
+            wrapWithCmdNone { appState | project = Calliope.updateProject appState.project content, refreshEditorContent = False }
+
 
 fx : msg -> Cmd msg
 fx msg =
-  Task.perform (always msg) (always msg) (Task.succeed msg)
+    Task.perform (always msg) (always msg) (Task.succeed msg)
+
 
 wrapWithCmdNone : AppState -> ( AppState, Cmd Msg )
 wrapWithCmdNone appState =
@@ -217,6 +229,9 @@ updateProjectTitle projectOld titleNew =
 --SUBS
 
 
+port getEditorContent : (String -> msg) -> Sub msg
+
+
 subscriptions : AppState -> Sub Msg
 subscriptions appState =
-    Sub.none
+    getEditorContent GetEditorContent

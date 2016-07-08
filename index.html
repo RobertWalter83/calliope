@@ -34,11 +34,19 @@
     app.ports.configureAce.subscribe(function(theme) {
       var aceContainer = document.getElementById("editor-container");
 
-      console.log("Called!");
+      if(aceContainer != null) {
+        var editor = aceContainer.editor;
+        editor.setTheme(theme);
+        editor.$blockScrolling = Infinity;
 
-      if(aceContainer != null)
-        aceContainer.editor.setTheme(theme);
+        editor.on('change', function() {
+          var content = editor.getValue();
+          console.log(content);
+          app.ports.getEditorContent.send(content);
+        });
+      }
     });
+
   </script>
 
 </html>

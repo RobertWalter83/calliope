@@ -8216,55 +8216,58 @@ var _RobertWalter83$calliope$Calliope$title = function (t) {
 				_elm_lang$html$Html$text(t)
 			]));
 };
-var _RobertWalter83$calliope$Calliope$renderScript = function (script) {
-	return A3(
-		_elm_lang$html$Html$node,
-		'juicy-ace-editor',
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html_Attributes$id('editor-container')
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text('my editor content')
-			]));
-};
-var _RobertWalter83$calliope$Calliope$renderDialog = function (project) {
-	return A2(
-		_debois$elm_mdl$Material_Options$div,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(_debois$elm_mdl$Material_Options$css, 'background', 'url(\'img/bg.png\')')
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_debois$elm_mdl$Material_Options$div,
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_RobertWalter83$calliope$Calliope$boxedDefault,
+var _RobertWalter83$calliope$Calliope$renderScript = F2(
+	function (script, refresh) {
+		return A3(
+			_elm_lang$html$Html$node,
+			'juicy-ace-editor',
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$id('editor-container')
+				]),
+			refresh ? _elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(script.content)
+				]) : _elm_lang$core$Native_List.fromArray(
+				[]));
+	});
+var _RobertWalter83$calliope$Calliope$renderDialog = F2(
+	function (project, refresh) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_debois$elm_mdl$Material_Options$css, 'background', 'url(\'assets/bg.png\')')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_debois$elm_mdl$Material_Options$div,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_RobertWalter83$calliope$Calliope$boxedDefault,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(_debois$elm_mdl$Material_Options$css, 'max-width', '812px')
+							])),
 					_elm_lang$core$Native_List.fromArray(
 						[
-							A2(_debois$elm_mdl$Material_Options$css, 'max-width', '812px')
-						])),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_debois$elm_mdl$Material_Options$div,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_debois$elm_mdl$Material_Elevation$e6,
-								A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px'),
-								A2(_debois$elm_mdl$Material_Options$css, 'position', 'relative'),
-								_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_RobertWalter83$calliope$Calliope$renderScript(project.script)
-							]))
-					]))
-			]));
-};
+							A2(
+							_debois$elm_mdl$Material_Options$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_debois$elm_mdl$Material_Elevation$e6,
+									A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px'),
+									A2(_debois$elm_mdl$Material_Options$css, 'position', 'relative'),
+									_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(_RobertWalter83$calliope$Calliope$renderScript, project.script, refresh)
+								]))
+						]))
+				]));
+	});
 var _RobertWalter83$calliope$Calliope$cellFromTier = F2(
 	function (gridWidth, tier) {
 		return A2(
@@ -8384,6 +8387,20 @@ var _RobertWalter83$calliope$Calliope$renderStructure = function (project) {
 					]))
 			]));
 };
+var _RobertWalter83$calliope$Calliope$updateScript = F2(
+	function (script, contentNew) {
+		return _elm_lang$core$Native_Utils.update(
+			script,
+			{content: contentNew});
+	});
+var _RobertWalter83$calliope$Calliope$updateProject = F2(
+	function (project, contentNew) {
+		return _elm_lang$core$Native_Utils.update(
+			project,
+			{
+				script: A2(_RobertWalter83$calliope$Calliope$updateScript, project.script, contentNew)
+			});
+	});
 var _RobertWalter83$calliope$Calliope$defaultStructure = {
 	tierList: _elm_lang$core$Native_List.fromArray(
 		[
@@ -8393,12 +8410,7 @@ var _RobertWalter83$calliope$Calliope$defaultStructure = {
 };
 var _RobertWalter83$calliope$Calliope$defaultProject = {
 	title: 'New Project',
-	script: {
-		scenes: _elm_lang$core$Native_List.fromArray(
-			[
-				{name: 'Start', location: 'Home'}
-			])
-	},
+	script: {content: ''},
 	structure: _RobertWalter83$calliope$Calliope$defaultStructure
 };
 var _RobertWalter83$calliope$Calliope$Project = F3(
@@ -8406,7 +8418,7 @@ var _RobertWalter83$calliope$Calliope$Project = F3(
 		return {title: a, script: b, structure: c};
 	});
 var _RobertWalter83$calliope$Calliope$Script = function (a) {
-	return {scenes: a};
+	return {content: a};
 };
 var _RobertWalter83$calliope$Calliope$Scene = F2(
 	function (a, b) {
@@ -12627,9 +12639,6 @@ var _debois$elm_mdl$Material$Model = F7(
 		return {button: a, textfield: b, menu: c, snackbar: d, layout: e, toggles: f, tooltip: g};
 	});
 
-var _RobertWalter83$calliope$App$subscriptions = function (appState) {
-	return _elm_lang$core$Platform_Sub$none;
-};
 var _RobertWalter83$calliope$App$updateProjectTitle = F2(
 	function (projectOld, titleNew) {
 		return _elm_lang$core$Native_Utils.update(
@@ -12669,10 +12678,17 @@ var _RobertWalter83$calliope$App$configureAce = _elm_lang$core$Native_Platform.o
 	function (v) {
 		return v;
 	});
-var _RobertWalter83$calliope$App$AppState = F4(
-	function (a, b, c, d) {
-		return {mdl: a, viewSelected: b, project: c, titleEditable: d};
+var _RobertWalter83$calliope$App$getEditorContent = _elm_lang$core$Native_Platform.incomingPort('getEditorContent', _elm_lang$core$Json_Decode$string);
+var _RobertWalter83$calliope$App$AppState = F5(
+	function (a, b, c, d, e) {
+		return {mdl: a, viewSelected: b, project: c, titleEditable: d, refreshEditorContent: e};
 	});
+var _RobertWalter83$calliope$App$GetEditorContent = function (a) {
+	return {ctor: 'GetEditorContent', _0: a};
+};
+var _RobertWalter83$calliope$App$subscriptions = function (appState) {
+	return _RobertWalter83$calliope$App$getEditorContent(_RobertWalter83$calliope$App$GetEditorContent);
+};
 var _RobertWalter83$calliope$App$ConfigureAce = {ctor: 'ConfigureAce'};
 var _RobertWalter83$calliope$App$EditTitle = function (a) {
 	return {ctor: 'EditTitle', _0: a};
@@ -12694,7 +12710,7 @@ var _RobertWalter83$calliope$App$Mdl = function (a) {
 };
 var _RobertWalter83$calliope$App$init = {
 	ctor: '_Tuple2',
-	_0: {mdl: _debois$elm_mdl$Material$model, viewSelected: 0, project: _RobertWalter83$calliope$Calliope$defaultProject, titleEditable: false},
+	_0: {mdl: _debois$elm_mdl$Material$model, viewSelected: 0, project: _RobertWalter83$calliope$Calliope$defaultProject, titleEditable: false, refreshEditorContent: false},
 	_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
 };
 var _RobertWalter83$calliope$App$btnEditTitle = F2(
@@ -12784,7 +12800,7 @@ var _RobertWalter83$calliope$App$viewMain = function (appState) {
 		case 'Welcome':
 			return _RobertWalter83$calliope$App$renderWelcome(appState);
 		case 'Dialog':
-			return _RobertWalter83$calliope$Calliope$renderDialog(appState.project);
+			return A2(_RobertWalter83$calliope$Calliope$renderDialog, appState.project, appState.refreshEditorContent);
 		default:
 			return _RobertWalter83$calliope$Calliope$renderStructure(appState.project);
 	}
@@ -12822,15 +12838,21 @@ var _RobertWalter83$calliope$App$update = F2(
 		var _p1 = msg;
 		switch (_p1.ctor) {
 			case 'SelectView':
-				var _p2 = _p1._0;
-				var cmd = _elm_lang$core$Native_Utils.eq(
-					_RobertWalter83$calliope$App$indexToView(_p2),
-					_RobertWalter83$calliope$App$Dialog) ? _RobertWalter83$calliope$App$fx(_RobertWalter83$calliope$App$ConfigureAce) : _elm_lang$core$Platform_Cmd$none;
+				var _p3 = _p1._0;
+				var _p2 = _elm_lang$core$Native_Utils.eq(
+					_RobertWalter83$calliope$App$indexToView(_p3),
+					_RobertWalter83$calliope$App$Dialog) ? {
+					ctor: '_Tuple2',
+					_0: true,
+					_1: _RobertWalter83$calliope$App$fx(_RobertWalter83$calliope$App$ConfigureAce)
+				} : {ctor: '_Tuple2', _0: false, _1: _elm_lang$core$Platform_Cmd$none};
+				var refresh = _p2._0;
+				var cmd = _p2._1;
 				return {
 					ctor: '_Tuple2',
 					_0: _elm_lang$core$Native_Utils.update(
 						appState,
-						{viewSelected: _p2}),
+						{viewSelected: _p3, refreshEditorContent: refresh}),
 					_1: cmd
 				};
 			case 'Mdl':
@@ -12849,12 +12871,20 @@ var _RobertWalter83$calliope$App$update = F2(
 						{
 							project: A2(_RobertWalter83$calliope$App$updateProjectTitle, appState.project, _p1._0)
 						}));
-			default:
+			case 'ConfigureAce':
 				return {
 					ctor: '_Tuple2',
 					_0: appState,
 					_1: _RobertWalter83$calliope$App$configureAce('ace/theme/monokai')
 				};
+			default:
+				return _RobertWalter83$calliope$App$wrapWithCmdNone(
+					_elm_lang$core$Native_Utils.update(
+						appState,
+						{
+							project: A2(_RobertWalter83$calliope$Calliope$updateProject, appState.project, _p1._0),
+							refreshEditorContent: false
+						}));
 		}
 	});
 var _RobertWalter83$calliope$App$main = {

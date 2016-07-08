@@ -1,10 +1,11 @@
-module Calliope
+port module Calliope
     exposing
         ( Project
         , defaultProject
         , defaultStructure
         , renderDialog
         , renderStructure
+        , updateProject
         )
 
 import Html exposing (..)
@@ -26,7 +27,7 @@ type alias Project =
 
 
 type alias Script =
-    { scenes : List (Scene)
+    { content : String
     }
 
 
@@ -55,12 +56,7 @@ defaultProject : Project
 defaultProject =
     { title = "New Project"
     , script =
-        { scenes =
-            [ { name = "Start"
-              , location = "Home"
-              }
-            ]
-        }
+        { content = "" }
     , structure = defaultStructure
     }
 
@@ -71,7 +67,22 @@ defaultStructure =
 
 
 
+-- UPDATE
+
+
+updateProject : Project -> String -> Project
+updateProject project contentNew =
+    { project | script = updateScript project.script contentNew }
+
+
+updateScript : Script -> String -> Script
+updateScript script contentNew =
+    { script | content = contentNew }
+
+
+
 -- RENDERING
+
 
 renderStructure : Project -> Html a
 renderStructure project =
@@ -146,8 +157,8 @@ cellFromTier gridWidth tier =
         [ text <| "Description of " ++ tier.name ++ " goes here!." ]
 
 
-renderDialog : Project -> Html a
-renderDialog project =
+renderDialog : Project -> Bool -> Html a
+renderDialog project refresh =
     Options.div [ css "background" "url('assets/bg.png')" ]
         [ Options.div
             (boxedDefault ++ [ css "max-width" "812px" ])
@@ -157,16 +168,20 @@ renderDialog project =
                 , css "position" "relative"
                 , Color.background Color.white
                 ]
-                [ renderScript project.script ]
+                [ renderScript project.script refresh ]
             ]
         ]
 
 
-renderScript : Script -> Html a
-renderScript script =
-    node "juicy-ace-editor" 
-      [ id "editor-container" ] 
-      [ text "my editor content"]
+renderScript : Script -> Bool -> Html a
+renderScript script refresh =
+    node "juicy-ace-editor"
+        [ id "editor-container" ]
+        (if (refresh) then
+            [ text script.content ]
+         else
+            []
+        )
 
 
 title : String -> Html a
