@@ -6,10 +6,13 @@ port module Calliope
         , renderDialog
         , renderStructure
         , updateProject
+        , Msg
         )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (..)
+import Json.Decode as Json
 import Material.Grid as Grid exposing (..)
 import Material.Color as Color
 import Material.Elevation as Elevation
@@ -46,6 +49,10 @@ type alias Tier =
     { id : String
     , name : String
     }
+
+
+type Msg
+    = EditorReady
 
 
 
@@ -157,7 +164,7 @@ cellFromTier gridWidth tier =
         [ text <| "Description of " ++ tier.name ++ " goes here!." ]
 
 
-renderDialog : Project -> Bool -> Html a
+renderDialog : Project -> Bool -> Html Msg
 renderDialog project refresh =
     Options.div [ css "background" "url('assets/bg.png')" ]
         [ Options.div
@@ -173,10 +180,10 @@ renderDialog project refresh =
         ]
 
 
-renderScript : Script -> Bool -> Html a
+renderScript : Script -> Bool -> Html Msg
 renderScript script refresh =
     node "juicy-ace-editor"
-        [ id "editor-container" ]
+        [ id "editor-container", on "editor-ready" (Json.succeed EditorReady) ]
         (if (refresh) then
             [ text script.content ]
          else

@@ -8216,58 +8216,6 @@ var _RobertWalter83$calliope$Calliope$title = function (t) {
 				_elm_lang$html$Html$text(t)
 			]));
 };
-var _RobertWalter83$calliope$Calliope$renderScript = F2(
-	function (script, refresh) {
-		return A3(
-			_elm_lang$html$Html$node,
-			'juicy-ace-editor',
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html_Attributes$id('editor-container')
-				]),
-			refresh ? _elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html$text(script.content)
-				]) : _elm_lang$core$Native_List.fromArray(
-				[]));
-	});
-var _RobertWalter83$calliope$Calliope$renderDialog = F2(
-	function (project, refresh) {
-		return A2(
-			_debois$elm_mdl$Material_Options$div,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(_debois$elm_mdl$Material_Options$css, 'background', 'url(\'assets/bg.png\')')
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(
-					_debois$elm_mdl$Material_Options$div,
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						_RobertWalter83$calliope$Calliope$boxedDefault,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								A2(_debois$elm_mdl$Material_Options$css, 'max-width', '812px')
-							])),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(
-							_debois$elm_mdl$Material_Options$div,
-							_elm_lang$core$Native_List.fromArray(
-								[
-									_debois$elm_mdl$Material_Elevation$e6,
-									A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px'),
-									A2(_debois$elm_mdl$Material_Options$css, 'position', 'relative'),
-									_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
-								]),
-							_elm_lang$core$Native_List.fromArray(
-								[
-									A2(_RobertWalter83$calliope$Calliope$renderScript, project.script, refresh)
-								]))
-						]))
-				]));
-	});
 var _RobertWalter83$calliope$Calliope$cellFromTier = F2(
 	function (gridWidth, tier) {
 		return A2(
@@ -8430,6 +8378,63 @@ var _RobertWalter83$calliope$Calliope$Structure = function (a) {
 var _RobertWalter83$calliope$Calliope$Tier = F2(
 	function (a, b) {
 		return {id: a, name: b};
+	});
+var _RobertWalter83$calliope$Calliope$EditorReady = {ctor: 'EditorReady'};
+var _RobertWalter83$calliope$Calliope$renderScript = F2(
+	function (script, refresh) {
+		return A3(
+			_elm_lang$html$Html$node,
+			'juicy-ace-editor',
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$id('editor-container'),
+					A2(
+					_elm_lang$html$Html_Events$on,
+					'editor-ready',
+					_elm_lang$core$Json_Decode$succeed(_RobertWalter83$calliope$Calliope$EditorReady))
+				]),
+			refresh ? _elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(script.content)
+				]) : _elm_lang$core$Native_List.fromArray(
+				[]));
+	});
+var _RobertWalter83$calliope$Calliope$renderDialog = F2(
+	function (project, refresh) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_debois$elm_mdl$Material_Options$css, 'background', 'url(\'assets/bg.png\')')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_debois$elm_mdl$Material_Options$div,
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_RobertWalter83$calliope$Calliope$boxedDefault,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								A2(_debois$elm_mdl$Material_Options$css, 'max-width', '812px')
+							])),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_debois$elm_mdl$Material_Options$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_debois$elm_mdl$Material_Elevation$e6,
+									A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px'),
+									A2(_debois$elm_mdl$Material_Options$css, 'position', 'relative'),
+									_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(_RobertWalter83$calliope$Calliope$renderScript, project.script, refresh)
+								]))
+						]))
+				]));
 	});
 
 var _elm_lang$html$Html_App$programWithFlags = _elm_lang$virtual_dom$VirtualDom$programWithFlags;
@@ -12648,13 +12653,6 @@ var _RobertWalter83$calliope$App$updateProjectTitle = F2(
 var _RobertWalter83$calliope$App$wrapWithCmdNone = function (appState) {
 	return {ctor: '_Tuple2', _0: appState, _1: _elm_lang$core$Platform_Cmd$none};
 };
-var _RobertWalter83$calliope$App$fx = function (msg) {
-	return A3(
-		_elm_lang$core$Task$perform,
-		_elm_lang$core$Basics$always(msg),
-		_elm_lang$core$Basics$always(msg),
-		_elm_lang$core$Task$succeed(msg));
-};
 var _RobertWalter83$calliope$App$renderWelcome = function (appState) {
 	return A2(
 		_debois$elm_mdl$Material_Options$div,
@@ -12683,13 +12681,15 @@ var _RobertWalter83$calliope$App$AppState = F5(
 	function (a, b, c, d, e) {
 		return {mdl: a, viewSelected: b, project: c, titleEditable: d, refreshEditorContent: e};
 	});
+var _RobertWalter83$calliope$App$EditorReady = function (a) {
+	return {ctor: 'EditorReady', _0: a};
+};
 var _RobertWalter83$calliope$App$GetEditorContent = function (a) {
 	return {ctor: 'GetEditorContent', _0: a};
 };
 var _RobertWalter83$calliope$App$subscriptions = function (appState) {
 	return _RobertWalter83$calliope$App$getEditorContent(_RobertWalter83$calliope$App$GetEditorContent);
 };
-var _RobertWalter83$calliope$App$ConfigureAce = {ctor: 'ConfigureAce'};
 var _RobertWalter83$calliope$App$EditTitle = function (a) {
 	return {ctor: 'EditTitle', _0: a};
 };
@@ -12800,7 +12800,10 @@ var _RobertWalter83$calliope$App$viewMain = function (appState) {
 		case 'Welcome':
 			return _RobertWalter83$calliope$App$renderWelcome(appState);
 		case 'Dialog':
-			return A2(_RobertWalter83$calliope$Calliope$renderDialog, appState.project, appState.refreshEditorContent);
+			return A2(
+				_elm_lang$html$Html_App$map,
+				_RobertWalter83$calliope$App$EditorReady,
+				A2(_RobertWalter83$calliope$Calliope$renderDialog, appState.project, appState.refreshEditorContent));
 		default:
 			return _RobertWalter83$calliope$Calliope$renderStructure(appState.project);
 	}
@@ -12838,23 +12841,14 @@ var _RobertWalter83$calliope$App$update = F2(
 		var _p1 = msg;
 		switch (_p1.ctor) {
 			case 'SelectView':
-				var _p3 = _p1._0;
-				var _p2 = _elm_lang$core$Native_Utils.eq(
-					_RobertWalter83$calliope$App$indexToView(_p3),
-					_RobertWalter83$calliope$App$Dialog) ? {
-					ctor: '_Tuple2',
-					_0: true,
-					_1: _RobertWalter83$calliope$App$fx(_RobertWalter83$calliope$App$ConfigureAce)
-				} : {ctor: '_Tuple2', _0: false, _1: _elm_lang$core$Platform_Cmd$none};
-				var refresh = _p2._0;
-				var cmd = _p2._1;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
+				var _p2 = _p1._0;
+				var refresh = _elm_lang$core$Native_Utils.eq(
+					_RobertWalter83$calliope$App$indexToView(_p2),
+					_RobertWalter83$calliope$App$Dialog) ? true : false;
+				return _RobertWalter83$calliope$App$wrapWithCmdNone(
+					_elm_lang$core$Native_Utils.update(
 						appState,
-						{viewSelected: _p3, refreshEditorContent: refresh}),
-					_1: cmd
-				};
+						{viewSelected: _p2, refreshEditorContent: refresh}));
 			case 'Mdl':
 				return A3(_debois$elm_mdl$Material$update, _RobertWalter83$calliope$App$Mdl, _p1._0, appState);
 			case 'ToggleEditableTitle':
@@ -12871,11 +12865,12 @@ var _RobertWalter83$calliope$App$update = F2(
 						{
 							project: A2(_RobertWalter83$calliope$App$updateProjectTitle, appState.project, _p1._0)
 						}));
-			case 'ConfigureAce':
+			case 'EditorReady':
 				return {
 					ctor: '_Tuple2',
 					_0: appState,
-					_1: _RobertWalter83$calliope$App$configureAce('ace/theme/monokai')
+					_1: _RobertWalter83$calliope$App$configureAce(
+						A2(_elm_lang$core$Debug$log, 'WHAT!', 'ace/theme/monokai'))
 				};
 			default:
 				return _RobertWalter83$calliope$App$wrapWithCmdNone(

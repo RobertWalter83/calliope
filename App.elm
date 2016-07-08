@@ -31,8 +31,8 @@ type Msg
     | SelectView Int
     | ToggleEditableTitle
     | EditTitle String
-    | ConfigureAce
     | GetEditorContent String
+    | EditorReady Calliope.Msg
 
 
 type View
@@ -113,7 +113,7 @@ viewMain appState =
                 renderWelcome appState
 
             Dialog ->
-                Calliope.renderDialog appState.project appState.refreshEditorContent
+                App.map EditorReady (Calliope.renderDialog appState.project appState.refreshEditorContent)
 
             Structure ->
                 Calliope.renderStructure appState.project
@@ -180,14 +180,13 @@ update msg appState =
     case msg of
         SelectView i ->
             let
-                ( refresh, cmd ) =
+                refresh =
                     if ((indexToView i) == Dialog) then
-                        ( True, (fx ConfigureAce) )
-                        --configureAce "ace/theme/monokai"
+                        True
                     else
-                        ( False, Cmd.none )
+                        False
             in
-                ( { appState | viewSelected = i, refreshEditorContent = refresh }, cmd )
+                wrapWithCmdNone { appState | viewSelected = i, refreshEditorContent = refresh }
 
         Mdl msg ->
             Material.update Mdl msg appState
@@ -198,16 +197,11 @@ update msg appState =
         EditTitle titleNew ->
             wrapWithCmdNone { appState | project = updateProjectTitle appState.project titleNew }
 
-        ConfigureAce ->
+        EditorReady subMsg ->
             ( appState, configureAce "ace/theme/monokai" )
 
         GetEditorContent content ->
             wrapWithCmdNone { appState | project = Calliope.updateProject appState.project content, refreshEditorContent = False }
-
-
-fx : msg -> Cmd msg
-fx msg =
-    Task.perform (always msg) (always msg) (Task.succeed msg)
 
 
 wrapWithCmdNone : AppState -> ( AppState, Cmd Msg )

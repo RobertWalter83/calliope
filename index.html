@@ -30,7 +30,6 @@
   <script type="text/javascript">
     var app = Elm.App.fullscreen();
 
-    // configureAce is the port in Elm
     app.ports.configureAce.subscribe(function(theme) {
       var aceContainer = document.getElementById("editor-container");
 
@@ -40,9 +39,7 @@
         editor.$blockScrolling = Infinity;
 
         editor.on('change', function() {
-          var content = editor.getValue();
-          console.log(content);
-          app.ports.getEditorContent.send(content);
+          app.ports.getEditorContent.send(editor.getValue());
         });
       }
     });
