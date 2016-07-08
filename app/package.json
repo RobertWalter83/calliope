@@ -1,0 +1,8 @@
+{
+  "name": "calliope",
+  "description": "create interactive narratives",
+  "version": "0.1.0",
+  "author": "Robert Walter",
+  "license": "MIT",
+  "main": "electron-start.js"
+}

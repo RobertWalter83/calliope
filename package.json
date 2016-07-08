@@ -1,0 +1,24 @@
+{
+  "name": "calliope",
+  "version": "0.1.0",
+  "main": "electron-start.js",
+  "scripts": {
+    "start": "electron .",
+    "postinstall": "install-app-deps",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.2"
+  },
+  "build": {
+    "appId": "org.digital-ember.calliope",
+    "app-category-type": "public.app-category.creative-writing",
+    "win": {
+      "title": "Calliope",
+      "version": "0.1.0",
+      "authors": "Robert Walter",
+      "iconUrl": "https://www.domain.com/image.ico"
+    }
+  }
+}

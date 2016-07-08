@@ -1,0 +1,16 @@
+{
+    "version": "0.1.0",
+    "summary": "calliope",
+    "repository": "https://github.com/RobertWalter83/calliope.git",
+    "license": "MIT",
+    "source-directories": [
+        "."
+    ],
+    "exposed-modules": [],
+    "dependencies": {
+        "debois/elm-mdl": "6.0.0 <= v < 7.0.0",
+        "elm-lang/core": "4.0.1 <= v < 5.0.0",
+        "elm-lang/html": "1.0.0 <= v < 2.0.0"
+    },
+    "elm-version": "0.17.0 <= v < 0.18.0"
+}
