@@ -21,6 +21,8 @@
     <!-- Ace -->
     <link rel="import" href="bower_components/juicy-ace-editor/juicy-ace-editor.html"></link>
 
+    
+    <script src="./src/js/interop.js"></script> 
   </head>
  
   <body>
@@ -28,22 +30,13 @@
   </body>
 
   <script type="text/javascript">
-    var app = Elm.App.fullscreen();
+    var calliopeAppState = localStorage.getItem('calliopeAppState');
+    var startingState = calliopeAppState ? JSON.parse(calliopeAppState) : null;
 
-    app.ports.configureAce.subscribe(function(theme) {
-      var aceContainer = document.getElementById("editor-container");
+    console.log("Starting State: " + startingState);
 
-      if(aceContainer != null) {
-        var editor = aceContainer.editor;
-        editor.setTheme(theme);
-        editor.$blockScrolling = Infinity;
-
-        editor.on('change', function() {
-          app.ports.getEditorContent.send(editor.getValue());
-        });
-      }
-    });
-
+    var app = Elm.App.fullscreen(startingState);
+    setupPorts(app);
   </script>
 
 </html>

@@ -1,4 +1,4 @@
-port module Calliope
+module Calliope
     exposing
         ( Project
         , defaultProject
@@ -6,13 +6,15 @@ port module Calliope
         , renderDialog
         , renderStructure
         , updateProject
+        , encodeProject
         , Msg
         )
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Json.Decode as Json
+import Json.Encode exposing (..)
+import Json.Decode exposing (..)
 import Material.Grid as Grid exposing (..)
 import Material.Color as Color
 import Material.Elevation as Elevation
@@ -97,24 +99,22 @@ renderStructure project =
         gridWidth =
             widthFromTierList project.structure.tierList
     in
-        Options.div [ css "background" "url('assets/bg.png')" ]
-            [ Options.div
-                (boxed 20 20)
-                [ grid
-                    ((boxed 12 0) ++ [ noSpacing ])
-                  <|
-                    List.append
-                        (cellHeaders gridWidth project)
-                        [ cellHeader gridWidth "Statistics" ]
-                , grid
-                    ((boxed 12 12)
-                        ++ [ noSpacing
-                           , Elevation.e6
-                           , Color.background Color.white
-                           ]
-                    )
-                    (cells gridWidth project)
-                ]
+        Options.div
+            (boxed 20 20)
+            [ grid
+                ((boxed 12 0) ++ [ noSpacing ])
+              <|
+                List.append
+                    (cellHeaders gridWidth project)
+                    [ cellHeader gridWidth "Statistics" ]
+            , grid
+                ((boxed 12 12)
+                    ++ [ noSpacing
+                       , Elevation.e6
+                       , Color.background Color.white
+                       ]
+                )
+                (cells gridWidth project)
             ]
 
 
@@ -166,24 +166,22 @@ cellFromTier gridWidth tier =
 
 renderDialog : Project -> Bool -> Html Msg
 renderDialog project refresh =
-    Options.div [ css "background" "url('assets/bg.png')" ]
+    Options.div
+        (boxedDefault ++ [ css "max-width" "812px" ])
         [ Options.div
-            (boxedDefault ++ [ css "max-width" "812px" ])
-            [ Options.div
-                [ Elevation.e6
-                , css "height" "1024px"
-                , css "position" "relative"
-                , Color.background Color.white
-                ]
-                [ renderScript project.script refresh ]
+            [ Elevation.e6
+            , css "height" "1024px"
+            , css "position" "relative"
+            , Color.background Color.white
             ]
+            [ renderScript project.script refresh ]
         ]
 
 
 renderScript : Script -> Bool -> Html Msg
 renderScript script refresh =
     node "juicy-ace-editor"
-        [ id "editor-container", on "editor-ready" (Json.succeed EditorReady) ]
+        [ id "editor-container", on "editor-ready" (Json.Decode.succeed EditorReady) ]
         (if (refresh) then
             [ text script.content ]
          else
@@ -218,3 +216,36 @@ boxed sides topBottom =
 boxedDefault : List (Options.Property a b)
 boxedDefault =
     boxed 80 20
+
+
+
+-- ENCODE
+
+
+encodeProject : Project -> Json.Encode.Value
+encodeProject project =
+    Json.Encode.object
+        [ ( "title", Json.Encode.string project.title )
+        , ( "script", encodeScript project.script )
+        , ( "structure", encodeStructure project.structure )
+        ]
+
+
+encodeScript : Script -> Json.Encode.Value
+encodeScript script =
+    Json.Encode.object
+        [ ( "content", Json.Encode.string script.content ) ]
+
+
+encodeStructure : Structure -> Json.Encode.Value
+encodeStructure structure =
+    Json.Encode.object
+        [ ( "tierList", Json.Encode.list (List.map encodeTier structure.tierList) ) ]
+
+
+encodeTier : Tier -> Json.Encode.Value
+encodeTier tier =
+    Json.Encode.object
+        [ ( "id", Json.Encode.string tier.id )
+        , ( "name", Json.Encode.string tier.name )
+        ]
