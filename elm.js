@@ -8183,6 +8183,44 @@ var _debois$elm_mdl$Material_Elevation$elevations = _elm_lang$core$Native_List.f
 		{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e24, _1: 24}
 	]);
 
+var _RobertWalter83$calliope$Util$withMaxWidth = F2(
+	function (maxWidth, cssProps) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			cssProps,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_debois$elm_mdl$Material_Options$css,
+					'max-width',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(maxWidth),
+						'px'))
+				]));
+	});
+var _RobertWalter83$calliope$Util$boxed = function (_p0) {
+	var _p1 = _p0;
+	var stTopBottom = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(_p1._1),
+		'px');
+	var stSides = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(_p1._0),
+		'px');
+	return _elm_lang$core$Native_List.fromArray(
+		[
+			A2(_debois$elm_mdl$Material_Options$css, 'margin', 'auto'),
+			A2(_debois$elm_mdl$Material_Options$css, 'padding-left', stSides),
+			A2(_debois$elm_mdl$Material_Options$css, 'padding-right', stSides),
+			A2(_debois$elm_mdl$Material_Options$css, 'padding-top', stTopBottom),
+			A2(_debois$elm_mdl$Material_Options$css, 'padding-bottom', stTopBottom)
+		]);
+};
+var _RobertWalter83$calliope$Util$boxedDefault = _RobertWalter83$calliope$Util$boxed(
+	{ctor: '_Tuple2', _0: 80, _1: 20});
+
 var _RobertWalter83$calliope$Calliope$encodeTier = function (tier) {
 	return _elm_lang$core$Json_Encode$object(
 		_elm_lang$core$Native_List.fromArray(
@@ -8243,26 +8281,6 @@ var _RobertWalter83$calliope$Calliope$encodeProject = function (project) {
 			}
 			]));
 };
-var _RobertWalter83$calliope$Calliope$boxed = F2(
-	function (sides, topBottom) {
-		var stTopBottom = A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Basics$toString(topBottom),
-			'px');
-		var stSides = A2(
-			_elm_lang$core$Basics_ops['++'],
-			_elm_lang$core$Basics$toString(sides),
-			'px');
-		return _elm_lang$core$Native_List.fromArray(
-			[
-				A2(_debois$elm_mdl$Material_Options$css, 'margin', 'auto'),
-				A2(_debois$elm_mdl$Material_Options$css, 'padding-left', stSides),
-				A2(_debois$elm_mdl$Material_Options$css, 'padding-right', stSides),
-				A2(_debois$elm_mdl$Material_Options$css, 'padding-top', stTopBottom),
-				A2(_debois$elm_mdl$Material_Options$css, 'padding-bottom', stTopBottom)
-			]);
-	});
-var _RobertWalter83$calliope$Calliope$boxedDefault = A2(_RobertWalter83$calliope$Calliope$boxed, 80, 20);
 var _RobertWalter83$calliope$Calliope$title = function (t) {
 	return A3(
 		_debois$elm_mdl$Material_Options$styled,
@@ -8355,14 +8373,15 @@ var _RobertWalter83$calliope$Calliope$renderStructure = function (project) {
 	var gridWidth = _RobertWalter83$calliope$Calliope$widthFromTierList(project.structure.tierList);
 	return A2(
 		_debois$elm_mdl$Material_Options$div,
-		A2(_RobertWalter83$calliope$Calliope$boxed, 20, 20),
+		_RobertWalter83$calliope$Util$boxedDefault,
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
 				_debois$elm_mdl$Material_Grid$grid,
 				A2(
 					_elm_lang$core$Basics_ops['++'],
-					A2(_RobertWalter83$calliope$Calliope$boxed, 12, 0),
+					_RobertWalter83$calliope$Util$boxed(
+						{ctor: '_Tuple2', _0: 12, _1: 0}),
 					_elm_lang$core$Native_List.fromArray(
 						[_debois$elm_mdl$Material_Grid$noSpacing])),
 				A2(
@@ -8376,7 +8395,8 @@ var _RobertWalter83$calliope$Calliope$renderStructure = function (project) {
 				_debois$elm_mdl$Material_Grid$grid,
 				A2(
 					_elm_lang$core$Basics_ops['++'],
-					A2(_RobertWalter83$calliope$Calliope$boxed, 12, 12),
+					_RobertWalter83$calliope$Util$boxed(
+						{ctor: '_Tuple2', _0: 12, _1: 12}),
 					_elm_lang$core$Native_List.fromArray(
 						[
 							_debois$elm_mdl$Material_Grid$noSpacing,
@@ -8454,13 +8474,7 @@ var _RobertWalter83$calliope$Calliope$renderDialog = F2(
 	function (project, refresh) {
 		return A2(
 			_debois$elm_mdl$Material_Options$div,
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_RobertWalter83$calliope$Calliope$boxedDefault,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(_debois$elm_mdl$Material_Options$css, 'max-width', '812px')
-					])),
+			A2(_RobertWalter83$calliope$Util$withMaxWidth, 812, _RobertWalter83$calliope$Util$boxedDefault),
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
@@ -12686,24 +12700,6 @@ var _debois$elm_mdl$Material$Model = F7(
 		return {button: a, textfield: b, menu: c, snackbar: d, layout: e, toggles: f, tooltip: g};
 	});
 
-var _RobertWalter83$calliope$App$renderWelcome = function (appWithMdl) {
-	return A2(
-		_debois$elm_mdl$Material_Options$div,
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A3(
-				_debois$elm_mdl$Material_Options$styled,
-				_elm_lang$html$Html$h1,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text('Welcome')
-					]))
-			]));
-};
 var _RobertWalter83$calliope$App$encodeAppState = function (appState) {
 	return _elm_lang$core$Json_Encode$object(
 		_elm_lang$core$Native_List.fromArray(
@@ -12742,6 +12738,74 @@ var _RobertWalter83$calliope$App$encodeAppState = function (appState) {
 			}
 			]));
 };
+var _RobertWalter83$calliope$App$stylesheet = _debois$elm_mdl$Material_Options$stylesheet('\n  .mdl-layout__header--transparent {\n    background: url(\'assets/bg.png\');\n  }\n');
+var _RobertWalter83$calliope$App$viewWelcomeHeader = _elm_lang$core$Native_List.fromArray(
+	[
+		A2(
+		_debois$elm_mdl$Material_Layout$row,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(_debois$elm_mdl$Material_Options$css, 'height', '400px'),
+				A2(_debois$elm_mdl$Material_Options$css, 'transition', 'height 333ms ease-in-out 0s')
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_debois$elm_mdl$Material_Layout$title,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(_debois$elm_mdl$Material_Options$css, 'margin-right', '20px'),
+						A2(_debois$elm_mdl$Material_Options$css, 'color', '#000000')
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text('Calliope')
+					]))
+			]))
+	]);
+var _RobertWalter83$calliope$App$cellWelcome = F3(
+	function (gridWidth, stHeader, content) {
+		return A2(
+			_debois$elm_mdl$Material_Grid$cell,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, gridWidth)
+				]),
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A3(
+						_debois$elm_mdl$Material_Options$styled,
+						_elm_lang$html$Html$h6,
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_debois$elm_mdl$Material_Color$text(
+								A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Grey, _debois$elm_mdl$Material_Color$S700))
+							]),
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_elm_lang$html$Html$text(stHeader)
+							]))
+					]),
+				content));
+	});
+var _RobertWalter83$calliope$App$renderProjectLink = function (project) {
+	return A2(
+		_debois$elm_mdl$Material_Options$div,
+		_RobertWalter83$calliope$Util$boxed(
+			{ctor: '_Tuple2', _0: 12, _1: 12}),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(project.title)
+			]));
+};
+var _RobertWalter83$calliope$App$renderAllProjects = function (appWithMdl) {
+	return A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$renderProjectLink, appWithMdl.appState.projectsAll);
+};
+var _RobertWalter83$calliope$App$renderRecentProjects = function (appWithMdl) {
+	return A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$renderProjectLink, appWithMdl.appState.projectsRecent);
+};
 var _RobertWalter83$calliope$App$updateProjectTitle = F2(
 	function (projectOld, titleNew) {
 		return _elm_lang$core$Native_Utils.update(
@@ -12750,6 +12814,30 @@ var _RobertWalter83$calliope$App$updateProjectTitle = F2(
 	});
 var _RobertWalter83$calliope$App$wrapWithCmdNone = function (appWithMdl) {
 	return {ctor: '_Tuple2', _0: appWithMdl, _1: _elm_lang$core$Platform_Cmd$none};
+};
+var _RobertWalter83$calliope$App$setEditorContent = F2(
+	function (appStateCurrent, content) {
+		return _elm_lang$core$Native_Utils.update(
+			appStateCurrent,
+			{
+				projectActive: A2(_RobertWalter83$calliope$Calliope$updateProject, appStateCurrent.projectActive, content),
+				refreshEditorContent: false
+			});
+	});
+var _RobertWalter83$calliope$App$editTitle = F2(
+	function (appStateCurrent, titleNew) {
+		return _elm_lang$core$Native_Utils.update(
+			appStateCurrent,
+			{
+				projectActive: A2(_RobertWalter83$calliope$App$updateProjectTitle, appStateCurrent.projectActive, titleNew)
+			});
+	});
+var _RobertWalter83$calliope$App$toggleEditableTitle = function (appStateCurrent) {
+	return _elm_lang$core$Native_Utils.update(
+		appStateCurrent,
+		{
+			titleEditable: _elm_lang$core$Basics$not(appStateCurrent.titleEditable)
+		});
 };
 var _RobertWalter83$calliope$App$defaultAppState = {
 	viewSelected: 0,
@@ -12760,6 +12848,21 @@ var _RobertWalter83$calliope$App$defaultAppState = {
 		[]),
 	titleEditable: false,
 	refreshEditorContent: false
+};
+var _RobertWalter83$calliope$App$createNewProject = function (appStateCurrent) {
+	var projectsAll = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Native_List.fromArray(
+			[appStateCurrent.projectActive]),
+		appStateCurrent.projectsAll);
+	var projectsRecent = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Native_List.fromArray(
+			[appStateCurrent.projectActive]),
+		appStateCurrent.projectsRecent);
+	return _elm_lang$core$Native_Utils.update(
+		_RobertWalter83$calliope$App$defaultAppState,
+		{projectsRecent: projectsRecent, projectsAll: projectsAll});
 };
 var _RobertWalter83$calliope$App$wrapWithMdl = function (appState) {
 	return {mdl: _debois$elm_mdl$Material$model, appState: appState};
@@ -12783,6 +12886,7 @@ var _RobertWalter83$calliope$App$AppWithMdl = F2(
 	function (a, b) {
 		return {mdl: a, appState: b};
 	});
+var _RobertWalter83$calliope$App$CreateNewProject = {ctor: 'CreateNewProject'};
 var _RobertWalter83$calliope$App$Save = {ctor: 'Save'};
 var _RobertWalter83$calliope$App$EditorReady = function (a) {
 	return {ctor: 'EditorReady', _0: a};
@@ -12804,34 +12908,77 @@ var _RobertWalter83$calliope$App$ToggleEditableTitle = {ctor: 'ToggleEditableTit
 var _RobertWalter83$calliope$App$SelectView = function (a) {
 	return {ctor: 'SelectView', _0: a};
 };
-var _RobertWalter83$calliope$App$layoutProperties = function (viewSelected) {
-	return _elm_lang$core$Native_List.fromArray(
-		[
-			_debois$elm_mdl$Material_Layout$fixedHeader,
-			_debois$elm_mdl$Material_Layout$selectedTab(viewSelected),
-			_debois$elm_mdl$Material_Layout$onSelectTab(_RobertWalter83$calliope$App$SelectView)
-		]);
-};
 var _RobertWalter83$calliope$App$Mdl = function (a) {
 	return {ctor: 'Mdl', _0: a};
 };
-var _RobertWalter83$calliope$App$init = function (maybeAppState) {
-	var appStateInit = function () {
-		var _p0 = maybeAppState;
-		if (_p0.ctor === 'Nothing') {
-			return _RobertWalter83$calliope$App$wrapWithMdl(_RobertWalter83$calliope$App$defaultAppState);
-		} else {
-			return _RobertWalter83$calliope$App$wrapWithMdl(
-				_elm_lang$core$Native_Utils.update(
-					_p0._0,
-					{refreshEditorContent: true}));
-		}
-	}();
+var _RobertWalter83$calliope$App$init = function (appState) {
+	var appWithMdlInit = _RobertWalter83$calliope$App$wrapWithMdl(
+		_elm_lang$core$Native_Utils.update(
+			appState,
+			{refreshEditorContent: true}));
 	return {
 		ctor: '_Tuple2',
-		_0: appStateInit,
+		_0: appWithMdlInit,
 		_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
 	};
+};
+var _RobertWalter83$calliope$App$buttonNew = function (appWithMdl) {
+	return A5(
+		_debois$elm_mdl$Material_Button$render,
+		_RobertWalter83$calliope$App$Mdl,
+		_elm_lang$core$Native_List.fromArray(
+			[2]),
+		appWithMdl.mdl,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_debois$elm_mdl$Material_Button$fab,
+				_debois$elm_mdl$Material_Button$plain,
+				_debois$elm_mdl$Material_Button$ripple,
+				_debois$elm_mdl$Material_Button$onClick(_RobertWalter83$calliope$App$CreateNewProject)
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text('+')
+			]));
+};
+var _RobertWalter83$calliope$App$renderWelcome = function (appWithMdl) {
+	return A2(
+		_debois$elm_mdl$Material_Options$div,
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_RobertWalter83$calliope$Util$boxedDefault,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px')
+				])),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_debois$elm_mdl$Material_Grid$grid,
+				_RobertWalter83$calliope$Util$boxed(
+					{ctor: '_Tuple2', _0: 12, _1: 0}),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A3(
+						_RobertWalter83$calliope$App$cellWelcome,
+						4,
+						'Create New Project',
+						_elm_lang$core$Native_List.fromArray(
+							[
+								_RobertWalter83$calliope$App$buttonNew(appWithMdl)
+							])),
+						A3(
+						_RobertWalter83$calliope$App$cellWelcome,
+						4,
+						'Recent Projects',
+						_RobertWalter83$calliope$App$renderRecentProjects(appWithMdl)),
+						A3(
+						_RobertWalter83$calliope$App$cellWelcome,
+						4,
+						'All Projects',
+						_RobertWalter83$calliope$App$renderAllProjects(appWithMdl))
+					]))
+			]));
 };
 var _RobertWalter83$calliope$App$btnEditTitle = F2(
 	function (stIcon, mdl) {
@@ -12852,7 +12999,7 @@ var _RobertWalter83$calliope$App$btnEditTitle = F2(
 					_debois$elm_mdl$Material_Icon$i(stIcon)
 				]));
 	});
-var _RobertWalter83$calliope$App$viewHeader = function (appWithMdl) {
+var _RobertWalter83$calliope$App$viewDefaultHeader = function (appWithMdl) {
 	return _elm_lang$core$Native_List.fromArray(
 		[
 			A2(
@@ -12910,47 +13057,42 @@ var _RobertWalter83$calliope$App$refreshEditorContent = function (index) {
 		_RobertWalter83$calliope$App$indexToView(index),
 		_RobertWalter83$calliope$App$Dialog) ? true : false;
 };
+var _RobertWalter83$calliope$App$selectView = F2(
+	function (appStateCurrent, index) {
+		return _elm_lang$core$Native_Utils.update(
+			appStateCurrent,
+			{
+				viewSelected: index,
+				refreshEditorContent: _RobertWalter83$calliope$App$refreshEditorContent(index)
+			});
+	});
 var _RobertWalter83$calliope$App$update = F2(
 	function (msg, appWithMdl) {
 		var appStateCurrent = appWithMdl.appState;
-		var _p1 = msg;
-		switch (_p1.ctor) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
 			case 'Mdl':
-				return A3(_debois$elm_mdl$Material$update, _RobertWalter83$calliope$App$Mdl, _p1._0, appWithMdl);
+				return A3(_debois$elm_mdl$Material$update, _RobertWalter83$calliope$App$Mdl, _p0._0, appWithMdl);
 			case 'SelectView':
-				var _p2 = _p1._0;
 				return _RobertWalter83$calliope$App$wrapWithCmdNone(
 					_elm_lang$core$Native_Utils.update(
 						appWithMdl,
 						{
-							appState: _elm_lang$core$Native_Utils.update(
-								appStateCurrent,
-								{
-									viewSelected: _p2,
-									refreshEditorContent: _RobertWalter83$calliope$App$refreshEditorContent(_p2)
-								})
+							appState: A2(_RobertWalter83$calliope$App$selectView, appStateCurrent, _p0._0)
 						}));
 			case 'ToggleEditableTitle':
 				return _RobertWalter83$calliope$App$wrapWithCmdNone(
 					_elm_lang$core$Native_Utils.update(
 						appWithMdl,
 						{
-							appState: _elm_lang$core$Native_Utils.update(
-								appStateCurrent,
-								{
-									titleEditable: _elm_lang$core$Basics$not(appStateCurrent.titleEditable)
-								})
+							appState: _RobertWalter83$calliope$App$toggleEditableTitle(appStateCurrent)
 						}));
 			case 'EditTitle':
 				return _RobertWalter83$calliope$App$wrapWithCmdNone(
 					_elm_lang$core$Native_Utils.update(
 						appWithMdl,
 						{
-							appState: _elm_lang$core$Native_Utils.update(
-								appStateCurrent,
-								{
-									projectActive: A2(_RobertWalter83$calliope$App$updateProjectTitle, appStateCurrent.projectActive, _p1._0)
-								})
+							appState: A2(_RobertWalter83$calliope$App$editTitle, appStateCurrent, _p0._0)
 						}));
 			case 'EditorReady':
 				return {
@@ -12963,36 +13105,50 @@ var _RobertWalter83$calliope$App$update = F2(
 					_elm_lang$core$Native_Utils.update(
 						appWithMdl,
 						{
-							appState: _elm_lang$core$Native_Utils.update(
-								appStateCurrent,
-								{
-									projectActive: A2(_RobertWalter83$calliope$Calliope$updateProject, appStateCurrent.projectActive, _p1._0),
-									refreshEditorContent: false
-								})
+							appState: A2(_RobertWalter83$calliope$App$setEditorContent, appStateCurrent, _p0._0)
 						}));
-			default:
+			case 'Save':
 				return {
 					ctor: '_Tuple2',
 					_0: appWithMdl,
 					_1: _RobertWalter83$calliope$App$save(
 						_RobertWalter83$calliope$App$encodeAppState(appWithMdl.appState))
 				};
+			default:
+				return _RobertWalter83$calliope$App$wrapWithCmdNone(
+					_elm_lang$core$Native_Utils.update(
+						appWithMdl,
+						{
+							appState: _RobertWalter83$calliope$App$createNewProject(appStateCurrent)
+						}));
 		}
 	});
+var _RobertWalter83$calliope$App$layoutProperties = function (viewSelected) {
+	return _elm_lang$core$Native_List.fromArray(
+		[
+			_debois$elm_mdl$Material_Layout$fixedHeader,
+			_debois$elm_mdl$Material_Layout$selectedTab(viewSelected),
+			_debois$elm_mdl$Material_Layout$onSelectTab(_RobertWalter83$calliope$App$SelectView),
+			_elm_lang$core$Native_Utils.eq(
+			_RobertWalter83$calliope$App$indexToView(viewSelected),
+			_RobertWalter83$calliope$App$Welcome) ? _debois$elm_mdl$Material_Layout$transparentHeader : _debois$elm_mdl$Material_Options$nop
+		]);
+};
 var _RobertWalter83$calliope$App$viewMain = function (appWithMdl) {
-	var viewSelected = _RobertWalter83$calliope$App$indexToView(appWithMdl.appState.viewSelected);
+	var appState = appWithMdl.appState;
+	var viewSelected = _RobertWalter83$calliope$App$indexToView(appState.viewSelected);
 	var renderedContent = function () {
-		var _p3 = viewSelected;
-		switch (_p3.ctor) {
+		var _p1 = viewSelected;
+		switch (_p1.ctor) {
 			case 'Welcome':
 				return _RobertWalter83$calliope$App$renderWelcome(appWithMdl);
 			case 'Dialog':
 				return A2(
 					_elm_lang$html$Html_App$map,
 					_RobertWalter83$calliope$App$EditorReady,
-					A2(_RobertWalter83$calliope$Calliope$renderDialog, appWithMdl.appState.projectActive, appWithMdl.appState.refreshEditorContent));
+					A2(_RobertWalter83$calliope$Calliope$renderDialog, appState.projectActive, appState.refreshEditorContent));
 			default:
-				return _RobertWalter83$calliope$Calliope$renderStructure(appWithMdl.appState.projectActive);
+				return _RobertWalter83$calliope$Calliope$renderStructure(appState.projectActive);
 		}
 	}();
 	return A2(
@@ -13031,9 +13187,30 @@ var _RobertWalter83$calliope$App$tabTitles = _elm_lang$core$Array$toList(
 				_elm_lang$core$Basics$toString(v));
 		},
 		_RobertWalter83$calliope$App$rgView));
-var _RobertWalter83$calliope$App$layoutContent = function (appWithMdl) {
+var _RobertWalter83$calliope$App$layoutWelcome = function (appWithMdl) {
 	return {
-		header: _RobertWalter83$calliope$App$viewHeader(appWithMdl),
+		header: _RobertWalter83$calliope$App$viewWelcomeHeader,
+		drawer: _elm_lang$core$Native_List.fromArray(
+			[]),
+		tabs: {
+			ctor: '_Tuple2',
+			_0: _RobertWalter83$calliope$App$tabTitles,
+			_1: _elm_lang$core$Native_List.fromArray(
+				[
+					_debois$elm_mdl$Material_Color$background(
+					A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$BlueGrey, _debois$elm_mdl$Material_Color$S400))
+				])
+		},
+		main: _elm_lang$core$Native_List.fromArray(
+			[
+				_RobertWalter83$calliope$App$stylesheet,
+				_RobertWalter83$calliope$App$viewMain(appWithMdl)
+			])
+	};
+};
+var _RobertWalter83$calliope$App$layoutDefault = function (appWithMdl) {
+	return {
+		header: _RobertWalter83$calliope$App$viewDefaultHeader(appWithMdl),
 		drawer: _elm_lang$core$Native_List.fromArray(
 			[]),
 		tabs: {
@@ -13052,28 +13229,81 @@ var _RobertWalter83$calliope$App$layoutContent = function (appWithMdl) {
 	};
 };
 var _RobertWalter83$calliope$App$view = function (appWithMdl) {
+	var layoutContent = _elm_lang$core$Native_Utils.eq(
+		_RobertWalter83$calliope$App$indexToView(appWithMdl.appState.viewSelected),
+		_RobertWalter83$calliope$App$Welcome) ? _RobertWalter83$calliope$App$layoutWelcome : _RobertWalter83$calliope$App$layoutDefault;
 	return A4(
 		_debois$elm_mdl$Material_Layout$render,
 		_RobertWalter83$calliope$App$Mdl,
 		appWithMdl.mdl,
 		_RobertWalter83$calliope$App$layoutProperties(appWithMdl.appState.viewSelected),
-		_RobertWalter83$calliope$App$layoutContent(appWithMdl));
+		layoutContent(appWithMdl));
 };
 var _RobertWalter83$calliope$App$main = {
 	main: _elm_lang$html$Html_App$programWithFlags(
 		{init: _RobertWalter83$calliope$App$init, view: _RobertWalter83$calliope$App$view, update: _RobertWalter83$calliope$App$update, subscriptions: _RobertWalter83$calliope$App$subscriptions}),
-	flags: _elm_lang$core$Json_Decode$oneOf(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+	flags: A2(
+		_elm_lang$core$Json_Decode$andThen,
+		A2(
+			_elm_lang$core$Json_Decode_ops[':='],
+			'projectActive',
+			A2(
+				_elm_lang$core$Json_Decode$andThen,
 				A2(
-				_elm_lang$core$Json_Decode$map,
-				_elm_lang$core$Maybe$Just,
-				A2(
-					_elm_lang$core$Json_Decode$andThen,
+					_elm_lang$core$Json_Decode_ops[':='],
+					'script',
 					A2(
-						_elm_lang$core$Json_Decode_ops[':='],
-						'projectActive',
+						_elm_lang$core$Json_Decode$andThen,
+						A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
+						function (content) {
+							return _elm_lang$core$Json_Decode$succeed(
+								{content: content});
+						})),
+				function (script) {
+					return A2(
+						_elm_lang$core$Json_Decode$andThen,
+						A2(
+							_elm_lang$core$Json_Decode_ops[':='],
+							'structure',
+							A2(
+								_elm_lang$core$Json_Decode$andThen,
+								A2(
+									_elm_lang$core$Json_Decode_ops[':='],
+									'tierList',
+									_elm_lang$core$Json_Decode$list(
+										A2(
+											_elm_lang$core$Json_Decode$andThen,
+											A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
+											function (id) {
+												return A2(
+													_elm_lang$core$Json_Decode$andThen,
+													A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+													function (name) {
+														return _elm_lang$core$Json_Decode$succeed(
+															{id: id, name: name});
+													});
+											}))),
+								function (tierList) {
+									return _elm_lang$core$Json_Decode$succeed(
+										{tierList: tierList});
+								})),
+						function (structure) {
+							return A2(
+								_elm_lang$core$Json_Decode$andThen,
+								A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
+								function (title) {
+									return _elm_lang$core$Json_Decode$succeed(
+										{script: script, structure: structure, title: title});
+								});
+						});
+				})),
+		function (projectActive) {
+			return A2(
+				_elm_lang$core$Json_Decode$andThen,
+				A2(
+					_elm_lang$core$Json_Decode_ops[':='],
+					'projectsAll',
+					_elm_lang$core$Json_Decode$list(
 						A2(
 							_elm_lang$core$Json_Decode$andThen,
 							A2(
@@ -13123,143 +13353,85 @@ var _RobertWalter83$calliope$App$main = {
 													{script: script, structure: structure, title: title});
 											});
 									});
-							})),
-					function (projectActive) {
-						return A2(
-							_elm_lang$core$Json_Decode$andThen,
-							A2(
-								_elm_lang$core$Json_Decode_ops[':='],
-								'projectsAll',
-								_elm_lang$core$Json_Decode$list(
-									A2(
-										_elm_lang$core$Json_Decode$andThen,
-										A2(
-											_elm_lang$core$Json_Decode_ops[':='],
-											'script',
-											A2(
-												_elm_lang$core$Json_Decode$andThen,
-												A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
-												function (content) {
-													return _elm_lang$core$Json_Decode$succeed(
-														{content: content});
-												})),
-										function (script) {
-											return A2(
-												_elm_lang$core$Json_Decode$andThen,
-												A2(
-													_elm_lang$core$Json_Decode_ops[':='],
-													'structure',
-													A2(
-														_elm_lang$core$Json_Decode$andThen,
-														A2(
-															_elm_lang$core$Json_Decode_ops[':='],
-															'tierList',
-															_elm_lang$core$Json_Decode$list(
-																A2(
-																	_elm_lang$core$Json_Decode$andThen,
-																	A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
-																	function (id) {
-																		return A2(
-																			_elm_lang$core$Json_Decode$andThen,
-																			A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-																			function (name) {
-																				return _elm_lang$core$Json_Decode$succeed(
-																					{id: id, name: name});
-																			});
-																	}))),
-														function (tierList) {
-															return _elm_lang$core$Json_Decode$succeed(
-																{tierList: tierList});
-														})),
-												function (structure) {
-													return A2(
-														_elm_lang$core$Json_Decode$andThen,
-														A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
-														function (title) {
-															return _elm_lang$core$Json_Decode$succeed(
-																{script: script, structure: structure, title: title});
-														});
-												});
-										}))),
-							function (projectsAll) {
-								return A2(
+							}))),
+				function (projectsAll) {
+					return A2(
+						_elm_lang$core$Json_Decode$andThen,
+						A2(
+							_elm_lang$core$Json_Decode_ops[':='],
+							'projectsRecent',
+							_elm_lang$core$Json_Decode$list(
+								A2(
 									_elm_lang$core$Json_Decode$andThen,
 									A2(
 										_elm_lang$core$Json_Decode_ops[':='],
-										'projectsRecent',
-										_elm_lang$core$Json_Decode$list(
-											A2(
-												_elm_lang$core$Json_Decode$andThen,
-												A2(
-													_elm_lang$core$Json_Decode_ops[':='],
-													'script',
-													A2(
-														_elm_lang$core$Json_Decode$andThen,
-														A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
-														function (content) {
-															return _elm_lang$core$Json_Decode$succeed(
-																{content: content});
-														})),
-												function (script) {
-													return A2(
-														_elm_lang$core$Json_Decode$andThen,
-														A2(
-															_elm_lang$core$Json_Decode_ops[':='],
-															'structure',
-															A2(
-																_elm_lang$core$Json_Decode$andThen,
-																A2(
-																	_elm_lang$core$Json_Decode_ops[':='],
-																	'tierList',
-																	_elm_lang$core$Json_Decode$list(
-																		A2(
-																			_elm_lang$core$Json_Decode$andThen,
-																			A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
-																			function (id) {
-																				return A2(
-																					_elm_lang$core$Json_Decode$andThen,
-																					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-																					function (name) {
-																						return _elm_lang$core$Json_Decode$succeed(
-																							{id: id, name: name});
-																					});
-																			}))),
-																function (tierList) {
-																	return _elm_lang$core$Json_Decode$succeed(
-																		{tierList: tierList});
-																})),
-														function (structure) {
-															return A2(
-																_elm_lang$core$Json_Decode$andThen,
-																A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
-																function (title) {
-																	return _elm_lang$core$Json_Decode$succeed(
-																		{script: script, structure: structure, title: title});
-																});
-														});
-												}))),
-									function (projectsRecent) {
+										'script',
+										A2(
+											_elm_lang$core$Json_Decode$andThen,
+											A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
+											function (content) {
+												return _elm_lang$core$Json_Decode$succeed(
+													{content: content});
+											})),
+									function (script) {
 										return A2(
 											_elm_lang$core$Json_Decode$andThen,
-											A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditorContent', _elm_lang$core$Json_Decode$bool),
-											function (refreshEditorContent) {
+											A2(
+												_elm_lang$core$Json_Decode_ops[':='],
+												'structure',
+												A2(
+													_elm_lang$core$Json_Decode$andThen,
+													A2(
+														_elm_lang$core$Json_Decode_ops[':='],
+														'tierList',
+														_elm_lang$core$Json_Decode$list(
+															A2(
+																_elm_lang$core$Json_Decode$andThen,
+																A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
+																function (id) {
+																	return A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+																		function (name) {
+																			return _elm_lang$core$Json_Decode$succeed(
+																				{id: id, name: name});
+																		});
+																}))),
+													function (tierList) {
+														return _elm_lang$core$Json_Decode$succeed(
+															{tierList: tierList});
+													})),
+											function (structure) {
 												return A2(
 													_elm_lang$core$Json_Decode$andThen,
-													A2(_elm_lang$core$Json_Decode_ops[':='], 'titleEditable', _elm_lang$core$Json_Decode$bool),
-													function (titleEditable) {
-														return A2(
-															_elm_lang$core$Json_Decode$andThen,
-															A2(_elm_lang$core$Json_Decode_ops[':='], 'viewSelected', _elm_lang$core$Json_Decode$int),
-															function (viewSelected) {
-																return _elm_lang$core$Json_Decode$succeed(
-																	{projectActive: projectActive, projectsAll: projectsAll, projectsRecent: projectsRecent, refreshEditorContent: refreshEditorContent, titleEditable: titleEditable, viewSelected: viewSelected});
-															});
+													A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
+													function (title) {
+														return _elm_lang$core$Json_Decode$succeed(
+															{script: script, structure: structure, title: title});
 													});
 											});
-									});
-							});
-					}))
-			]))
+									}))),
+						function (projectsRecent) {
+							return A2(
+								_elm_lang$core$Json_Decode$andThen,
+								A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditorContent', _elm_lang$core$Json_Decode$bool),
+								function (refreshEditorContent) {
+									return A2(
+										_elm_lang$core$Json_Decode$andThen,
+										A2(_elm_lang$core$Json_Decode_ops[':='], 'titleEditable', _elm_lang$core$Json_Decode$bool),
+										function (titleEditable) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												A2(_elm_lang$core$Json_Decode_ops[':='], 'viewSelected', _elm_lang$core$Json_Decode$int),
+												function (viewSelected) {
+													return _elm_lang$core$Json_Decode$succeed(
+														{projectActive: projectActive, projectsAll: projectsAll, projectsRecent: projectsRecent, refreshEditorContent: refreshEditorContent, titleEditable: titleEditable, viewSelected: viewSelected});
+												});
+										});
+								});
+						});
+				});
+		})
 };
 
 var Elm = {};

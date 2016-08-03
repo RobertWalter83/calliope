@@ -19,6 +19,7 @@ import Material.Grid as Grid exposing (..)
 import Material.Color as Color
 import Material.Elevation as Elevation
 import Material.Options as Options exposing (css, when)
+import Util exposing (..)
 
 
 -- MODEL
@@ -91,6 +92,7 @@ updateScript script contentNew =
 
 
 -- RENDERING
+-- RENDER STRUCTURE
 
 
 renderStructure : Project -> Html a
@@ -100,15 +102,15 @@ renderStructure project =
             widthFromTierList project.structure.tierList
     in
         Options.div
-            (boxed 20 20)
+            boxedDefault
             [ grid
-                ((boxed 12 0) ++ [ noSpacing ])
+                ((boxed ( 12, 0 )) ++ [ noSpacing ])
               <|
                 List.append
                     (cellHeaders gridWidth project)
                     [ cellHeader gridWidth "Statistics" ]
             , grid
-                ((boxed 12 12)
+                ((boxed ( 12, 12 ))
                     ++ [ noSpacing
                        , Elevation.e6
                        , Color.background Color.white
@@ -164,10 +166,14 @@ cellFromTier gridWidth tier =
         [ text <| "Description of " ++ tier.name ++ " goes here!." ]
 
 
+
+-- RENDER DIALOG
+
+
 renderDialog : Project -> Bool -> Html Msg
 renderDialog project refresh =
     Options.div
-        (boxedDefault ++ [ css "max-width" "812px" ])
+        (boxedDefault |> withMaxWidth 812)
         [ Options.div
             [ Elevation.e6
             , css "height" "1024px"
@@ -194,28 +200,6 @@ title t =
     Options.styled Html.h1
         [ Color.text Color.primary ]
         [ text t ]
-
-
-boxed : Int -> Int -> List (Options.Property a b)
-boxed sides topBottom =
-    let
-        stSides =
-            toString sides ++ "px"
-
-        stTopBottom =
-            toString topBottom ++ "px"
-    in
-        [ css "margin" "auto"
-        , css "padding-left" stSides
-        , css "padding-right" stSides
-        , css "padding-top" stTopBottom
-        , css "padding-bottom" stTopBottom
-        ]
-
-
-boxedDefault : List (Options.Property a b)
-boxedDefault =
-    boxed 80 20
 
 
 

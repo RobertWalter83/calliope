@@ -10,9 +10,10 @@ import Material.Color as Color
 import Material.Textfield as Textfield
 import Material.Icon as Icon
 import Material.Layout as Layout
+import Material.Grid as Grid exposing (..)
 import Material.Options as Options exposing (css, when)
 import Material.Button as Button exposing (..)
-import Debug exposing (..)
+import Util exposing (..)
 
 
 -- MODEL
@@ -42,6 +43,7 @@ type Msg
     | GetEditorContent String
     | EditorReady Calliope.Msg
     | Save
+    | CreateNewProject
 
 
 type View
@@ -67,7 +69,7 @@ port getEditorContent : (String -> msg) -> Sub msg
 -- MAIN
 
 
-main : Program (Maybe AppState)
+main : Program AppState
 main =
     App.programWithFlags
         { init = init
@@ -77,18 +79,13 @@ main =
         }
 
 
-init : Maybe AppState -> ( AppWithMdl, Cmd Msg )
-init maybeAppState =
+init : AppState -> ( AppWithMdl, Cmd Msg )
+init appState =
     let
-        appStateInit =
-            case maybeAppState of
-                Nothing ->
-                    wrapWithMdl defaultAppState
-
-                Maybe.Just appState ->
-                    wrapWithMdl { appState | refreshEditorContent = True }
+        appWithMdlInit =
+            wrapWithMdl { appState | refreshEditorContent = True }
     in
-        ( appStateInit, Layout.sub0 Mdl )
+        ( appWithMdlInit, Layout.sub0 Mdl )
 
 
 wrapWithMdl : AppState -> AppWithMdl
@@ -124,25 +121,60 @@ update msg appWithMdl =
                 Material.update Mdl msg appWithMdl
 
             SelectView index ->
-                wrapWithCmdNone { appWithMdl | appState = { appStateCurrent | viewSelected = index, refreshEditorContent = refreshEditorContent index } }
+                wrapWithCmdNone { appWithMdl | appState = selectView appStateCurrent index }
 
             ToggleEditableTitle ->
-                wrapWithCmdNone { appWithMdl | appState = { appStateCurrent | titleEditable = (not appStateCurrent.titleEditable) } }
+                wrapWithCmdNone { appWithMdl | appState = toggleEditableTitle appStateCurrent }
 
             EditTitle titleNew ->
-                wrapWithCmdNone { appWithMdl | appState = { appStateCurrent | projectActive = updateProjectTitle appStateCurrent.projectActive titleNew } }
+                wrapWithCmdNone { appWithMdl | appState = editTitle appStateCurrent titleNew }
 
             EditorReady subMsg ->
                 ( appWithMdl, configureAce "ace/theme/textmate" )
 
             GetEditorContent content ->
-                wrapWithCmdNone { appWithMdl | appState = { appStateCurrent | projectActive = Calliope.updateProject appStateCurrent.projectActive content, refreshEditorContent = False } }
+                wrapWithCmdNone { appWithMdl | appState = setEditorContent appStateCurrent content }
 
             Save ->
                 ( appWithMdl
                 , encodeAppState appWithMdl.appState
                     |> save
                 )
+
+            CreateNewProject ->
+                wrapWithCmdNone { appWithMdl | appState = createNewProject appStateCurrent }
+
+
+selectView : AppState -> Int -> AppState
+selectView appStateCurrent index =
+    { appStateCurrent | viewSelected = index, refreshEditorContent = refreshEditorContent index }
+
+
+toggleEditableTitle : AppState -> AppState
+toggleEditableTitle appStateCurrent =
+    { appStateCurrent | titleEditable = (not appStateCurrent.titleEditable) }
+
+
+editTitle : AppState -> String -> AppState
+editTitle appStateCurrent titleNew =
+    { appStateCurrent | projectActive = updateProjectTitle appStateCurrent.projectActive titleNew }
+
+
+setEditorContent : AppState -> String -> AppState
+setEditorContent appStateCurrent content =
+    { appStateCurrent | projectActive = Calliope.updateProject appStateCurrent.projectActive content, refreshEditorContent = False }
+
+
+createNewProject : AppState -> AppState
+createNewProject appStateCurrent =
+    let
+        projectsRecent =
+            [ appStateCurrent.projectActive ] ++ appStateCurrent.projectsRecent
+
+        projectsAll =
+            [ appStateCurrent.projectActive ] ++ appStateCurrent.projectsAll
+    in
+        { defaultAppState | projectsRecent = projectsRecent, projectsAll = projectsAll }
 
 
 refreshEditorContent : Int -> Bool
@@ -169,31 +201,22 @@ updateProjectTitle projectOld titleNew =
 
 
 
--- ENCODE
-
-
-encodeAppState : AppState -> Json.Encode.Value
-encodeAppState appState =
-    Json.Encode.object
-        [ ( "viewSelected", Json.Encode.int appState.viewSelected )
-        , ( "projectActive", Calliope.encodeProject appState.projectActive )
-        , ( "projectsRecent", Json.Encode.list (List.map Calliope.encodeProject appState.projectsRecent) )
-        , ( "projectsAll", Json.Encode.list (List.map Calliope.encodeProject appState.projectsAll) )
-        , ( "titleEditable", Json.Encode.bool appState.titleEditable )
-        , ( "refreshEditorContent", Json.Encode.bool appState.refreshEditorContent )
-        ]
-
-
-
 -- VIEW
 
 
 view : AppWithMdl -> Html Msg
 view appWithMdl =
-    Layout.render Mdl
-        appWithMdl.mdl
-        (layoutProperties appWithMdl.appState.viewSelected)
-        (layoutContent appWithMdl)
+    let
+        layoutContent =
+            if ((indexToView appWithMdl.appState.viewSelected) == Welcome) then
+                layoutWelcome
+            else
+                layoutDefault
+    in
+        Layout.render Mdl
+            appWithMdl.mdl
+            (layoutProperties appWithMdl.appState.viewSelected)
+            (layoutContent appWithMdl)
 
 
 layoutProperties : Int -> List (Layout.Property Msg)
@@ -201,12 +224,25 @@ layoutProperties viewSelected =
     [ Layout.fixedHeader
     , Layout.selectedTab viewSelected
     , Layout.onSelectTab SelectView
+    , if ((indexToView viewSelected) == Welcome) then
+        Layout.transparentHeader
+      else
+        Options.nop
     ]
 
 
-layoutContent : AppWithMdl -> Layout.Contents Msg
-layoutContent appWithMdl =
-    { header = viewHeader appWithMdl
+layoutWelcome : AppWithMdl -> Layout.Contents Msg
+layoutWelcome appWithMdl =
+    { header = viewWelcomeHeader
+    , drawer = []
+    , tabs = ( tabTitles, [ Color.background (Color.color Color.BlueGrey Color.S400) ] )
+    , main = [ stylesheet, viewMain appWithMdl ]
+    }
+
+
+layoutDefault : AppWithMdl -> Layout.Contents Msg
+layoutDefault appWithMdl =
+    { header = viewDefaultHeader appWithMdl
     , drawer = []
     , tabs = ( tabTitles, [ Color.background (Color.color Color.BlueGrey Color.S400) ] )
     , main = [ viewMain appWithMdl ]
@@ -222,8 +258,11 @@ tabTitles =
 viewMain : AppWithMdl -> Html Msg
 viewMain appWithMdl =
     let
+        appState =
+            appWithMdl.appState
+
         viewSelected =
-            indexToView appWithMdl.appState.viewSelected
+            indexToView appState.viewSelected
 
         renderedContent =
             case viewSelected of
@@ -231,10 +270,10 @@ viewMain appWithMdl =
                     renderWelcome appWithMdl
 
                 Dialog ->
-                    App.map EditorReady (Calliope.renderDialog appWithMdl.appState.projectActive appWithMdl.appState.refreshEditorContent)
+                    App.map EditorReady (Calliope.renderDialog appState.projectActive appState.refreshEditorContent)
 
                 Structure ->
-                    Calliope.renderStructure appWithMdl.appState.projectActive
+                    Calliope.renderStructure appState.projectActive
     in
         Options.div [ css "background" "url('assets/bg.png')" ]
             [ renderedContent
@@ -252,11 +291,54 @@ viewMain appWithMdl =
 
 renderWelcome : AppWithMdl -> Html Msg
 renderWelcome appWithMdl =
-    Options.div []
-        [ Options.styled Html.h1
-            []
-            [ text "Welcome" ]
+    Options.div (boxedDefault ++ [ css "height" "1024px" ])
+        [ grid
+            (boxed ( 12, 0 ))
+            [ cellWelcome 4 "Create New Project" <| [ buttonNew appWithMdl ]
+            , cellWelcome 4 "Recent Projects" <| renderRecentProjects appWithMdl
+            , cellWelcome 4 "All Projects" <| renderAllProjects appWithMdl
+            ]
         ]
+
+
+buttonNew : AppWithMdl -> Html Msg
+buttonNew appWithMdl =
+    Button.render Mdl
+        [ 2 ]
+        appWithMdl.mdl
+        [ Button.fab
+        , Button.plain
+        , Button.ripple
+        , Button.onClick CreateNewProject
+        ]
+        [ text "+" ]
+
+
+renderRecentProjects : AppWithMdl -> List (Html Msg)
+renderRecentProjects appWithMdl =
+    List.map renderProjectLink appWithMdl.appState.projectsRecent
+
+
+renderAllProjects : AppWithMdl -> List (Html Msg)
+renderAllProjects appWithMdl =
+    List.map renderProjectLink appWithMdl.appState.projectsAll
+
+
+renderProjectLink : Calliope.Project -> Html Msg
+renderProjectLink project =
+    Options.div (boxed ( 12, 12 )) [ text project.title ]
+
+
+cellWelcome : Int -> String -> List (Html Msg) -> Cell Msg
+cellWelcome gridWidth stHeader content =
+    cell
+        [ Grid.size All gridWidth ]
+        ([ Options.styled Html.h6
+            [ Color.text <| Color.color Color.Grey Color.S700 ]
+            [ text stHeader ]
+         ]
+            ++ content
+        )
 
 
 rgView : Array View
@@ -264,8 +346,18 @@ rgView =
     Array.fromList [ Welcome, Structure, Dialog ]
 
 
-viewHeader : AppWithMdl -> List (Html Msg)
-viewHeader appWithMdl =
+viewWelcomeHeader : List (Html Msg)
+viewWelcomeHeader =
+    [ Layout.row
+        [ css "height" "400px"
+        , css "transition" "height 333ms ease-in-out 0s"
+        ]
+        [ Layout.title [ css "margin-right" "20px", css "color" "#000000" ] [ text "Calliope" ] ]
+    ]
+
+
+viewDefaultHeader : AppWithMdl -> List (Html Msg)
+viewDefaultHeader appWithMdl =
     [ Layout.row [ css "transition" "height 333ms ease-in-out 0s" ]
         (if appWithMdl.appState.titleEditable then
             [ Textfield.render Mdl
@@ -300,11 +392,40 @@ btnEditTitle stIcon mdl =
 
 
 
---SUBS
+-- STYLING
+
+
+stylesheet : Html a
+stylesheet =
+    Options.stylesheet """
+  .mdl-layout__header--transparent {
+    background: url('assets/bg.png');
+  }
+"""
+
+
+
+-- SUBS
 
 
 subscriptions : AppWithMdl -> Sub Msg
 subscriptions appState =
     Sub.batch
         [ getEditorContent GetEditorContent
+        ]
+
+
+
+-- ENCODE
+
+
+encodeAppState : AppState -> Json.Encode.Value
+encodeAppState appState =
+    Json.Encode.object
+        [ ( "viewSelected", Json.Encode.int appState.viewSelected )
+        , ( "projectActive", Calliope.encodeProject appState.projectActive )
+        , ( "projectsRecent", Json.Encode.list (List.map Calliope.encodeProject appState.projectsRecent) )
+        , ( "projectsAll", Json.Encode.list (List.map Calliope.encodeProject appState.projectsAll) )
+        , ( "titleEditable", Json.Encode.bool appState.titleEditable )
+        , ( "refreshEditorContent", Json.Encode.bool appState.refreshEditorContent )
         ]

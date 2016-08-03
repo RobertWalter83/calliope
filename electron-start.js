@@ -21,8 +21,10 @@ app.on('ready', function() {
   // Create the browser window.
   mainWindow = new BrowserWindow(
     {
-       width: 1600, 
-       height: 900
+       width: 1920, 
+       height: 1080,
+       show: false,
+       backgroundColor: '#2e2c29'
     });
 
   // and load the index.html of the app.
@@ -30,6 +32,10 @@ app.on('ready', function() {
   
   mainWindow.webContents.openDevTools();
 
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  });
+  
   // Emitted when the window is closed.
   mainWindow.on('closed', function() { 
     mainWindow = null;
