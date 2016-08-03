@@ -37,6 +37,18 @@
 
     var app = Elm.App.fullscreen(startingState);
     setupPorts(app);
+
+    document.onclick = function (e) {
+      e = e ||  window.event;
+      var element = e.target || e.srcElement;
+
+       console.log("Found onclick");
+
+      if (element.tagName == 'A') {
+        console.log("Found link");
+        return false; // prevent default action and stop event propagation
+      }
+    };
   </script>
 
 </html>

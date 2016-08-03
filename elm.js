@@ -12769,19 +12769,22 @@ var _RobertWalter83$calliope$App$cellWelcome = F3(
 			_debois$elm_mdl$Material_Grid$cell,
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, gridWidth)
+					A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, gridWidth),
+					_debois$elm_mdl$Material_Elevation$e6,
+					_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white),
+					A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px')
 				]),
 			A2(
 				_elm_lang$core$Basics_ops['++'],
 				_elm_lang$core$Native_List.fromArray(
 					[
-						A3(
-						_debois$elm_mdl$Material_Options$styled,
-						_elm_lang$html$Html$h6,
+						A2(
+						_debois$elm_mdl$Material_Options$div,
 						_elm_lang$core$Native_List.fromArray(
 							[
 								_debois$elm_mdl$Material_Color$text(
-								A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Grey, _debois$elm_mdl$Material_Color$S700))
+								A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Grey, _debois$elm_mdl$Material_Color$S700)),
+								A2(_debois$elm_mdl$Material_Options$css, 'margin-bottom', '12px')
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -12790,22 +12793,6 @@ var _RobertWalter83$calliope$App$cellWelcome = F3(
 					]),
 				content));
 	});
-var _RobertWalter83$calliope$App$renderProjectLink = function (project) {
-	return A2(
-		_debois$elm_mdl$Material_Options$div,
-		_RobertWalter83$calliope$Util$boxed(
-			{ctor: '_Tuple2', _0: 12, _1: 12}),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(project.title)
-			]));
-};
-var _RobertWalter83$calliope$App$renderAllProjects = function (appWithMdl) {
-	return A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$renderProjectLink, appWithMdl.appState.projectsAll);
-};
-var _RobertWalter83$calliope$App$renderRecentProjects = function (appWithMdl) {
-	return A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$renderProjectLink, appWithMdl.appState.projectsRecent);
-};
 var _RobertWalter83$calliope$App$updateProjectTitle = F2(
 	function (projectOld, titleNew) {
 		return _elm_lang$core$Native_Utils.update(
@@ -12815,6 +12802,34 @@ var _RobertWalter83$calliope$App$updateProjectTitle = F2(
 var _RobertWalter83$calliope$App$wrapWithCmdNone = function (appWithMdl) {
 	return {ctor: '_Tuple2', _0: appWithMdl, _1: _elm_lang$core$Platform_Cmd$none};
 };
+var _RobertWalter83$calliope$App$updateProjectList = F2(
+	function (projectsCurrent, projectNew) {
+		var filtered = A2(
+			_elm_lang$core$List$filter,
+			function (p) {
+				return A2(
+					F2(
+						function (x, y) {
+							return !_elm_lang$core$Native_Utils.eq(x, y);
+						}),
+					p,
+					projectNew);
+			},
+			projectsCurrent);
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Native_List.fromArray(
+				[projectNew]),
+			filtered);
+	});
+var _RobertWalter83$calliope$App$openProject = F2(
+	function (appStateCurrent, projectToOpen) {
+		var projectsAll = A2(_RobertWalter83$calliope$App$updateProjectList, appStateCurrent.projectsAll, projectToOpen);
+		var projectsRecent = A2(_RobertWalter83$calliope$App$updateProjectList, appStateCurrent.projectsRecent, projectToOpen);
+		return _elm_lang$core$Native_Utils.update(
+			appStateCurrent,
+			{projectActive: projectToOpen, projectsRecent: projectsRecent, projectsAll: projectsAll});
+	});
 var _RobertWalter83$calliope$App$setEditorContent = F2(
 	function (appStateCurrent, content) {
 		return _elm_lang$core$Native_Utils.update(
@@ -12886,6 +12901,36 @@ var _RobertWalter83$calliope$App$AppWithMdl = F2(
 	function (a, b) {
 		return {mdl: a, appState: b};
 	});
+var _RobertWalter83$calliope$App$OpenProject = function (a) {
+	return {ctor: 'OpenProject', _0: a};
+};
+var _RobertWalter83$calliope$App$renderProjectLink = function (project) {
+	return A2(
+		_debois$elm_mdl$Material_Options$div,
+		_RobertWalter83$calliope$Util$boxed(
+			{ctor: '_Tuple2', _0: 0, _1: 6}),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$html$Html$a,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$href(''),
+						_elm_lang$html$Html_Events$onClick(
+						_RobertWalter83$calliope$App$OpenProject(project))
+					]),
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html$text(project.title)
+					]))
+			]));
+};
+var _RobertWalter83$calliope$App$renderRecentProjects = function (appWithMdl) {
+	return A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$renderProjectLink, appWithMdl.appState.projectsRecent);
+};
+var _RobertWalter83$calliope$App$renderAllProjects = function (appWithMdl) {
+	return A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$renderProjectLink, appWithMdl.appState.projectsAll);
+};
 var _RobertWalter83$calliope$App$CreateNewProject = {ctor: 'CreateNewProject'};
 var _RobertWalter83$calliope$App$Save = {ctor: 'Save'};
 var _RobertWalter83$calliope$App$EditorReady = function (a) {
@@ -12929,13 +12974,17 @@ var _RobertWalter83$calliope$App$buttonNew = function (appWithMdl) {
 		_elm_lang$core$Native_List.fromArray(
 			[2]),
 		appWithMdl.mdl,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_debois$elm_mdl$Material_Button$fab,
-				_debois$elm_mdl$Material_Button$plain,
-				_debois$elm_mdl$Material_Button$ripple,
-				_debois$elm_mdl$Material_Button$onClick(_RobertWalter83$calliope$App$CreateNewProject)
-			]),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_RobertWalter83$calliope$Util$boxed(
+				{ctor: '_Tuple2', _0: 12, _1: 0}),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_debois$elm_mdl$Material_Button$fab,
+					_debois$elm_mdl$Material_Button$plain,
+					_debois$elm_mdl$Material_Button$ripple,
+					_debois$elm_mdl$Material_Button$onClick(_RobertWalter83$calliope$App$CreateNewProject)
+				])),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				_elm_lang$html$Html$text('+')
@@ -12946,7 +12995,8 @@ var _RobertWalter83$calliope$App$renderWelcome = function (appWithMdl) {
 		_debois$elm_mdl$Material_Options$div,
 		A2(
 			_elm_lang$core$Basics_ops['++'],
-			_RobertWalter83$calliope$Util$boxedDefault,
+			_RobertWalter83$calliope$Util$boxed(
+				{ctor: '_Tuple2', _0: 100, _1: 20}),
 			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px')
@@ -12955,8 +13005,8 @@ var _RobertWalter83$calliope$App$renderWelcome = function (appWithMdl) {
 			[
 				A2(
 				_debois$elm_mdl$Material_Grid$grid,
-				_RobertWalter83$calliope$Util$boxed(
-					{ctor: '_Tuple2', _0: 12, _1: 0}),
+				_elm_lang$core$Native_List.fromArray(
+					[]),
 				_elm_lang$core$Native_List.fromArray(
 					[
 						A3(
@@ -13114,12 +13164,19 @@ var _RobertWalter83$calliope$App$update = F2(
 					_1: _RobertWalter83$calliope$App$save(
 						_RobertWalter83$calliope$App$encodeAppState(appWithMdl.appState))
 				};
-			default:
+			case 'CreateNewProject':
 				return _RobertWalter83$calliope$App$wrapWithCmdNone(
 					_elm_lang$core$Native_Utils.update(
 						appWithMdl,
 						{
 							appState: _RobertWalter83$calliope$App$createNewProject(appStateCurrent)
+						}));
+			default:
+				return _RobertWalter83$calliope$App$wrapWithCmdNone(
+					_elm_lang$core$Native_Utils.update(
+						appWithMdl,
+						{
+							appState: A2(_RobertWalter83$calliope$App$openProject, appStateCurrent, _p0._0)
 						}));
 		}
 	});

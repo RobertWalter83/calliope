@@ -2,6 +2,8 @@ port module App exposing (..)
 
 import Calliope exposing (..)
 import Html exposing (..)
+import Html.Attributes exposing(href)
+import Html.Events as Html exposing(..)
 import Html.App as App
 import Json.Encode exposing (..)
 import Array exposing (..)
@@ -13,6 +15,7 @@ import Material.Layout as Layout
 import Material.Grid as Grid exposing (..)
 import Material.Options as Options exposing (css, when)
 import Material.Button as Button exposing (..)
+import Material.Elevation as Elevation
 import Util exposing (..)
 
 
@@ -44,6 +47,7 @@ type Msg
     | EditorReady Calliope.Msg
     | Save
     | CreateNewProject
+    | OpenProject Project
 
 
 type View
@@ -144,6 +148,9 @@ update msg appWithMdl =
             CreateNewProject ->
                 wrapWithCmdNone { appWithMdl | appState = createNewProject appStateCurrent }
 
+            OpenProject project -> 
+                wrapWithCmdNone { appWithMdl | appState = openProject appStateCurrent project }
+
 
 selectView : AppState -> Int -> AppState
 selectView appStateCurrent index =
@@ -167,7 +174,7 @@ setEditorContent appStateCurrent content =
 
 createNewProject : AppState -> AppState
 createNewProject appStateCurrent =
-    let
+    let -- TODO handle name clashes 
         projectsRecent =
             [ appStateCurrent.projectActive ] ++ appStateCurrent.projectsRecent
 
@@ -176,6 +183,24 @@ createNewProject appStateCurrent =
     in
         { defaultAppState | projectsRecent = projectsRecent, projectsAll = projectsAll }
 
+
+openProject : AppState -> Project -> AppState
+openProject appStateCurrent projectToOpen =
+    let
+        projectsRecent =
+            updateProjectList appStateCurrent.projectsRecent projectToOpen
+
+        projectsAll =
+            updateProjectList appStateCurrent.projectsAll projectToOpen
+    in
+        { appStateCurrent | projectActive = projectToOpen, projectsRecent = projectsRecent, projectsAll = projectsAll } 
+
+updateProjectList : List Project -> Project -> List Project
+updateProjectList projectsCurrent projectNew =
+    let 
+        filtered = List.filter (\p -> (/=) p projectNew) projectsCurrent
+    in
+        [ projectNew ] ++ filtered
 
 refreshEditorContent : Int -> Bool
 refreshEditorContent index =
@@ -291,9 +316,9 @@ viewMain appWithMdl =
 
 renderWelcome : AppWithMdl -> Html Msg
 renderWelcome appWithMdl =
-    Options.div (boxedDefault ++ [ css "height" "1024px" ])
+    Options.div ((boxed ( 100, 20 )) ++ [ css "height" "1024px" ])
         [ grid
-            (boxed ( 12, 0 ))
+            []
             [ cellWelcome 4 "Create New Project" <| [ buttonNew appWithMdl ]
             , cellWelcome 4 "Recent Projects" <| renderRecentProjects appWithMdl
             , cellWelcome 4 "All Projects" <| renderAllProjects appWithMdl
@@ -306,11 +331,13 @@ buttonNew appWithMdl =
     Button.render Mdl
         [ 2 ]
         appWithMdl.mdl
-        [ Button.fab
-        , Button.plain
-        , Button.ripple
-        , Button.onClick CreateNewProject
-        ]
+        (boxed ( 12, 0 )
+            ++ [ Button.fab
+               , Button.plain
+               , Button.ripple
+               , Button.onClick CreateNewProject
+               ]
+        )
         [ text "+" ]
 
 
@@ -326,15 +353,17 @@ renderAllProjects appWithMdl =
 
 renderProjectLink : Calliope.Project -> Html Msg
 renderProjectLink project =
-    Options.div (boxed ( 12, 12 )) [ text project.title ]
+    Options.div
+        (boxed ( 0, 6 ))
+        [ a [ href "", Html.onClick (OpenProject project) ] [ text project.title ] ]
 
 
 cellWelcome : Int -> String -> List (Html Msg) -> Cell Msg
 cellWelcome gridWidth stHeader content =
     cell
-        [ Grid.size All gridWidth ]
-        ([ Options.styled Html.h6
-            [ Color.text <| Color.color Color.Grey Color.S700 ]
+        [ Grid.size All gridWidth, Elevation.e6, Color.background Color.white, css "padding" "12px" ]
+        ([ Options.div
+            [ Color.text <| Color.color Color.Grey Color.S700, css "margin-bottom" "12px" ]
             [ text stHeader ]
          ]
             ++ content
