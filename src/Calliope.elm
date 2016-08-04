@@ -12,6 +12,9 @@ module Calliope
         )
 
 import Date exposing (..)
+import Time exposing (..)
+import Date.Extra.Config.Config_en_us exposing (config)
+import Date.Extra.Format as Format exposing (format)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -30,6 +33,7 @@ import Util exposing (..)
 type alias Project =
     { title : String
     , dateCreated : String
+    , timeCreated : String
     , script : Script
     , structure : Structure
     }
@@ -69,15 +73,17 @@ defaultProject : Project
 defaultProject =
     { title = "New Project"
     , dateCreated = "1/1/1990"
+    , timeCreated = "12:00:00"
     , script =
         { content = "" }
     , structure = defaultStructure
     }
 
-createProject : Date -> Project
-createProject dateNow =
+createProject : Time -> Project
+createProject timeNow =
     { title = "New Project"
-    , dateCreated = toStringDate dateNow
+    , dateCreated = Date.fromTime timeNow |> format config config.format.date 
+    , timeCreated = Date.fromTime timeNow |> format config config.format.time 
     , script =
         { content = "" }
     , structure = defaultStructure
@@ -86,6 +92,10 @@ createProject dateNow =
 toStringDate : Date -> String
 toStringDate date =
   ((toString <| Date.day date) ++ "/" ++ (toString <| Date.month date) ++ "/" ++ (toString <| Date.year date))
+
+toStringTime : Date -> String
+toStringTime date =
+  ((toString <| Date.hour date) ++ ":" ++ (toString <| Date.minute date) ++ ":" ++ (toString <| Date.second date))
 
 
 defaultStructure : Structure
@@ -230,6 +240,7 @@ encodeProject project =
         , ( "script", encodeScript project.script )
         , ( "structure", encodeStructure project.structure )
         , ( "dateCreated", Json.Encode.string <| toString project.dateCreated )
+        , ( "timeCreated", Json.Encode.string <| toString project.timeCreated)
         ]
 
 
