@@ -2,6 +2,7 @@ module Calliope
     exposing
         ( Project
         , defaultProject
+        , createProject
         , defaultStructure
         , renderDialog
         , renderStructure
@@ -10,6 +11,7 @@ module Calliope
         , Msg
         )
 
+import Date exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -27,6 +29,7 @@ import Util exposing (..)
 
 type alias Project =
     { title : String
+    , dateCreated : String
     , script : Script
     , structure : Structure
     }
@@ -65,10 +68,24 @@ type Msg
 defaultProject : Project
 defaultProject =
     { title = "New Project"
+    , dateCreated = "1/1/1990"
     , script =
         { content = "" }
     , structure = defaultStructure
     }
+
+createProject : Date -> Project
+createProject dateNow =
+    { title = "New Project"
+    , dateCreated = toStringDate dateNow
+    , script =
+        { content = "" }
+    , structure = defaultStructure
+    }
+
+toStringDate : Date -> String
+toStringDate date =
+  ((toString <| Date.day date) ++ "/" ++ (toString <| Date.month date) ++ "/" ++ (toString <| Date.year date))
 
 
 defaultStructure : Structure
@@ -212,6 +229,7 @@ encodeProject project =
         [ ( "title", Json.Encode.string project.title )
         , ( "script", encodeScript project.script )
         , ( "structure", encodeStructure project.structure )
+        , ( "dateCreated", Json.Encode.string <| toString project.dateCreated )
         ]
 
 

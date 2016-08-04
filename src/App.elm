@@ -1,9 +1,11 @@
 port module App exposing (..)
 
 import Calliope exposing (..)
+import Task exposing (..)
+import Date exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing(href)
-import Html.Events as Html exposing(..)
+import Html.Attributes exposing (href)
+import Html.Events as Html exposing (..)
 import Html.App as App
 import Json.Encode exposing (..)
 import Array exposing (..)
@@ -41,14 +43,18 @@ type alias AppWithMdl =
 type Msg
     = Mdl Material.Msg
     | SelectView Int
-    | ToggleEditableTitle
+    | ToggleEditableTitle 
     | EditTitle String
     | GetEditorContent String
     | EditorReady Calliope.Msg
     | Save
     | CreateNewProject
     | OpenProject Project
+    | CreateNewProjectNow Date 
+    | NoOp
 
+cmdDateNow : Cmd Msg
+cmdDateNow = Task.perform (\_ -> NoOp) CreateNewProjectNow Date.now
 
 type View
     = Welcome
@@ -61,7 +67,7 @@ type View
 
 
 port configureAce : String -> Cmd m
-
+ 
 
 port save : Json.Encode.Value -> Cmd m
 
@@ -73,7 +79,7 @@ port getEditorContent : (String -> msg) -> Sub msg
 -- MAIN
 
 
-main : Program AppState
+main : Program (Maybe AppState)
 main =
     App.programWithFlags
         { init = init
@@ -83,26 +89,41 @@ main =
         }
 
 
-init : AppState -> ( AppWithMdl, Cmd Msg )
-init appState =
+init : Maybe AppState -> ( AppWithMdl, Cmd Msg )
+init maybeAppState =
     let
-        appWithMdlInit =
-            wrapWithMdl { appState | refreshEditorContent = True }
+        appStateInit =
+            case maybeAppState of
+                Nothing ->
+                    wrapWithMdl defaultAppState
+
+                Maybe.Just appState ->
+                    wrapWithMdl { appState | refreshEditorContent = True }
     in
-        ( appWithMdlInit, Layout.sub0 Mdl )
+        ( appStateInit, Layout.sub0 Mdl )
 
 
 wrapWithMdl : AppState -> AppWithMdl
 wrapWithMdl appState =
     { mdl = Material.model
     , appState = appState
-    }
-
+    } 
 
 defaultAppState : AppState
 defaultAppState =
-    { viewSelected = 0
+    { viewSelected = 0 
     , projectActive = Calliope.defaultProject
+    , projectsAll = []
+    , projectsRecent = []
+    , titleEditable = False
+    , refreshEditorContent = False
+    }
+
+
+createProjectWithDate : Date -> AppState
+createProjectWithDate dateNow =
+    { viewSelected = 0
+    , projectActive = Calliope.createProject dateNow 
     , projectsAll = []
     , projectsRecent = []
     , titleEditable = False
@@ -145,11 +166,17 @@ update msg appWithMdl =
                     |> save
                 )
 
-            CreateNewProject ->
-                wrapWithCmdNone { appWithMdl | appState = createNewProject appStateCurrent }
+            CreateNewProjectNow dateNow -> 
+                wrapWithCmdNone { appWithMdl | appState = createNewProject appStateCurrent dateNow }
 
-            OpenProject project -> 
+            CreateNewProject ->
+                ( appWithMdl, cmdDateNow )
+                
+            OpenProject project ->
                 wrapWithCmdNone { appWithMdl | appState = openProject appStateCurrent project }
+
+            NoOp -> 
+                wrapWithCmdNone appWithMdl
 
 
 selectView : AppState -> Int -> AppState
@@ -172,16 +199,19 @@ setEditorContent appStateCurrent content =
     { appStateCurrent | projectActive = Calliope.updateProject appStateCurrent.projectActive content, refreshEditorContent = False }
 
 
-createNewProject : AppState -> AppState
-createNewProject appStateCurrent =
-    let -- TODO handle name clashes 
+createNewProject : AppState -> Date -> AppState
+createNewProject appStateCurrent dateNow =
+    let
+        -- TODO handle name clashes
         projectsRecent =
             [ appStateCurrent.projectActive ] ++ appStateCurrent.projectsRecent
 
         projectsAll =
             [ appStateCurrent.projectActive ] ++ appStateCurrent.projectsAll
+
+        defaultAppStateI = createProjectWithDate dateNow
     in
-        { defaultAppState | projectsRecent = projectsRecent, projectsAll = projectsAll }
+        { defaultAppStateI | projectsRecent = projectsRecent, projectsAll = projectsAll }
 
 
 openProject : AppState -> Project -> AppState
@@ -191,16 +221,19 @@ openProject appStateCurrent projectToOpen =
             updateProjectList appStateCurrent.projectsRecent projectToOpen
 
         projectsAll =
-            updateProjectList appStateCurrent.projectsAll projectToOpen
+            List.sortBy .title <| updateProjectList appStateCurrent.projectsAll projectToOpen
     in
-        { appStateCurrent | projectActive = projectToOpen, projectsRecent = projectsRecent, projectsAll = projectsAll } 
+        { appStateCurrent | projectActive = projectToOpen, projectsRecent = projectsRecent, projectsAll = projectsAll }
+
 
 updateProjectList : List Project -> Project -> List Project
 updateProjectList projectsCurrent projectNew =
-    let 
-        filtered = List.filter (\p -> (/=) p projectNew) projectsCurrent
+    let
+        filtered =
+            List.filter (\p -> (/=) p projectNew) projectsCurrent
     in
         [ projectNew ] ++ filtered
+
 
 refreshEditorContent : Int -> Bool
 refreshEditorContent index =
@@ -319,9 +352,9 @@ renderWelcome appWithMdl =
     Options.div ((boxed ( 100, 20 )) ++ [ css "height" "1024px" ])
         [ grid
             []
-            [ cellWelcome 4 "Create New Project" <| [ buttonNew appWithMdl ]
-            , cellWelcome 4 "Recent Projects" <| renderRecentProjects appWithMdl
-            , cellWelcome 4 "All Projects" <| renderAllProjects appWithMdl
+            [ cellWelcome 2 "Create New Project" <| [ buttonNew appWithMdl ]
+            , cellWelcome 5 "Recent Projects" <| renderRecentProjects appWithMdl
+            , cellWelcome 5 "All Projects" <| renderAllProjects appWithMdl
             ]
         ]
 
@@ -355,7 +388,9 @@ renderProjectLink : Calliope.Project -> Html Msg
 renderProjectLink project =
     Options.div
         (boxed ( 0, 6 ))
-        [ a [ href "", Html.onClick (OpenProject project) ] [ text project.title ] ]
+        [ a [ href "", Html.onClick (OpenProject project) ] [ text project.title ] 
+        , Options.div [css "float" "right"] [text project.dateCreated ]
+        ] 
 
 
 cellWelcome : Int -> String -> List (Html Msg) -> Cell Msg
@@ -423,7 +458,7 @@ btnEditTitle stIcon mdl =
 
 -- STYLING
 
-
+ 
 stylesheet : Html a
 stylesheet =
     Options.stylesheet """
