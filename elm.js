@@ -14879,6 +14879,134 @@ var _debois$elm_mdl$Material$Model = F8(
 		return {button: a, textfield: b, menu: c, snackbar: d, layout: e, toggles: f, tooltip: g, tabs: h};
 	});
 
+var _debois$elm_mdl$Material_Card$stopClick = _debois$elm_mdl$Material_Options_Internal$attribute(
+	A2(_elm_lang$html$Html_Attributes$attribute, 'onclick', 'var event = arguments[0] || window.event; event.stopPropagation();'));
+var _debois$elm_mdl$Material_Card$block = function (block) {
+	var _p0 = block;
+	switch (_p0.ctor) {
+		case 'Title':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__title'),
+					_p0._0),
+				_p0._1);
+		case 'Media':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__media'),
+					_p0._0),
+				_p0._1);
+		case 'SupportingText':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__supporting-text'),
+					_p0._0),
+				_p0._1);
+		case 'Actions':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__actions'),
+					A2(_elm_lang$core$List_ops['::'], _debois$elm_mdl$Material_Card$stopClick, _p0._0)),
+				_p0._1);
+		default:
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__menu'),
+					A2(_elm_lang$core$List_ops['::'], _debois$elm_mdl$Material_Card$stopClick, _p0._0)),
+				_p0._1);
+	}
+};
+var _debois$elm_mdl$Material_Card$view = F2(
+	function (styling, views) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			A2(
+				_elm_lang$core$List$append,
+				styling,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_debois$elm_mdl$Material_Options$cs('mdl-card'),
+						A2(_debois$elm_mdl$Material_Options$css, 'min-height', '0px')
+					])),
+			A2(_elm_lang$core$List$map, _debois$elm_mdl$Material_Card$block, views));
+	});
+var _debois$elm_mdl$Material_Card$subhead = function (styling) {
+	return _debois$elm_mdl$Material_Options$span(
+		A2(
+			_elm_lang$core$List_ops['::'],
+			_debois$elm_mdl$Material_Options$cs('mdl-card__subtitle-text'),
+			A2(
+				_elm_lang$core$List_ops['::'],
+				A2(_debois$elm_mdl$Material_Options$css, 'padding-top', '8px'),
+				styling)));
+};
+var _debois$elm_mdl$Material_Card$head = function (styling) {
+	return A2(
+		_debois$elm_mdl$Material_Options$styled,
+		_elm_lang$html$Html$h1,
+		A2(
+			_elm_lang$core$List_ops['::'],
+			_debois$elm_mdl$Material_Options$cs('mdl-card__title-text'),
+			A2(
+				_elm_lang$core$List_ops['::'],
+				A2(_debois$elm_mdl$Material_Options$css, 'align-self', 'flex-start'),
+				styling)));
+};
+var _debois$elm_mdl$Material_Card$expand = _debois$elm_mdl$Material_Options$cs('mdl-card--expand');
+var _debois$elm_mdl$Material_Card$border = _debois$elm_mdl$Material_Options$cs('mdl-card--border');
+var _debois$elm_mdl$Material_Card$Actions = F2(
+	function (a, b) {
+		return {ctor: 'Actions', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$actions = _debois$elm_mdl$Material_Card$Actions;
+var _debois$elm_mdl$Material_Card$SupportingText = F2(
+	function (a, b) {
+		return {ctor: 'SupportingText', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$text = _debois$elm_mdl$Material_Card$SupportingText;
+var _debois$elm_mdl$Material_Card$Media = F2(
+	function (a, b) {
+		return {ctor: 'Media', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$media = _debois$elm_mdl$Material_Card$Media;
+var _debois$elm_mdl$Material_Card$Menu = F2(
+	function (a, b) {
+		return {ctor: 'Menu', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$menu = F2(
+	function (styling, block) {
+		return A2(_debois$elm_mdl$Material_Card$Menu, styling, block);
+	});
+var _debois$elm_mdl$Material_Card$Title = F2(
+	function (a, b) {
+		return {ctor: 'Title', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$title = F2(
+	function (styling, block) {
+		return A2(
+			_debois$elm_mdl$Material_Card$Title,
+			A2(
+				_elm_lang$core$List$append,
+				styling,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(_debois$elm_mdl$Material_Options$css, 'justify-content', 'flex-end'),
+						A2(_debois$elm_mdl$Material_Options$css, 'flex-direction', 'column'),
+						A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'flex-start')
+					])),
+			block);
+	});
+
 var _RobertWalter83$calliope$App$encodeAppState = function (appState) {
 	return _elm_lang$core$Json_Encode$object(
 		_elm_lang$core$Native_List.fromArray(
@@ -14914,11 +15042,16 @@ var _RobertWalter83$calliope$App$encodeAppState = function (appState) {
 				ctor: '_Tuple2',
 				_0: 'refreshEditorContent',
 				_1: _elm_lang$core$Json_Encode$bool(appState.refreshEditorContent)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'raisedCard',
+				_1: _elm_lang$core$Json_Encode$int(appState.raisedCard)
 			}
 			]));
 };
 var _RobertWalter83$calliope$App$stylesheet = _debois$elm_mdl$Material_Options$stylesheet('\n  .mdl-layout__header--transparent {\n    background: url(\'assets/march.jpg\') 0 45% no-repeat;\n    background-size: 100% auto\n  }\n');
-var _RobertWalter83$calliope$App$viewWelcomeHeader = _elm_lang$core$Native_List.fromArray(
+var _RobertWalter83$calliope$App$viewOverviewHeader = _elm_lang$core$Native_List.fromArray(
 	[
 		A2(
 		_debois$elm_mdl$Material_Layout$row,
@@ -14927,52 +15060,33 @@ var _RobertWalter83$calliope$App$viewWelcomeHeader = _elm_lang$core$Native_List.
 				A2(_debois$elm_mdl$Material_Options$css, 'height', '320px'),
 				A2(_debois$elm_mdl$Material_Options$css, 'min-height', '320px'),
 				A2(_debois$elm_mdl$Material_Options$css, 'max-height', '320px'),
-				A2(_debois$elm_mdl$Material_Options$css, 'transition', 'height 333ms ease-in-out 0s')
+				A2(_debois$elm_mdl$Material_Options$css, 'transition', 'height 333ms ease-in-out 0s'),
+				A2(_debois$elm_mdl$Material_Options$css, 'padding', '24px')
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
-				_debois$elm_mdl$Material_Layout$title,
+				_debois$elm_mdl$Material_Options$div,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						A2(_debois$elm_mdl$Material_Options$css, 'margin-right', '20px'),
-						A2(_debois$elm_mdl$Material_Options$css, 'color', '#000000')
+						A2(_debois$elm_mdl$Material_Options$css, 'display', 'flex'),
+						A2(_debois$elm_mdl$Material_Options$css, 'flex-flow', 'row wrap'),
+						A2(_debois$elm_mdl$Material_Options$css, 'justify-content', 'space-between'),
+						A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'flex-start'),
+						A2(_debois$elm_mdl$Material_Options$css, 'width', '100%'),
+						_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$black),
+						A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px'),
+						A2(_debois$elm_mdl$Material_Options$css, 'padding-bottom', '200px')
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('Calliope')
+						_elm_lang$html$Html$text('Welcome back to Calliope!')
 					]))
 			]))
 	]);
-var _RobertWalter83$calliope$App$cellWelcome = F3(
-	function (gridWidth, stHeader, content) {
-		return A2(
-			_debois$elm_mdl$Material_Grid$cell,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, gridWidth),
-					_debois$elm_mdl$Material_Elevation$e6,
-					_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white),
-					A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px')
-				]),
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(
-						_debois$elm_mdl$Material_Options$div,
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_debois$elm_mdl$Material_Color$text(
-								A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Grey, _debois$elm_mdl$Material_Color$S700)),
-								A2(_debois$elm_mdl$Material_Options$css, 'margin-bottom', '12px')
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_elm_lang$html$Html$text(stHeader)
-							]))
-					]),
-				content));
+var _RobertWalter83$calliope$App$createParams = F5(
+	function (index, appWithMdl, msg, pathBackground, messageTuple) {
+		return {index: index, appWithMdl: appWithMdl, onClick: msg, pathBackground: pathBackground, messageTuple: messageTuple};
 	});
 var _RobertWalter83$calliope$App$updateProjectTitle = F2(
 	function (projectOld, titleNew) {
@@ -15024,7 +15138,7 @@ var _RobertWalter83$calliope$App$openProject = F2(
 		var projectsRecent = A2(_RobertWalter83$calliope$App$updateProjectList, appStateCurrent.projectsRecent, projectToOpen);
 		return _elm_lang$core$Native_Utils.update(
 			appStateCurrent,
-			{projectActive: projectToOpen, projectsRecent: projectsRecent, projectsAll: projectsAll});
+			{projectActive: projectToOpen, projectsRecent: projectsRecent, projectsAll: projectsAll, viewSelected: 1});
 	});
 var _RobertWalter83$calliope$App$editTitle = F2(
 	function (appStateCurrent, titleNew) {
@@ -15046,13 +15160,18 @@ var _RobertWalter83$calliope$App$editTitle = F2(
 			appStateCurrent,
 			{projectActive: newProject, projectsRecent: projectsRecent, projectsAll: projectsAll});
 	});
-var _RobertWalter83$calliope$App$toggleEditableTitle = function (appStateCurrent) {
-	return _elm_lang$core$Native_Utils.update(
-		appStateCurrent,
-		{
-			titleEditable: _elm_lang$core$Basics$not(appStateCurrent.titleEditable)
-		});
-};
+var _RobertWalter83$calliope$App$titleEditable = F2(
+	function (appStateCurrent, isEditable) {
+		return _elm_lang$core$Native_Utils.update(
+			appStateCurrent,
+			{titleEditable: isEditable});
+	});
+var _RobertWalter83$calliope$App$raiseCard = F2(
+	function (appStateCurrent, cardIndex) {
+		return _elm_lang$core$Native_Utils.update(
+			appStateCurrent,
+			{raisedCard: cardIndex});
+	});
 var _RobertWalter83$calliope$App$addNewProject = function (project) {
 	return {
 		viewSelected: 0,
@@ -15062,18 +15181,24 @@ var _RobertWalter83$calliope$App$addNewProject = function (project) {
 		projectsRecent: _elm_lang$core$Native_List.fromArray(
 			[]),
 		titleEditable: false,
-		refreshEditorContent: false
+		refreshEditorContent: false,
+		raisedCard: -1
 	};
 };
 var _RobertWalter83$calliope$App$createNewProject = F2(
 	function (appStateCurrent, timeNow) {
 		var newProject = _RobertWalter83$calliope$Calliope$createProject(timeNow);
 		var projectsRecent = A2(_elm_lang$core$List_ops['::'], newProject, appStateCurrent.projectsRecent);
-		var projectsAll = A2(_elm_lang$core$List_ops['::'], newProject, appStateCurrent.projectsAll);
+		var projectsAll = A2(
+			_elm_lang$core$List$sortBy,
+			function (_) {
+				return _.title;
+			},
+			A2(_elm_lang$core$List_ops['::'], newProject, appStateCurrent.projectsAll));
 		var appStateNew = _RobertWalter83$calliope$App$addNewProject(newProject);
 		return _elm_lang$core$Native_Utils.update(
 			appStateNew,
-			{projectsRecent: projectsRecent, projectsAll: projectsAll});
+			{projectsRecent: projectsRecent, projectsAll: projectsAll, titleEditable: true});
 	});
 var _RobertWalter83$calliope$App$addDefaultProject = _RobertWalter83$calliope$App$addNewProject(_RobertWalter83$calliope$Calliope$defaultProject);
 var _RobertWalter83$calliope$App$wrapWithMdl = function (appState) {
@@ -15090,15 +15215,22 @@ var _RobertWalter83$calliope$App$save = _elm_lang$core$Native_Platform.outgoingP
 		return v;
 	});
 var _RobertWalter83$calliope$App$getEditorContent = _elm_lang$core$Native_Platform.incomingPort('getEditorContent', _elm_lang$core$Json_Decode$string);
-var _RobertWalter83$calliope$App$AppState = F6(
-	function (a, b, c, d, e, f) {
-		return {viewSelected: a, projectActive: b, projectsAll: c, projectsRecent: d, titleEditable: e, refreshEditorContent: f};
+var _RobertWalter83$calliope$App$AppState = F7(
+	function (a, b, c, d, e, f, g) {
+		return {viewSelected: a, projectActive: b, projectsAll: c, projectsRecent: d, titleEditable: e, refreshEditorContent: f, raisedCard: g};
 	});
 var _RobertWalter83$calliope$App$AppWithMdl = F2(
 	function (a, b) {
 		return {mdl: a, appState: b};
 	});
+var _RobertWalter83$calliope$App$PolaroidParams = F5(
+	function (a, b, c, d, e) {
+		return {index: a, appWithMdl: b, onClick: c, pathBackground: d, messageTuple: e};
+	});
 var _RobertWalter83$calliope$App$NoOp = {ctor: 'NoOp'};
+var _RobertWalter83$calliope$App$Raise = function (a) {
+	return {ctor: 'Raise', _0: a};
+};
 var _RobertWalter83$calliope$App$CreateNewProjectNow = function (a) {
 	return {ctor: 'CreateNewProjectNow', _0: a};
 };
@@ -15111,52 +15243,6 @@ var _RobertWalter83$calliope$App$cmdTimeNow = A3(
 	_elm_lang$core$Time$now);
 var _RobertWalter83$calliope$App$OpenProject = function (a) {
 	return {ctor: 'OpenProject', _0: a};
-};
-var _RobertWalter83$calliope$App$renderProjectLink = function (project) {
-	return A2(
-		_debois$elm_mdl$Material_Options$div,
-		_RobertWalter83$calliope$Util$boxed(
-			{ctor: '_Tuple2', _0: 0, _1: 6}),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$html$Html$a,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$href(''),
-						_elm_lang$html$Html_Events$onClick(
-						_RobertWalter83$calliope$App$OpenProject(project))
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(project.title)
-					])),
-				A2(
-				_debois$elm_mdl$Material_Options$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(_debois$elm_mdl$Material_Options$css, 'float', 'right'),
-						A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '4px')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(project.timeCreated)
-					])),
-				A2(
-				_debois$elm_mdl$Material_Options$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(_debois$elm_mdl$Material_Options$css, 'float', 'right'),
-						A2(_debois$elm_mdl$Material_Options$css, 'margin-left', '4px')
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(project.dateCreated)
-					]))
-			]));
-};
-var _RobertWalter83$calliope$App$renderProjectList = function (projects) {
-	return A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$renderProjectLink, projects);
 };
 var _RobertWalter83$calliope$App$CreateNewProject = {ctor: 'CreateNewProject'};
 var _RobertWalter83$calliope$App$Save = {ctor: 'Save'};
@@ -15176,7 +15262,9 @@ var _RobertWalter83$calliope$App$subscriptions = function (appState) {
 var _RobertWalter83$calliope$App$EditTitle = function (a) {
 	return {ctor: 'EditTitle', _0: a};
 };
-var _RobertWalter83$calliope$App$ToggleEditableTitle = {ctor: 'ToggleEditableTitle'};
+var _RobertWalter83$calliope$App$TitleEditable = function (a) {
+	return {ctor: 'TitleEditable', _0: a};
+};
 var _RobertWalter83$calliope$App$SelectView = function (a) {
 	return {ctor: 'SelectView', _0: a};
 };
@@ -15201,30 +15289,129 @@ var _RobertWalter83$calliope$App$init = function (maybeAppState) {
 		_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
 	};
 };
-var _RobertWalter83$calliope$App$buttonNew = function (appWithMdl) {
-	return A5(
-		_debois$elm_mdl$Material_Button$render,
-		_RobertWalter83$calliope$App$Mdl,
-		_elm_lang$core$Native_List.fromArray(
-			[2]),
-		appWithMdl.mdl,
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			_RobertWalter83$calliope$Util$boxed(
-				{ctor: '_Tuple2', _0: 12, _1: 0}),
+var _RobertWalter83$calliope$App$renderPolaroid = F3(
+	function (project, editableTitle, params) {
+		var onTextClick = editableTitle ? _debois$elm_mdl$Material_Options$attribute(
+			_elm_lang$html$Html_Events$onClick(params.onClick)) : _debois$elm_mdl$Material_Options$nop;
+		var onCardClick = editableTitle ? _debois$elm_mdl$Material_Options$nop : _debois$elm_mdl$Material_Options$attribute(
+			_elm_lang$html$Html_Events$onClick(params.onClick));
+		var editable = editableTitle && _elm_lang$core$Native_Utils.eq(project, params.appWithMdl.appState.projectActive);
+		return A2(
+			_debois$elm_mdl$Material_Card$view,
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_debois$elm_mdl$Material_Button$fab,
-					_debois$elm_mdl$Material_Button$plain,
-					_debois$elm_mdl$Material_Button$ripple,
-					_debois$elm_mdl$Material_Button$onClick(_RobertWalter83$calliope$App$CreateNewProject)
-				])),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text('+')
-			]));
-};
-var _RobertWalter83$calliope$App$renderWelcome = function (appWithMdl) {
+					_elm_lang$core$Native_Utils.eq(params.appWithMdl.appState.raisedCard, params.index) ? _debois$elm_mdl$Material_Elevation$e8 : _debois$elm_mdl$Material_Elevation$e2,
+					_debois$elm_mdl$Material_Elevation$transition(250),
+					A2(_debois$elm_mdl$Material_Options$css, 'width', '256px'),
+					_debois$elm_mdl$Material_Options$attribute(
+					_elm_lang$html$Html_Events$onMouseEnter(
+						_RobertWalter83$calliope$App$Raise(params.index))),
+					_debois$elm_mdl$Material_Options$attribute(
+					_elm_lang$html$Html_Events$onMouseLeave(
+						_RobertWalter83$calliope$App$Raise(-1))),
+					onCardClick,
+					A2(_debois$elm_mdl$Material_Options$css, 'margin', '0'),
+					A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_debois$elm_mdl$Material_Card$title,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_debois$elm_mdl$Material_Options$css,
+							'background',
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'url(\'',
+								A2(_elm_lang$core$Basics_ops['++'], params.pathBackground, '\') center / cover'))),
+							A2(_debois$elm_mdl$Material_Options$css, 'height', '256px'),
+							A2(_debois$elm_mdl$Material_Options$css, 'padding', '0')
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_debois$elm_mdl$Material_Card$head,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$white),
+									_debois$elm_mdl$Material_Options$scrim(0.6),
+									A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px'),
+									A2(_debois$elm_mdl$Material_Options$css, 'width', '208px')
+								]),
+							editable ? (params.appWithMdl.appState.titleEditable ? _elm_lang$core$Native_List.fromArray(
+								[
+									A4(
+									_debois$elm_mdl$Material_Textfield$render,
+									_RobertWalter83$calliope$App$Mdl,
+									_elm_lang$core$Native_List.fromArray(
+										[13]),
+									params.appWithMdl.mdl,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_debois$elm_mdl$Material_Textfield$text$,
+											_debois$elm_mdl$Material_Textfield$onInput(_RobertWalter83$calliope$App$EditTitle),
+											_debois$elm_mdl$Material_Textfield$onBlur(
+											_RobertWalter83$calliope$App$TitleEditable(false)),
+											_debois$elm_mdl$Material_Textfield$value(project.title),
+											A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px')
+										]))
+								]) : _elm_lang$core$Native_List.fromArray(
+								[
+									A2(
+									_debois$elm_mdl$Material_Options$div,
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_debois$elm_mdl$Material_Options$attribute(
+											_elm_lang$html$Html_Events$onClick(
+												_RobertWalter83$calliope$App$TitleEditable(true)))
+										]),
+									_elm_lang$core$Native_List.fromArray(
+										[
+											_elm_lang$html$Html$text(
+											_elm_lang$core$Basics$fst(params.messageTuple))
+										]))
+								])) : _elm_lang$core$Native_List.fromArray(
+								[
+									_elm_lang$html$Html$text(
+									_elm_lang$core$Basics$fst(params.messageTuple))
+								]))
+						])),
+					A2(
+					_debois$elm_mdl$Material_Card$text,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(_debois$elm_mdl$Material_Options$css, 'padding', '16px 0px 12px 0px'),
+							A2(_debois$elm_mdl$Material_Options$css, 'font-family', 'caveat'),
+							A2(_debois$elm_mdl$Material_Options$css, 'font-weight', '700'),
+							A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px'),
+							A2(_debois$elm_mdl$Material_Options$css, 'width', '100%'),
+							_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$black),
+							onTextClick
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(
+							_elm_lang$core$Basics$snd(params.messageTuple))
+						]))
+				]));
+	});
+var _RobertWalter83$calliope$App$renderProjectLink = F2(
+	function (project, params) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A3(_RobertWalter83$calliope$App$renderPolaroid, project, true, params)
+				]));
+	});
+var _RobertWalter83$calliope$App$renderOverview = function (appWithMdl) {
+	var lengthRecentProjects = _elm_lang$core$List$length(appWithMdl.appState.projectsRecent);
 	return A2(
 		_debois$elm_mdl$Material_Options$div,
 		A2(
@@ -15238,30 +15425,66 @@ var _RobertWalter83$calliope$App$renderWelcome = function (appWithMdl) {
 		_elm_lang$core$Native_List.fromArray(
 			[
 				A2(
-				_debois$elm_mdl$Material_Grid$grid,
-				_elm_lang$core$Native_List.fromArray(
-					[]),
+				_debois$elm_mdl$Material_Options$div,
 				_elm_lang$core$Native_List.fromArray(
 					[
-						A3(
-						_RobertWalter83$calliope$App$cellWelcome,
-						2,
-						'Create New Project',
-						_elm_lang$core$Native_List.fromArray(
-							[
-								_RobertWalter83$calliope$App$buttonNew(appWithMdl)
-							])),
-						A3(
-						_RobertWalter83$calliope$App$cellWelcome,
-						5,
-						'Recent Projects',
-						_RobertWalter83$calliope$App$renderProjectList(appWithMdl.appState.projectsRecent)),
-						A3(
-						_RobertWalter83$calliope$App$cellWelcome,
-						5,
-						'All Projects',
-						_RobertWalter83$calliope$App$renderProjectList(appWithMdl.appState.projectsAll))
-					]))
+						A2(_debois$elm_mdl$Material_Options$css, 'display', 'flex'),
+						A2(_debois$elm_mdl$Material_Options$css, 'flex-flow', 'row wrap'),
+						A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'flex-start'),
+						A2(_debois$elm_mdl$Material_Options$css, 'width', '100%')
+					]),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_debois$elm_mdl$Material_Options$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(_debois$elm_mdl$Material_Options$css, 'min-width', '300px'),
+									A2(_debois$elm_mdl$Material_Options$css, 'max-width', '300px'),
+									A2(_debois$elm_mdl$Material_Options$css, 'width', '300px'),
+									A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px'),
+									A2(_debois$elm_mdl$Material_Options$css, 'border-right', '2px dashed grey'),
+									A2(_debois$elm_mdl$Material_Options$css, 'margin-right', '44px')
+								]),
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A3(
+									_RobertWalter83$calliope$App$renderPolaroid,
+									appWithMdl.appState.projectActive,
+									false,
+									A5(
+										_RobertWalter83$calliope$App$createParams,
+										0,
+										appWithMdl,
+										_RobertWalter83$calliope$App$CreateNewProject,
+										'assets/new.jpg',
+										{ctor: '_Tuple2', _0: 'New Project', _1: 'Create a brand new project'}))
+								]))
+						]),
+					A3(
+						_elm_lang$core$List$map2,
+						_RobertWalter83$calliope$App$renderProjectLink,
+						appWithMdl.appState.projectsRecent,
+						A6(
+							_elm_lang$core$List$map5,
+							_RobertWalter83$calliope$App$createParams,
+							_elm_lang$core$Native_List.range(1, lengthRecentProjects),
+							A2(_elm_lang$core$List$repeat, lengthRecentProjects, appWithMdl),
+							A2(
+								_elm_lang$core$List$map,
+								function (p) {
+									return _RobertWalter83$calliope$App$OpenProject(p);
+								},
+								appWithMdl.appState.projectsRecent),
+							A2(_elm_lang$core$List$repeat, lengthRecentProjects, 'assets/existing.jpg'),
+							A2(
+								_elm_lang$core$List$map,
+								function (p) {
+									return {ctor: '_Tuple2', _0: p.title, _1: 'Click here to open.'};
+								},
+								appWithMdl.appState.projectsRecent)))))
 			]));
 };
 var _RobertWalter83$calliope$App$btnEditTitle = F2(
@@ -15276,7 +15499,8 @@ var _RobertWalter83$calliope$App$btnEditTitle = F2(
 				[
 					_debois$elm_mdl$Material_Button$icon,
 					_debois$elm_mdl$Material_Button$ripple,
-					_debois$elm_mdl$Material_Button$onClick(_RobertWalter83$calliope$App$ToggleEditableTitle)
+					_debois$elm_mdl$Material_Button$onClick(
+					_RobertWalter83$calliope$App$TitleEditable(true))
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
@@ -15326,14 +15550,14 @@ var _RobertWalter83$calliope$App$viewDefaultHeader = function (appWithMdl) {
 };
 var _RobertWalter83$calliope$App$Dialog = {ctor: 'Dialog'};
 var _RobertWalter83$calliope$App$Structure = {ctor: 'Structure'};
-var _RobertWalter83$calliope$App$Welcome = {ctor: 'Welcome'};
+var _RobertWalter83$calliope$App$Overview = {ctor: 'Overview'};
 var _RobertWalter83$calliope$App$rgView = _elm_lang$core$Array$fromList(
 	_elm_lang$core$Native_List.fromArray(
-		[_RobertWalter83$calliope$App$Welcome, _RobertWalter83$calliope$App$Structure, _RobertWalter83$calliope$App$Dialog]));
+		[_RobertWalter83$calliope$App$Overview, _RobertWalter83$calliope$App$Structure, _RobertWalter83$calliope$App$Dialog]));
 var _RobertWalter83$calliope$App$indexToView = function (i) {
 	return A2(
 		_elm_lang$core$Maybe$withDefault,
-		_RobertWalter83$calliope$App$Welcome,
+		_RobertWalter83$calliope$App$Overview,
 		A2(_elm_lang$core$Array$get, i, _RobertWalter83$calliope$App$rgView));
 };
 var _RobertWalter83$calliope$App$refreshEditorContent = function (index) {
@@ -15357,16 +15581,21 @@ var _RobertWalter83$calliope$App$update = F2(
 		switch (_p2.ctor) {
 			case 'Mdl':
 				return A2(_debois$elm_mdl$Material$update, _p2._0, appWithMdl);
+			case 'Raise':
+				return A2(
+					_RobertWalter83$calliope$App$appMdlWithCmdNone,
+					appWithMdl,
+					A2(_RobertWalter83$calliope$App$raiseCard, appStateCurrent, _p2._0));
 			case 'SelectView':
 				return A2(
 					_RobertWalter83$calliope$App$appMdlWithCmdNone,
 					appWithMdl,
 					A2(_RobertWalter83$calliope$App$selectView, appStateCurrent, _p2._0));
-			case 'ToggleEditableTitle':
+			case 'TitleEditable':
 				return A2(
 					_RobertWalter83$calliope$App$appMdlWithCmdNone,
 					appWithMdl,
-					_RobertWalter83$calliope$App$toggleEditableTitle(appStateCurrent));
+					A2(_RobertWalter83$calliope$App$titleEditable, appStateCurrent, _p2._0));
 			case 'EditTitle':
 				return A2(
 					_RobertWalter83$calliope$App$appMdlWithCmdNone,
@@ -15414,7 +15643,7 @@ var _RobertWalter83$calliope$App$layoutProperties = function (viewSelected) {
 			_debois$elm_mdl$Material_Layout$onSelectTab(_RobertWalter83$calliope$App$SelectView),
 			_elm_lang$core$Native_Utils.eq(
 			_RobertWalter83$calliope$App$indexToView(viewSelected),
-			_RobertWalter83$calliope$App$Welcome) ? _debois$elm_mdl$Material_Layout$transparentHeader : _debois$elm_mdl$Material_Options$nop
+			_RobertWalter83$calliope$App$Overview) ? _debois$elm_mdl$Material_Layout$transparentHeader : _debois$elm_mdl$Material_Options$nop
 		]);
 };
 var _RobertWalter83$calliope$App$viewMain = function (appWithMdl) {
@@ -15423,8 +15652,8 @@ var _RobertWalter83$calliope$App$viewMain = function (appWithMdl) {
 	var renderedContent = function () {
 		var _p3 = viewSelected;
 		switch (_p3.ctor) {
-			case 'Welcome':
-				return _RobertWalter83$calliope$App$renderWelcome(appWithMdl);
+			case 'Overview':
+				return _RobertWalter83$calliope$App$renderOverview(appWithMdl);
 			case 'Dialog':
 				return A2(
 					_elm_lang$html$Html_App$map,
@@ -15462,27 +15691,17 @@ var _RobertWalter83$calliope$App$viewMain = function (appWithMdl) {
 					]))
 			]));
 };
-var _RobertWalter83$calliope$App$tabTitles = _elm_lang$core$Array$toList(
-	A2(
-		_elm_lang$core$Array$map,
-		function (v) {
-			return _elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(v));
-		},
-		_RobertWalter83$calliope$App$rgView));
-var _RobertWalter83$calliope$App$layoutWelcome = function (appWithMdl) {
+var _RobertWalter83$calliope$App$layoutOverview = function (appWithMdl) {
 	return {
-		header: _RobertWalter83$calliope$App$viewWelcomeHeader,
+		header: _RobertWalter83$calliope$App$viewOverviewHeader,
 		drawer: _elm_lang$core$Native_List.fromArray(
 			[]),
 		tabs: {
 			ctor: '_Tuple2',
-			_0: _RobertWalter83$calliope$App$tabTitles,
+			_0: _elm_lang$core$Native_List.fromArray(
+				[]),
 			_1: _elm_lang$core$Native_List.fromArray(
-				[
-					_debois$elm_mdl$Material_Color$background(
-					A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$BlueGrey, _debois$elm_mdl$Material_Color$S400))
-				])
+				[])
 		},
 		main: _elm_lang$core$Native_List.fromArray(
 			[
@@ -15491,6 +15710,14 @@ var _RobertWalter83$calliope$App$layoutWelcome = function (appWithMdl) {
 			])
 	};
 };
+var _RobertWalter83$calliope$App$tabTitles = _elm_lang$core$Array$toList(
+	A2(
+		_elm_lang$core$Array$map,
+		function (v) {
+			return _elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(v));
+		},
+		_RobertWalter83$calliope$App$rgView));
 var _RobertWalter83$calliope$App$layoutDefault = function (appWithMdl) {
 	return {
 		header: _RobertWalter83$calliope$App$viewDefaultHeader(appWithMdl),
@@ -15502,7 +15729,7 @@ var _RobertWalter83$calliope$App$layoutDefault = function (appWithMdl) {
 			_1: _elm_lang$core$Native_List.fromArray(
 				[
 					_debois$elm_mdl$Material_Color$background(
-					A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$BlueGrey, _debois$elm_mdl$Material_Color$S400))
+					A2(_debois$elm_mdl$Material_Color$color, _debois$elm_mdl$Material_Color$Teal, _debois$elm_mdl$Material_Color$S600))
 				])
 		},
 		main: _elm_lang$core$Native_List.fromArray(
@@ -15514,7 +15741,7 @@ var _RobertWalter83$calliope$App$layoutDefault = function (appWithMdl) {
 var _RobertWalter83$calliope$App$view = function (appWithMdl) {
 	var layoutContent = _elm_lang$core$Native_Utils.eq(
 		_RobertWalter83$calliope$App$indexToView(appWithMdl.appState.viewSelected),
-		_RobertWalter83$calliope$App$Welcome) ? _RobertWalter83$calliope$App$layoutWelcome : _RobertWalter83$calliope$App$layoutDefault;
+		_RobertWalter83$calliope$App$Overview) ? _RobertWalter83$calliope$App$layoutOverview : _RobertWalter83$calliope$App$layoutDefault;
 	return A4(
 		_debois$elm_mdl$Material_Layout$render,
 		_RobertWalter83$calliope$App$Mdl,
@@ -15734,18 +15961,23 @@ var _RobertWalter83$calliope$App$main = {
 									function (projectsRecent) {
 										return A2(
 											_elm_lang$core$Json_Decode$andThen,
-											A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditorContent', _elm_lang$core$Json_Decode$bool),
-											function (refreshEditorContent) {
+											A2(_elm_lang$core$Json_Decode_ops[':='], 'raisedCard', _elm_lang$core$Json_Decode$int),
+											function (raisedCard) {
 												return A2(
 													_elm_lang$core$Json_Decode$andThen,
-													A2(_elm_lang$core$Json_Decode_ops[':='], 'titleEditable', _elm_lang$core$Json_Decode$bool),
-													function (titleEditable) {
+													A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditorContent', _elm_lang$core$Json_Decode$bool),
+													function (refreshEditorContent) {
 														return A2(
 															_elm_lang$core$Json_Decode$andThen,
-															A2(_elm_lang$core$Json_Decode_ops[':='], 'viewSelected', _elm_lang$core$Json_Decode$int),
-															function (viewSelected) {
-																return _elm_lang$core$Json_Decode$succeed(
-																	{projectActive: projectActive, projectsAll: projectsAll, projectsRecent: projectsRecent, refreshEditorContent: refreshEditorContent, titleEditable: titleEditable, viewSelected: viewSelected});
+															A2(_elm_lang$core$Json_Decode_ops[':='], 'titleEditable', _elm_lang$core$Json_Decode$bool),
+															function (titleEditable) {
+																return A2(
+																	_elm_lang$core$Json_Decode$andThen,
+																	A2(_elm_lang$core$Json_Decode_ops[':='], 'viewSelected', _elm_lang$core$Json_Decode$int),
+																	function (viewSelected) {
+																		return _elm_lang$core$Json_Decode$succeed(
+																			{projectActive: projectActive, projectsAll: projectsAll, projectsRecent: projectsRecent, raisedCard: raisedCard, refreshEditorContent: refreshEditorContent, titleEditable: titleEditable, viewSelected: viewSelected});
+																	});
 															});
 													});
 											});

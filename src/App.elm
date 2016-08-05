@@ -10,6 +10,7 @@ import Html.App as App
 import Json.Encode exposing (..)
 import Array exposing (..)
 import Material
+import Material.Card as Card
 import Material.Color as Color
 import Material.Textfield as Textfield
 import Material.Icon as Icon
@@ -31,6 +32,7 @@ type alias AppState =
     , projectsRecent : List Project
     , titleEditable : Bool
     , refreshEditorContent : Bool
+    , raisedCard : Int
     }
 
 
@@ -40,23 +42,27 @@ type alias AppWithMdl =
     }
 
 
+type alias PolaroidParams =
+    { index : Int, appWithMdl : AppWithMdl, onClick : Msg, pathBackground : String, messageTuple : ( String, String ) }
+
+
 type Msg
     = Mdl (Material.Msg Msg)
     | SelectView Int
-    | ToggleEditableTitle 
+    | TitleEditable Bool
     | EditTitle String
     | GetEditorContent String
     | EditorReady Calliope.Msg
     | Save
     | CreateNewProject
     | OpenProject Project
-    | CreateNewProjectNow Time 
+    | CreateNewProjectNow Time
+    | Raise Int
     | NoOp
 
 
-
 type View
-    = Welcome
+    = Overview
     | Structure
     | Dialog
 
@@ -66,7 +72,7 @@ type View
 
 
 port configureAce : String -> Cmd m
- 
+
 
 port save : Json.Encode.Value -> Cmd m
 
@@ -106,7 +112,8 @@ wrapWithMdl : AppState -> AppWithMdl
 wrapWithMdl appState =
     { mdl = Material.model
     , appState = appState
-    } 
+    }
+
 
 addDefaultProject : AppState
 addDefaultProject =
@@ -121,11 +128,13 @@ addNewProject project =
     , projectsRecent = []
     , titleEditable = False
     , refreshEditorContent = False
+    , raisedCard = -1
     }
 
-    
+
 cmdTimeNow : Cmd Msg
-cmdTimeNow = Task.perform (\_ -> NoOp) CreateNewProjectNow Time.now
+cmdTimeNow =
+    Task.perform (\_ -> NoOp) CreateNewProjectNow Time.now
 
 
 
@@ -142,11 +151,14 @@ update msg appWithMdl =
             Mdl msg ->
                 Material.update msg appWithMdl
 
-            SelectView index ->
-                selectView appStateCurrent index |> appMdlWithCmdNone appWithMdl  
+            Raise cardIndex ->
+                raiseCard appStateCurrent cardIndex |> appMdlWithCmdNone appWithMdl
 
-            ToggleEditableTitle ->
-                toggleEditableTitle appStateCurrent |> appMdlWithCmdNone appWithMdl
+            SelectView index ->
+                selectView appStateCurrent index |> appMdlWithCmdNone appWithMdl
+
+            TitleEditable isEditable ->
+                titleEditable appStateCurrent isEditable |> appMdlWithCmdNone appWithMdl
 
             EditTitle titleNew ->
                 editTitle appStateCurrent titleNew |> appMdlWithCmdNone appWithMdl
@@ -163,17 +175,22 @@ update msg appWithMdl =
                     |> save
                 )
 
-            CreateNewProjectNow timeNow -> 
+            CreateNewProjectNow timeNow ->
                 createNewProject appStateCurrent timeNow |> appMdlWithCmdNone appWithMdl
 
             CreateNewProject ->
                 ( appWithMdl, cmdTimeNow )
-                
+
             OpenProject project ->
                 openProject appStateCurrent project |> appMdlWithCmdNone appWithMdl
 
-            NoOp -> 
+            NoOp ->
                 appMdlWithCmdNone appWithMdl appWithMdl.appState
+
+
+raiseCard : AppState -> Int -> AppState
+raiseCard appStateCurrent cardIndex =
+    { appStateCurrent | raisedCard = cardIndex }
 
 
 selectView : AppState -> Int -> AppState
@@ -181,29 +198,32 @@ selectView appStateCurrent index =
     { appStateCurrent | viewSelected = index, refreshEditorContent = refreshEditorContent index }
 
 
-toggleEditableTitle : AppState -> AppState
-toggleEditableTitle appStateCurrent =
-    { appStateCurrent | titleEditable = (not appStateCurrent.titleEditable) }
+titleEditable : AppState -> Bool -> AppState
+titleEditable appStateCurrent isEditable =
+    { appStateCurrent | titleEditable = isEditable }
 
 
 editTitle : AppState -> String -> AppState
 editTitle appStateCurrent titleNew =
     let
-        newProject = updateProjectTitle appStateCurrent.projectActive titleNew
+        newProject =
+            updateProjectTitle appStateCurrent.projectActive titleNew
 
-        projectsRecent = newProject ::
-            (Debug.log "projectsRecent" filter appStateCurrent.projectsRecent (Debug.log "projectActive" appStateCurrent.projectActive))
+        projectsRecent =
+            newProject
+                :: (Debug.log "projectsRecent" filter appStateCurrent.projectsRecent (Debug.log "projectActive" appStateCurrent.projectActive))
 
-        projectsAll = newProject ::
-            filter appStateCurrent.projectsAll appStateCurrent.projectActive 
+        projectsAll =
+            newProject
+                :: filter appStateCurrent.projectsAll appStateCurrent.projectActive
     in
-
-    { appStateCurrent | projectActive = newProject, projectsRecent = projectsRecent, projectsAll = projectsAll }
+        { appStateCurrent | projectActive = newProject, projectsRecent = projectsRecent, projectsAll = projectsAll }
 
 
 filter : List a -> a -> List a
 filter list item =
     List.filter (\i -> i /= item) list
+
 
 setEditorContent : AppState -> String -> AppState
 setEditorContent appStateCurrent content =
@@ -213,17 +233,19 @@ setEditorContent appStateCurrent content =
 createNewProject : AppState -> Time -> AppState
 createNewProject appStateCurrent timeNow =
     let
-        newProject = Calliope.createProject timeNow
+        newProject =
+            Calliope.createProject timeNow
 
         projectsRecent =
             newProject :: appStateCurrent.projectsRecent
 
         projectsAll =
-            newProject :: appStateCurrent.projectsAll 
+            List.sortBy .title <| newProject :: appStateCurrent.projectsAll
 
-        appStateNew = addNewProject newProject 
+        appStateNew =
+            addNewProject newProject
     in
-        { appStateNew | projectsRecent = projectsRecent, projectsAll = projectsAll }
+        { appStateNew | projectsRecent = projectsRecent, projectsAll = projectsAll, titleEditable = True }
 
 
 openProject : AppState -> Project -> AppState
@@ -235,7 +257,7 @@ openProject appStateCurrent projectToOpen =
         projectsAll =
             List.sortBy .title <| updateProjectList appStateCurrent.projectsAll projectToOpen
     in
-        { appStateCurrent | projectActive = projectToOpen, projectsRecent = projectsRecent, projectsAll = projectsAll }
+        { appStateCurrent | projectActive = projectToOpen, projectsRecent = projectsRecent, projectsAll = projectsAll, viewSelected = 1 }
 
 
 updateProjectList : List Project -> Project -> List Project
@@ -262,7 +284,7 @@ appMdlWithCmdNone appWithMdl appStateNew =
 
 indexToView : Int -> View
 indexToView i =
-    Array.get i rgView |> Maybe.withDefault Welcome
+    Array.get i rgView |> Maybe.withDefault Overview
 
 
 updateProjectTitle : Calliope.Project -> String -> Calliope.Project
@@ -278,8 +300,8 @@ view : AppWithMdl -> Html Msg
 view appWithMdl =
     let
         layoutContent =
-            if ((indexToView appWithMdl.appState.viewSelected) == Welcome) then
-                layoutWelcome
+            if ((indexToView appWithMdl.appState.viewSelected) == Overview) then
+                layoutOverview
             else
                 layoutDefault
     in
@@ -294,18 +316,18 @@ layoutProperties viewSelected =
     [ Layout.fixedHeader
     , Layout.selectedTab viewSelected
     , Layout.onSelectTab SelectView
-    , if ((indexToView viewSelected) == Welcome) then
+    , if ((indexToView viewSelected) == Overview) then
         Layout.transparentHeader
       else
         Options.nop
     ]
 
 
-layoutWelcome : AppWithMdl -> Layout.Contents Msg
-layoutWelcome appWithMdl =
-    { header = viewWelcomeHeader
+layoutOverview : AppWithMdl -> Layout.Contents Msg
+layoutOverview appWithMdl =
+    { header = viewOverviewHeader
     , drawer = []
-    , tabs = ( tabTitles, [ Color.background (Color.color Color.BlueGrey Color.S400) ] )
+    , tabs = ( [], [] )
     , main = [ stylesheet, viewMain appWithMdl ]
     }
 
@@ -314,7 +336,7 @@ layoutDefault : AppWithMdl -> Layout.Contents Msg
 layoutDefault appWithMdl =
     { header = viewDefaultHeader appWithMdl
     , drawer = []
-    , tabs = ( tabTitles, [ Color.background (Color.color Color.BlueGrey Color.S400) ] )
+    , tabs = ( tabTitles, [ Color.background (Color.color Color.Teal Color.S600) ] )
     , main = [ viewMain appWithMdl ]
     }
 
@@ -336,8 +358,8 @@ viewMain appWithMdl =
 
         renderedContent =
             case viewSelected of
-                Welcome ->
-                    renderWelcome appWithMdl
+                Overview ->
+                    renderOverview appWithMdl
 
                 Dialog ->
                     App.map EditorReady (Calliope.renderDialog appState.projectActive appState.refreshEditorContent)
@@ -359,74 +381,163 @@ viewMain appWithMdl =
             ]
 
 
-renderWelcome : AppWithMdl -> Html Msg
-renderWelcome appWithMdl =
-    Options.div ((boxed ( 100, 20 )) ++ [ css "height" "1024px" ])
-        [ grid
-            []
-            [ cellWelcome 2 "Create New Project" <| [ buttonNew appWithMdl ]
-            , cellWelcome 5 "Recent Projects" <| renderProjectList appWithMdl.appState.projectsRecent
-            , cellWelcome 5 "All Projects" <| renderProjectList appWithMdl.appState.projectsAll
+renderOverview : AppWithMdl -> Html Msg
+renderOverview appWithMdl =
+    let
+        lengthRecentProjects =
+            List.length appWithMdl.appState.projectsRecent
+    in
+        Options.div ((boxed ( 100, 20 )) ++ [ css "height" "1024px" ])
+            [ Options.div
+                [ css "display" "flex"
+                , css "flex-flow" "row wrap"
+                  -- , css "justify-content" "space-between"
+                , css "align-items" "flex-start"
+                , css "width" "100%"
+                ]
+                ([ Options.div
+                    [ css "min-width" "300px"
+                    , css "max-width" "300px"
+                    , css "width" "300px"
+                    , css "padding" "12px"
+                    , css "border-right" "2px dashed grey"
+                    , css "margin-right" "44px"
+                    ]
+                    [ renderPolaroid appWithMdl.appState.projectActive False <|
+                        createParams 0 appWithMdl CreateNewProject "assets/new.jpg" ( "New Project", "Create a brand new project" )
+                    ]
+                 ]
+                    ++ (List.map2 renderProjectLink
+                            appWithMdl.appState.projectsRecent
+                        <|
+                            List.map5 createParams
+                                [1..lengthRecentProjects]
+                                (List.repeat lengthRecentProjects appWithMdl)
+                                (List.map (\p -> OpenProject p) appWithMdl.appState.projectsRecent)
+                                (List.repeat lengthRecentProjects "assets/existing.jpg")
+                                (List.map (\p -> ( p.title, "Click here to open." )) appWithMdl.appState.projectsRecent)
+                       )
+                )
             ]
-        ]
 
 
-buttonNew : AppWithMdl -> Html Msg
-buttonNew appWithMdl =
-    Button.render Mdl
-        [ 2 ]
-        appWithMdl.mdl
-        (boxed ( 12, 0 )
-            ++ [ Button.fab
-               , Button.plain
-               , Button.ripple
-               , Button.onClick CreateNewProject
-               ] 
-        )
-        [ text "+" ]
+createParams : Int -> AppWithMdl -> Msg -> String -> ( String, String ) -> PolaroidParams
+createParams index appWithMdl msg pathBackground messageTuple =
+    { index = index
+    , appWithMdl = appWithMdl
+    , onClick = msg
+    , pathBackground = pathBackground
+    , messageTuple = messageTuple
+    }
 
 
-renderProjectList : List Project -> List (Html Msg)
-renderProjectList projects =
-    List.map renderProjectLink projects
-
-
-renderProjectLink : Calliope.Project -> Html Msg
-renderProjectLink project =
+renderProjectLink : Project -> PolaroidParams -> Html Msg
+renderProjectLink project params =
     Options.div
-        (boxed ( 0, 6 ))
-        [ a [ href "", Html.onClick (OpenProject project) ] [ text project.title ] 
-        , Options.div [css "float" "right", css "margin-left" "4px"] [text project.timeCreated ]
-        , Options.div [css "float" "right", css "margin-left" "4px"] [text project.dateCreated ]
-        ] 
+        [ css "padding" "12px" ]
+        [ renderPolaroid project True params ]
 
 
-cellWelcome : Int -> String -> List (Html Msg) -> Cell Msg
-cellWelcome gridWidth stHeader content =
-    cell
-        [ Grid.size All gridWidth, Elevation.e6, Color.background Color.white, css "padding" "12px" ]
-        ([ Options.div
-            [ Color.text <| Color.color Color.Grey Color.S700, css "margin-bottom" "12px" ]
-            [ text stHeader ]
-         ]
-            ++ content
-        )
+renderPolaroid : Project -> Bool -> PolaroidParams -> Html Msg
+renderPolaroid project editableTitle params =
+    let
+        editable =
+            editableTitle && project == params.appWithMdl.appState.projectActive
+
+        onCardClick =
+            if editableTitle then
+                Options.nop
+            else
+                Options.attribute <| Html.onClick params.onClick
+
+        onTextClick =
+            if editableTitle then
+                Options.attribute <| Html.onClick params.onClick
+            else
+                Options.nop
+    in
+        Card.view
+            [ if params.appWithMdl.appState.raisedCard == params.index then
+                Elevation.e8
+              else
+                Elevation.e2
+            , Elevation.transition 250
+            , css "width" "256px"
+            , Options.attribute <| Html.onMouseEnter (Raise params.index)
+            , Options.attribute <| Html.onMouseLeave (Raise -1)
+            , onCardClick
+            , css "margin" "0"
+            , css "padding" "12px"
+            ]
+            [ Card.title
+                [ css "background" <| "url('" ++ params.pathBackground ++ "') center / cover"
+                , css "height" "256px"
+                , css "padding" "0"
+                ]
+                [ Card.head
+                    [ Color.text Color.white
+                    , Options.scrim 0.6
+                    , css "padding" "12px"
+                    , css "width" "208px"
+                    ]
+                    (if editable then
+                        if params.appWithMdl.appState.titleEditable then
+                            [ Textfield.render Mdl
+                                [ 13 ]
+                                params.appWithMdl.mdl
+                                [ Textfield.text'
+                                , Textfield.onInput EditTitle
+                                , Textfield.onBlur <| TitleEditable False
+                                , Textfield.value project.title
+                                , css "font-size" "24px"
+                                --, css "padding" "10px"
+                                ]
+                            ]
+                        else
+                            [ Options.div [ Options.attribute <| Html.onClick (TitleEditable True) ] [ text <| fst params.messageTuple ] ]
+                     else
+                        [ text <| fst params.messageTuple ]
+                    )
+                ]
+            , Card.text
+                [ css "padding" "16px 0px 12px 0px"
+                , css "font-family" "caveat"
+                , css "font-weight" "700"
+                , css "font-size" "24px"
+                , css "width" "100%"
+                , Color.text Color.black
+                , onTextClick
+                ]
+                [ text <| snd params.messageTuple ]
+            ]
 
 
 rgView : Array View
 rgView =
-    Array.fromList [ Welcome, Structure, Dialog ]
+    Array.fromList [ Overview, Structure, Dialog ]
 
 
-viewWelcomeHeader : List (Html Msg)
-viewWelcomeHeader =
+viewOverviewHeader : List (Html Msg)
+viewOverviewHeader =
     [ Layout.row
         [ css "height" "320px"
         , css "min-height" "320px"
         , css "max-height" "320px"
         , css "transition" "height 333ms ease-in-out 0s"
+        , css "padding" "24px"
         ]
-        [ Layout.title [ css "margin-right" "20px", css "color" "#000000" ] [ text "Calliope" ] ]
+        [ Options.div
+            [ css "display" "flex"
+            , css "flex-flow" "row wrap"
+            , css "justify-content" "space-between"
+            , css "align-items" "flex-start"
+            , css "width" "100%"
+            , Color.text Color.black
+            , css "font-size" "24px"
+            , css "padding-bottom" "200px"
+            ]
+            [ text "Welcome back to Calliope!" ]
+        ]
     ]
 
 
@@ -460,7 +571,7 @@ btnEditTitle stIcon mdl =
         mdl
         [ Button.icon
         , Button.ripple
-        , Button.onClick ToggleEditableTitle
+        , Button.onClick <| TitleEditable True
         ]
         [ Icon.i stIcon ]
 
@@ -468,7 +579,7 @@ btnEditTitle stIcon mdl =
 
 -- STYLING
 
- 
+
 stylesheet : Html a
 stylesheet =
     Options.stylesheet """
@@ -503,4 +614,5 @@ encodeAppState appState =
         , ( "projectsAll", Json.Encode.list (List.map Calliope.encodeProject appState.projectsAll) )
         , ( "titleEditable", Json.Encode.bool appState.titleEditable )
         , ( "refreshEditorContent", Json.Encode.bool appState.refreshEditorContent )
+        , ( "raisedCard", Json.Encode.int appState.raisedCard )
         ]
