@@ -27,10 +27,12 @@ app.on('ready', function() {
        backgroundColor: '#2e2c29'
     });
 
+  mainWindow.maximize() 
+
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');
   
-  mainWindow.webContents.openDevTools();
+  //mainWindow.webContents.openDevTools();
 
   mainWindow.once('ready-to-show', () => {
     mainWindow.show()

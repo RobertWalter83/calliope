@@ -20,6 +20,7 @@ import Material.Options as Options exposing (css, when)
 import Material.Button as Button exposing (..)
 import Material.Elevation as Elevation
 import Util exposing (..)
+import Random exposing (..)
 
 
 -- MODEL
@@ -441,9 +442,6 @@ renderProjectLink project params =
 renderPolaroid : Project -> Bool -> PolaroidParams -> Html Msg
 renderPolaroid project editableTitle params =
     let
-        editable =
-            editableTitle && project == params.appWithMdl.appState.projectActive
-
         onCardClick =
             if editableTitle then
                 Options.nop
@@ -480,7 +478,7 @@ renderPolaroid project editableTitle params =
                     , css "padding" "12px"
                     , css "width" "208px"
                     ]
-                    (if editable then
+                    (if editableTitle then
                         if params.appWithMdl.appState.titleEditable then
                             [ Textfield.render Mdl
                                 [ 13 ]

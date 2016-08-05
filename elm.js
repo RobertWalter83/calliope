@@ -15295,7 +15295,6 @@ var _RobertWalter83$calliope$App$renderPolaroid = F3(
 			_elm_lang$html$Html_Events$onClick(params.onClick)) : _debois$elm_mdl$Material_Options$nop;
 		var onCardClick = editableTitle ? _debois$elm_mdl$Material_Options$nop : _debois$elm_mdl$Material_Options$attribute(
 			_elm_lang$html$Html_Events$onClick(params.onClick));
-		var editable = editableTitle && _elm_lang$core$Native_Utils.eq(project, params.appWithMdl.appState.projectActive);
 		return A2(
 			_debois$elm_mdl$Material_Card$view,
 			_elm_lang$core$Native_List.fromArray(
@@ -15340,7 +15339,7 @@ var _RobertWalter83$calliope$App$renderPolaroid = F3(
 									A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px'),
 									A2(_debois$elm_mdl$Material_Options$css, 'width', '208px')
 								]),
-							editable ? (params.appWithMdl.appState.titleEditable ? _elm_lang$core$Native_List.fromArray(
+							editableTitle ? (params.appWithMdl.appState.titleEditable ? _elm_lang$core$Native_List.fromArray(
 								[
 									A4(
 									_debois$elm_mdl$Material_Textfield$render,
