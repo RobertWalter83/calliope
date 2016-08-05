@@ -219,7 +219,7 @@ renderScript script refresh =
             [ text script.content ]
          else
             []
-        )
+        ) 
 
 
 title : String -> Html a
@@ -239,8 +239,8 @@ encodeProject project =
         [ ( "title", Json.Encode.string project.title )
         , ( "script", encodeScript project.script )
         , ( "structure", encodeStructure project.structure )
-        , ( "dateCreated", Json.Encode.string <| toString project.dateCreated )
-        , ( "timeCreated", Json.Encode.string <| toString project.timeCreated)
+        , ( "dateCreated", Json.Encode.string project.dateCreated )
+        , ( "timeCreated", Json.Encode.string project.timeCreated )
         ]
 
 

@@ -9950,14 +9950,12 @@ var _RobertWalter83$calliope$Calliope$encodeProject = function (project) {
 				{
 				ctor: '_Tuple2',
 				_0: 'dateCreated',
-				_1: _elm_lang$core$Json_Encode$string(
-					_elm_lang$core$Basics$toString(project.dateCreated))
+				_1: _elm_lang$core$Json_Encode$string(project.dateCreated)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'timeCreated',
-				_1: _elm_lang$core$Json_Encode$string(
-					_elm_lang$core$Basics$toString(project.timeCreated))
+				_1: _elm_lang$core$Json_Encode$string(project.timeCreated)
 			}
 			]));
 };
@@ -14919,14 +14917,16 @@ var _RobertWalter83$calliope$App$encodeAppState = function (appState) {
 			}
 			]));
 };
-var _RobertWalter83$calliope$App$stylesheet = _debois$elm_mdl$Material_Options$stylesheet('\n  .mdl-layout__header--transparent {\n    background: url(\'assets/bg.png\');\n  }\n');
+var _RobertWalter83$calliope$App$stylesheet = _debois$elm_mdl$Material_Options$stylesheet('\n  .mdl-layout__header--transparent {\n    background: url(\'assets/march.jpg\') 0 45% no-repeat;\n    background-size: 100% auto\n  }\n');
 var _RobertWalter83$calliope$App$viewWelcomeHeader = _elm_lang$core$Native_List.fromArray(
 	[
 		A2(
 		_debois$elm_mdl$Material_Layout$row,
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A2(_debois$elm_mdl$Material_Options$css, 'height', '400px'),
+				A2(_debois$elm_mdl$Material_Options$css, 'height', '320px'),
+				A2(_debois$elm_mdl$Material_Options$css, 'min-height', '320px'),
+				A2(_debois$elm_mdl$Material_Options$css, 'max-height', '320px'),
 				A2(_debois$elm_mdl$Material_Options$css, 'transition', 'height 333ms ease-in-out 0s')
 			]),
 		_elm_lang$core$Native_List.fromArray(

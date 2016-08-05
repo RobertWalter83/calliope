@@ -421,7 +421,9 @@ rgView =
 viewWelcomeHeader : List (Html Msg)
 viewWelcomeHeader =
     [ Layout.row
-        [ css "height" "400px"
+        [ css "height" "320px"
+        , css "min-height" "320px"
+        , css "max-height" "320px"
         , css "transition" "height 333ms ease-in-out 0s"
         ]
         [ Layout.title [ css "margin-right" "20px", css "color" "#000000" ] [ text "Calliope" ] ]
@@ -471,7 +473,8 @@ stylesheet : Html a
 stylesheet =
     Options.stylesheet """
   .mdl-layout__header--transparent {
-    background: url('assets/bg.png');
+    background: url('assets/march.jpg') 0 45% no-repeat;
+    background-size: 100% auto
   }
 """
 
