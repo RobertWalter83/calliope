@@ -4,7 +4,6 @@ import Calliope exposing (..)
 import Task exposing (..)
 import Time exposing (..)
 import Html exposing (..)
-import Html.Attributes exposing (href)
 import Html.Events as Html exposing (..)
 import Html.App as App
 import Json.Encode exposing (..)
@@ -15,12 +14,10 @@ import Material.Color as Color
 import Material.Textfield as Textfield
 import Material.Icon as Icon
 import Material.Layout as Layout
-import Material.Grid as Grid exposing (..)
 import Material.Options as Options exposing (css, when)
 import Material.Button as Button exposing (..)
 import Material.Elevation as Elevation
 import Util exposing (..)
-import Random exposing (..)
 
 
 -- MODEL
