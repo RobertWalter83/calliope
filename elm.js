@@ -1518,22 +1518,124 @@ var _elm_lang$core$List$intersperse = F2(
 			return A2(_elm_lang$core$List_ops['::'], _p21._0, spersed);
 		}
 	});
-var _elm_lang$core$List$take = F2(
+var _elm_lang$core$List$takeReverse = F3(
+	function (n, list, taken) {
+		takeReverse:
+		while (true) {
+			if (_elm_lang$core$Native_Utils.cmp(n, 0) < 1) {
+				return taken;
+			} else {
+				var _p22 = list;
+				if (_p22.ctor === '[]') {
+					return taken;
+				} else {
+					var _v23 = n - 1,
+						_v24 = _p22._1,
+						_v25 = A2(_elm_lang$core$List_ops['::'], _p22._0, taken);
+					n = _v23;
+					list = _v24;
+					taken = _v25;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var _elm_lang$core$List$takeTailRec = F2(
 	function (n, list) {
+		return _elm_lang$core$List$reverse(
+			A3(
+				_elm_lang$core$List$takeReverse,
+				n,
+				list,
+				_elm_lang$core$Native_List.fromArray(
+					[])));
+	});
+var _elm_lang$core$List$takeFast = F3(
+	function (ctr, n, list) {
 		if (_elm_lang$core$Native_Utils.cmp(n, 0) < 1) {
 			return _elm_lang$core$Native_List.fromArray(
 				[]);
 		} else {
-			var _p22 = list;
-			if (_p22.ctor === '[]') {
-				return list;
-			} else {
-				return A2(
-					_elm_lang$core$List_ops['::'],
-					_p22._0,
-					A2(_elm_lang$core$List$take, n - 1, _p22._1));
-			}
+			var _p23 = {ctor: '_Tuple2', _0: n, _1: list};
+			_v26_5:
+			do {
+				_v26_1:
+				do {
+					if (_p23.ctor === '_Tuple2') {
+						if (_p23._1.ctor === '[]') {
+							return list;
+						} else {
+							if (_p23._1._1.ctor === '::') {
+								switch (_p23._0) {
+									case 1:
+										break _v26_1;
+									case 2:
+										return _elm_lang$core$Native_List.fromArray(
+											[_p23._1._0, _p23._1._1._0]);
+									case 3:
+										if (_p23._1._1._1.ctor === '::') {
+											return _elm_lang$core$Native_List.fromArray(
+												[_p23._1._0, _p23._1._1._0, _p23._1._1._1._0]);
+										} else {
+											break _v26_5;
+										}
+									default:
+										if ((_p23._1._1._1.ctor === '::') && (_p23._1._1._1._1.ctor === '::')) {
+											var _p28 = _p23._1._1._1._0;
+											var _p27 = _p23._1._1._0;
+											var _p26 = _p23._1._0;
+											var _p25 = _p23._1._1._1._1._0;
+											var _p24 = _p23._1._1._1._1._1;
+											return (_elm_lang$core$Native_Utils.cmp(ctr, 1000) > 0) ? A2(
+												_elm_lang$core$List_ops['::'],
+												_p26,
+												A2(
+													_elm_lang$core$List_ops['::'],
+													_p27,
+													A2(
+														_elm_lang$core$List_ops['::'],
+														_p28,
+														A2(
+															_elm_lang$core$List_ops['::'],
+															_p25,
+															A2(_elm_lang$core$List$takeTailRec, n - 4, _p24))))) : A2(
+												_elm_lang$core$List_ops['::'],
+												_p26,
+												A2(
+													_elm_lang$core$List_ops['::'],
+													_p27,
+													A2(
+														_elm_lang$core$List_ops['::'],
+														_p28,
+														A2(
+															_elm_lang$core$List_ops['::'],
+															_p25,
+															A3(_elm_lang$core$List$takeFast, ctr + 1, n - 4, _p24)))));
+										} else {
+											break _v26_5;
+										}
+								}
+							} else {
+								if (_p23._0 === 1) {
+									break _v26_1;
+								} else {
+									break _v26_5;
+								}
+							}
+						}
+					} else {
+						break _v26_5;
+					}
+				} while(false);
+				return _elm_lang$core$Native_List.fromArray(
+					[_p23._1._0]);
+			} while(false);
+			return list;
 		}
+	});
+var _elm_lang$core$List$take = F2(
+	function (n, list) {
+		return A3(_elm_lang$core$List$takeFast, 0, n, list);
 	});
 var _elm_lang$core$List$repeatHelp = F3(
 	function (result, n, value) {
@@ -1542,12 +1644,12 @@ var _elm_lang$core$List$repeatHelp = F3(
 			if (_elm_lang$core$Native_Utils.cmp(n, 0) < 1) {
 				return result;
 			} else {
-				var _v23 = A2(_elm_lang$core$List_ops['::'], value, result),
-					_v24 = n - 1,
-					_v25 = value;
-				result = _v23;
-				n = _v24;
-				value = _v25;
+				var _v27 = A2(_elm_lang$core$List_ops['::'], value, result),
+					_v28 = n - 1,
+					_v29 = value;
+				result = _v27;
+				n = _v28;
+				value = _v29;
 				continue repeatHelp;
 			}
 		}
@@ -2530,7 +2632,10 @@ function work()
 	var process;
 	while (numSteps < MAX_STEPS && (process = workQueue.shift()))
 	{
-		numSteps = step(numSteps, process);
+		if (process.root)
+		{
+			numSteps = step(numSteps, process);
+		}
 	}
 	if (!process)
 	{
@@ -2589,6 +2694,1714 @@ var _elm_lang$core$Platform_Sub$none = _elm_lang$core$Platform_Sub$batch(
 		[]));
 var _elm_lang$core$Platform_Sub$map = _elm_lang$core$Native_Platform.map;
 var _elm_lang$core$Platform_Sub$Sub = {ctor: 'Sub'};
+
+//import Native.List //
+
+var _elm_lang$core$Native_Array = function() {
+
+// A RRB-Tree has two distinct data types.
+// Leaf -> "height"  is always 0
+//         "table"   is an array of elements
+// Node -> "height"  is always greater than 0
+//         "table"   is an array of child nodes
+//         "lengths" is an array of accumulated lengths of the child nodes
+
+// M is the maximal table size. 32 seems fast. E is the allowed increase
+// of search steps when concatting to find an index. Lower values will
+// decrease balancing, but will increase search steps.
+var M = 32;
+var E = 2;
+
+// An empty array.
+var empty = {
+	ctor: '_Array',
+	height: 0,
+	table: []
+};
+
+
+function get(i, array)
+{
+	if (i < 0 || i >= length(array))
+	{
+		throw new Error(
+			'Index ' + i + ' is out of range. Check the length of ' +
+			'your array first or use getMaybe or getWithDefault.');
+	}
+	return unsafeGet(i, array);
+}
+
+
+function unsafeGet(i, array)
+{
+	for (var x = array.height; x > 0; x--)
+	{
+		var slot = i >> (x * 5);
+		while (array.lengths[slot] <= i)
+		{
+			slot++;
+		}
+		if (slot > 0)
+		{
+			i -= array.lengths[slot - 1];
+		}
+		array = array.table[slot];
+	}
+	return array.table[i];
+}
+
+
+// Sets the value at the index i. Only the nodes leading to i will get
+// copied and updated.
+function set(i, item, array)
+{
+	if (i < 0 || length(array) <= i)
+	{
+		return array;
+	}
+	return unsafeSet(i, item, array);
+}
+
+
+function unsafeSet(i, item, array)
+{
+	array = nodeCopy(array);
+
+	if (array.height === 0)
+	{
+		array.table[i] = item;
+	}
+	else
+	{
+		var slot = getSlot(i, array);
+		if (slot > 0)
+		{
+			i -= array.lengths[slot - 1];
+		}
+		array.table[slot] = unsafeSet(i, item, array.table[slot]);
+	}
+	return array;
+}
+
+
+function initialize(len, f)
+{
+	if (len <= 0)
+	{
+		return empty;
+	}
+	var h = Math.floor( Math.log(len) / Math.log(M) );
+	return initialize_(f, h, 0, len);
+}
+
+function initialize_(f, h, from, to)
+{
+	if (h === 0)
+	{
+		var table = new Array((to - from) % (M + 1));
+		for (var i = 0; i < table.length; i++)
+		{
+		  table[i] = f(from + i);
+		}
+		return {
+			ctor: '_Array',
+			height: 0,
+			table: table
+		};
+	}
+
+	var step = Math.pow(M, h);
+	var table = new Array(Math.ceil((to - from) / step));
+	var lengths = new Array(table.length);
+	for (var i = 0; i < table.length; i++)
+	{
+		table[i] = initialize_(f, h - 1, from + (i * step), Math.min(from + ((i + 1) * step), to));
+		lengths[i] = length(table[i]) + (i > 0 ? lengths[i-1] : 0);
+	}
+	return {
+		ctor: '_Array',
+		height: h,
+		table: table,
+		lengths: lengths
+	};
+}
+
+function fromList(list)
+{
+	if (list.ctor === '[]')
+	{
+		return empty;
+	}
+
+	// Allocate M sized blocks (table) and write list elements to it.
+	var table = new Array(M);
+	var nodes = [];
+	var i = 0;
+
+	while (list.ctor !== '[]')
+	{
+		table[i] = list._0;
+		list = list._1;
+		i++;
+
+		// table is full, so we can push a leaf containing it into the
+		// next node.
+		if (i === M)
+		{
+			var leaf = {
+				ctor: '_Array',
+				height: 0,
+				table: table
+			};
+			fromListPush(leaf, nodes);
+			table = new Array(M);
+			i = 0;
+		}
+	}
+
+	// Maybe there is something left on the table.
+	if (i > 0)
+	{
+		var leaf = {
+			ctor: '_Array',
+			height: 0,
+			table: table.splice(0, i)
+		};
+		fromListPush(leaf, nodes);
+	}
+
+	// Go through all of the nodes and eventually push them into higher nodes.
+	for (var h = 0; h < nodes.length - 1; h++)
+	{
+		if (nodes[h].table.length > 0)
+		{
+			fromListPush(nodes[h], nodes);
+		}
+	}
+
+	var head = nodes[nodes.length - 1];
+	if (head.height > 0 && head.table.length === 1)
+	{
+		return head.table[0];
+	}
+	else
+	{
+		return head;
+	}
+}
+
+// Push a node into a higher node as a child.
+function fromListPush(toPush, nodes)
+{
+	var h = toPush.height;
+
+	// Maybe the node on this height does not exist.
+	if (nodes.length === h)
+	{
+		var node = {
+			ctor: '_Array',
+			height: h + 1,
+			table: [],
+			lengths: []
+		};
+		nodes.push(node);
+	}
+
+	nodes[h].table.push(toPush);
+	var len = length(toPush);
+	if (nodes[h].lengths.length > 0)
+	{
+		len += nodes[h].lengths[nodes[h].lengths.length - 1];
+	}
+	nodes[h].lengths.push(len);
+
+	if (nodes[h].table.length === M)
+	{
+		fromListPush(nodes[h], nodes);
+		nodes[h] = {
+			ctor: '_Array',
+			height: h + 1,
+			table: [],
+			lengths: []
+		};
+	}
+}
+
+// Pushes an item via push_ to the bottom right of a tree.
+function push(item, a)
+{
+	var pushed = push_(item, a);
+	if (pushed !== null)
+	{
+		return pushed;
+	}
+
+	var newTree = create(item, a.height);
+	return siblise(a, newTree);
+}
+
+// Recursively tries to push an item to the bottom-right most
+// tree possible. If there is no space left for the item,
+// null will be returned.
+function push_(item, a)
+{
+	// Handle resursion stop at leaf level.
+	if (a.height === 0)
+	{
+		if (a.table.length < M)
+		{
+			var newA = {
+				ctor: '_Array',
+				height: 0,
+				table: a.table.slice()
+			};
+			newA.table.push(item);
+			return newA;
+		}
+		else
+		{
+		  return null;
+		}
+	}
+
+	// Recursively push
+	var pushed = push_(item, botRight(a));
+
+	// There was space in the bottom right tree, so the slot will
+	// be updated.
+	if (pushed !== null)
+	{
+		var newA = nodeCopy(a);
+		newA.table[newA.table.length - 1] = pushed;
+		newA.lengths[newA.lengths.length - 1]++;
+		return newA;
+	}
+
+	// When there was no space left, check if there is space left
+	// for a new slot with a tree which contains only the item
+	// at the bottom.
+	if (a.table.length < M)
+	{
+		var newSlot = create(item, a.height - 1);
+		var newA = nodeCopy(a);
+		newA.table.push(newSlot);
+		newA.lengths.push(newA.lengths[newA.lengths.length - 1] + length(newSlot));
+		return newA;
+	}
+	else
+	{
+		return null;
+	}
+}
+
+// Converts an array into a list of elements.
+function toList(a)
+{
+	return toList_(_elm_lang$core$Native_List.Nil, a);
+}
+
+function toList_(list, a)
+{
+	for (var i = a.table.length - 1; i >= 0; i--)
+	{
+		list =
+			a.height === 0
+				? _elm_lang$core$Native_List.Cons(a.table[i], list)
+				: toList_(list, a.table[i]);
+	}
+	return list;
+}
+
+// Maps a function over the elements of an array.
+function map(f, a)
+{
+	var newA = {
+		ctor: '_Array',
+		height: a.height,
+		table: new Array(a.table.length)
+	};
+	if (a.height > 0)
+	{
+		newA.lengths = a.lengths;
+	}
+	for (var i = 0; i < a.table.length; i++)
+	{
+		newA.table[i] =
+			a.height === 0
+				? f(a.table[i])
+				: map(f, a.table[i]);
+	}
+	return newA;
+}
+
+// Maps a function over the elements with their index as first argument.
+function indexedMap(f, a)
+{
+	return indexedMap_(f, a, 0);
+}
+
+function indexedMap_(f, a, from)
+{
+	var newA = {
+		ctor: '_Array',
+		height: a.height,
+		table: new Array(a.table.length)
+	};
+	if (a.height > 0)
+	{
+		newA.lengths = a.lengths;
+	}
+	for (var i = 0; i < a.table.length; i++)
+	{
+		newA.table[i] =
+			a.height === 0
+				? A2(f, from + i, a.table[i])
+				: indexedMap_(f, a.table[i], i == 0 ? from : from + a.lengths[i - 1]);
+	}
+	return newA;
+}
+
+function foldl(f, b, a)
+{
+	if (a.height === 0)
+	{
+		for (var i = 0; i < a.table.length; i++)
+		{
+			b = A2(f, a.table[i], b);
+		}
+	}
+	else
+	{
+		for (var i = 0; i < a.table.length; i++)
+		{
+			b = foldl(f, b, a.table[i]);
+		}
+	}
+	return b;
+}
+
+function foldr(f, b, a)
+{
+	if (a.height === 0)
+	{
+		for (var i = a.table.length; i--; )
+		{
+			b = A2(f, a.table[i], b);
+		}
+	}
+	else
+	{
+		for (var i = a.table.length; i--; )
+		{
+			b = foldr(f, b, a.table[i]);
+		}
+	}
+	return b;
+}
+
+// TODO: currently, it slices the right, then the left. This can be
+// optimized.
+function slice(from, to, a)
+{
+	if (from < 0)
+	{
+		from += length(a);
+	}
+	if (to < 0)
+	{
+		to += length(a);
+	}
+	return sliceLeft(from, sliceRight(to, a));
+}
+
+function sliceRight(to, a)
+{
+	if (to === length(a))
+	{
+		return a;
+	}
+
+	// Handle leaf level.
+	if (a.height === 0)
+	{
+		var newA = { ctor:'_Array', height:0 };
+		newA.table = a.table.slice(0, to);
+		return newA;
+	}
+
+	// Slice the right recursively.
+	var right = getSlot(to, a);
+	var sliced = sliceRight(to - (right > 0 ? a.lengths[right - 1] : 0), a.table[right]);
+
+	// Maybe the a node is not even needed, as sliced contains the whole slice.
+	if (right === 0)
+	{
+		return sliced;
+	}
+
+	// Create new node.
+	var newA = {
+		ctor: '_Array',
+		height: a.height,
+		table: a.table.slice(0, right),
+		lengths: a.lengths.slice(0, right)
+	};
+	if (sliced.table.length > 0)
+	{
+		newA.table[right] = sliced;
+		newA.lengths[right] = length(sliced) + (right > 0 ? newA.lengths[right - 1] : 0);
+	}
+	return newA;
+}
+
+function sliceLeft(from, a)
+{
+	if (from === 0)
+	{
+		return a;
+	}
+
+	// Handle leaf level.
+	if (a.height === 0)
+	{
+		var newA = { ctor:'_Array', height:0 };
+		newA.table = a.table.slice(from, a.table.length + 1);
+		return newA;
+	}
+
+	// Slice the left recursively.
+	var left = getSlot(from, a);
+	var sliced = sliceLeft(from - (left > 0 ? a.lengths[left - 1] : 0), a.table[left]);
+
+	// Maybe the a node is not even needed, as sliced contains the whole slice.
+	if (left === a.table.length - 1)
+	{
+		return sliced;
+	}
+
+	// Create new node.
+	var newA = {
+		ctor: '_Array',
+		height: a.height,
+		table: a.table.slice(left, a.table.length + 1),
+		lengths: new Array(a.table.length - left)
+	};
+	newA.table[0] = sliced;
+	var len = 0;
+	for (var i = 0; i < newA.table.length; i++)
+	{
+		len += length(newA.table[i]);
+		newA.lengths[i] = len;
+	}
+
+	return newA;
+}
+
+// Appends two trees.
+function append(a,b)
+{
+	if (a.table.length === 0)
+	{
+		return b;
+	}
+	if (b.table.length === 0)
+	{
+		return a;
+	}
+
+	var c = append_(a, b);
+
+	// Check if both nodes can be crunshed together.
+	if (c[0].table.length + c[1].table.length <= M)
+	{
+		if (c[0].table.length === 0)
+		{
+			return c[1];
+		}
+		if (c[1].table.length === 0)
+		{
+			return c[0];
+		}
+
+		// Adjust .table and .lengths
+		c[0].table = c[0].table.concat(c[1].table);
+		if (c[0].height > 0)
+		{
+			var len = length(c[0]);
+			for (var i = 0; i < c[1].lengths.length; i++)
+			{
+				c[1].lengths[i] += len;
+			}
+			c[0].lengths = c[0].lengths.concat(c[1].lengths);
+		}
+
+		return c[0];
+	}
+
+	if (c[0].height > 0)
+	{
+		var toRemove = calcToRemove(a, b);
+		if (toRemove > E)
+		{
+			c = shuffle(c[0], c[1], toRemove);
+		}
+	}
+
+	return siblise(c[0], c[1]);
+}
+
+// Returns an array of two nodes; right and left. One node _may_ be empty.
+function append_(a, b)
+{
+	if (a.height === 0 && b.height === 0)
+	{
+		return [a, b];
+	}
+
+	if (a.height !== 1 || b.height !== 1)
+	{
+		if (a.height === b.height)
+		{
+			a = nodeCopy(a);
+			b = nodeCopy(b);
+			var appended = append_(botRight(a), botLeft(b));
+
+			insertRight(a, appended[1]);
+			insertLeft(b, appended[0]);
+		}
+		else if (a.height > b.height)
+		{
+			a = nodeCopy(a);
+			var appended = append_(botRight(a), b);
+
+			insertRight(a, appended[0]);
+			b = parentise(appended[1], appended[1].height + 1);
+		}
+		else
+		{
+			b = nodeCopy(b);
+			var appended = append_(a, botLeft(b));
+
+			var left = appended[0].table.length === 0 ? 0 : 1;
+			var right = left === 0 ? 1 : 0;
+			insertLeft(b, appended[left]);
+			a = parentise(appended[right], appended[right].height + 1);
+		}
+	}
+
+	// Check if balancing is needed and return based on that.
+	if (a.table.length === 0 || b.table.length === 0)
+	{
+		return [a, b];
+	}
+
+	var toRemove = calcToRemove(a, b);
+	if (toRemove <= E)
+	{
+		return [a, b];
+	}
+	return shuffle(a, b, toRemove);
+}
+
+// Helperfunctions for append_. Replaces a child node at the side of the parent.
+function insertRight(parent, node)
+{
+	var index = parent.table.length - 1;
+	parent.table[index] = node;
+	parent.lengths[index] = length(node);
+	parent.lengths[index] += index > 0 ? parent.lengths[index - 1] : 0;
+}
+
+function insertLeft(parent, node)
+{
+	if (node.table.length > 0)
+	{
+		parent.table[0] = node;
+		parent.lengths[0] = length(node);
+
+		var len = length(parent.table[0]);
+		for (var i = 1; i < parent.lengths.length; i++)
+		{
+			len += length(parent.table[i]);
+			parent.lengths[i] = len;
+		}
+	}
+	else
+	{
+		parent.table.shift();
+		for (var i = 1; i < parent.lengths.length; i++)
+		{
+			parent.lengths[i] = parent.lengths[i] - parent.lengths[0];
+		}
+		parent.lengths.shift();
+	}
+}
+
+// Returns the extra search steps for E. Refer to the paper.
+function calcToRemove(a, b)
+{
+	var subLengths = 0;
+	for (var i = 0; i < a.table.length; i++)
+	{
+		subLengths += a.table[i].table.length;
+	}
+	for (var i = 0; i < b.table.length; i++)
+	{
+		subLengths += b.table[i].table.length;
+	}
+
+	var toRemove = a.table.length + b.table.length;
+	return toRemove - (Math.floor((subLengths - 1) / M) + 1);
+}
+
+// get2, set2 and saveSlot are helpers for accessing elements over two arrays.
+function get2(a, b, index)
+{
+	return index < a.length
+		? a[index]
+		: b[index - a.length];
+}
+
+function set2(a, b, index, value)
+{
+	if (index < a.length)
+	{
+		a[index] = value;
+	}
+	else
+	{
+		b[index - a.length] = value;
+	}
+}
+
+function saveSlot(a, b, index, slot)
+{
+	set2(a.table, b.table, index, slot);
+
+	var l = (index === 0 || index === a.lengths.length)
+		? 0
+		: get2(a.lengths, a.lengths, index - 1);
+
+	set2(a.lengths, b.lengths, index, l + length(slot));
+}
+
+// Creates a node or leaf with a given length at their arrays for perfomance.
+// Is only used by shuffle.
+function createNode(h, length)
+{
+	if (length < 0)
+	{
+		length = 0;
+	}
+	var a = {
+		ctor: '_Array',
+		height: h,
+		table: new Array(length)
+	};
+	if (h > 0)
+	{
+		a.lengths = new Array(length);
+	}
+	return a;
+}
+
+// Returns an array of two balanced nodes.
+function shuffle(a, b, toRemove)
+{
+	var newA = createNode(a.height, Math.min(M, a.table.length + b.table.length - toRemove));
+	var newB = createNode(a.height, newA.table.length - (a.table.length + b.table.length - toRemove));
+
+	// Skip the slots with size M. More precise: copy the slot references
+	// to the new node
+	var read = 0;
+	while (get2(a.table, b.table, read).table.length % M === 0)
+	{
+		set2(newA.table, newB.table, read, get2(a.table, b.table, read));
+		set2(newA.lengths, newB.lengths, read, get2(a.lengths, b.lengths, read));
+		read++;
+	}
+
+	// Pulling items from left to right, caching in a slot before writing
+	// it into the new nodes.
+	var write = read;
+	var slot = new createNode(a.height - 1, 0);
+	var from = 0;
+
+	// If the current slot is still containing data, then there will be at
+	// least one more write, so we do not break this loop yet.
+	while (read - write - (slot.table.length > 0 ? 1 : 0) < toRemove)
+	{
+		// Find out the max possible items for copying.
+		var source = get2(a.table, b.table, read);
+		var to = Math.min(M - slot.table.length, source.table.length);
+
+		// Copy and adjust size table.
+		slot.table = slot.table.concat(source.table.slice(from, to));
+		if (slot.height > 0)
+		{
+			var len = slot.lengths.length;
+			for (var i = len; i < len + to - from; i++)
+			{
+				slot.lengths[i] = length(slot.table[i]);
+				slot.lengths[i] += (i > 0 ? slot.lengths[i - 1] : 0);
+			}
+		}
+
+		from += to;
+
+		// Only proceed to next slots[i] if the current one was
+		// fully copied.
+		if (source.table.length <= to)
+		{
+			read++; from = 0;
+		}
+
+		// Only create a new slot if the current one is filled up.
+		if (slot.table.length === M)
+		{
+			saveSlot(newA, newB, write, slot);
+			slot = createNode(a.height - 1, 0);
+			write++;
+		}
+	}
+
+	// Cleanup after the loop. Copy the last slot into the new nodes.
+	if (slot.table.length > 0)
+	{
+		saveSlot(newA, newB, write, slot);
+		write++;
+	}
+
+	// Shift the untouched slots to the left
+	while (read < a.table.length + b.table.length )
+	{
+		saveSlot(newA, newB, write, get2(a.table, b.table, read));
+		read++;
+		write++;
+	}
+
+	return [newA, newB];
+}
+
+// Navigation functions
+function botRight(a)
+{
+	return a.table[a.table.length - 1];
+}
+function botLeft(a)
+{
+	return a.table[0];
+}
+
+// Copies a node for updating. Note that you should not use this if
+// only updating only one of "table" or "lengths" for performance reasons.
+function nodeCopy(a)
+{
+	var newA = {
+		ctor: '_Array',
+		height: a.height,
+		table: a.table.slice()
+	};
+	if (a.height > 0)
+	{
+		newA.lengths = a.lengths.slice();
+	}
+	return newA;
+}
+
+// Returns how many items are in the tree.
+function length(array)
+{
+	if (array.height === 0)
+	{
+		return array.table.length;
+	}
+	else
+	{
+		return array.lengths[array.lengths.length - 1];
+	}
+}
+
+// Calculates in which slot of "table" the item probably is, then
+// find the exact slot via forward searching in  "lengths". Returns the index.
+function getSlot(i, a)
+{
+	var slot = i >> (5 * a.height);
+	while (a.lengths[slot] <= i)
+	{
+		slot++;
+	}
+	return slot;
+}
+
+// Recursively creates a tree with a given height containing
+// only the given item.
+function create(item, h)
+{
+	if (h === 0)
+	{
+		return {
+			ctor: '_Array',
+			height: 0,
+			table: [item]
+		};
+	}
+	return {
+		ctor: '_Array',
+		height: h,
+		table: [create(item, h - 1)],
+		lengths: [1]
+	};
+}
+
+// Recursively creates a tree that contains the given tree.
+function parentise(tree, h)
+{
+	if (h === tree.height)
+	{
+		return tree;
+	}
+
+	return {
+		ctor: '_Array',
+		height: h,
+		table: [parentise(tree, h - 1)],
+		lengths: [length(tree)]
+	};
+}
+
+// Emphasizes blood brotherhood beneath two trees.
+function siblise(a, b)
+{
+	return {
+		ctor: '_Array',
+		height: a.height + 1,
+		table: [a, b],
+		lengths: [length(a), length(a) + length(b)]
+	};
+}
+
+function toJSArray(a)
+{
+	var jsArray = new Array(length(a));
+	toJSArray_(jsArray, 0, a);
+	return jsArray;
+}
+
+function toJSArray_(jsArray, i, a)
+{
+	for (var t = 0; t < a.table.length; t++)
+	{
+		if (a.height === 0)
+		{
+			jsArray[i + t] = a.table[t];
+		}
+		else
+		{
+			var inc = t === 0 ? 0 : a.lengths[t - 1];
+			toJSArray_(jsArray, i + inc, a.table[t]);
+		}
+	}
+}
+
+function fromJSArray(jsArray)
+{
+	if (jsArray.length === 0)
+	{
+		return empty;
+	}
+	var h = Math.floor(Math.log(jsArray.length) / Math.log(M));
+	return fromJSArray_(jsArray, h, 0, jsArray.length);
+}
+
+function fromJSArray_(jsArray, h, from, to)
+{
+	if (h === 0)
+	{
+		return {
+			ctor: '_Array',
+			height: 0,
+			table: jsArray.slice(from, to)
+		};
+	}
+
+	var step = Math.pow(M, h);
+	var table = new Array(Math.ceil((to - from) / step));
+	var lengths = new Array(table.length);
+	for (var i = 0; i < table.length; i++)
+	{
+		table[i] = fromJSArray_(jsArray, h - 1, from + (i * step), Math.min(from + ((i + 1) * step), to));
+		lengths[i] = length(table[i]) + (i > 0 ? lengths[i - 1] : 0);
+	}
+	return {
+		ctor: '_Array',
+		height: h,
+		table: table,
+		lengths: lengths
+	};
+}
+
+return {
+	empty: empty,
+	fromList: fromList,
+	toList: toList,
+	initialize: F2(initialize),
+	append: F2(append),
+	push: F2(push),
+	slice: F3(slice),
+	get: F2(get),
+	set: F3(set),
+	map: F2(map),
+	indexedMap: F2(indexedMap),
+	foldl: F3(foldl),
+	foldr: F3(foldr),
+	length: length,
+
+	toJSArray: toJSArray,
+	fromJSArray: fromJSArray
+};
+
+}();
+var _elm_lang$core$Array$append = _elm_lang$core$Native_Array.append;
+var _elm_lang$core$Array$length = _elm_lang$core$Native_Array.length;
+var _elm_lang$core$Array$isEmpty = function (array) {
+	return _elm_lang$core$Native_Utils.eq(
+		_elm_lang$core$Array$length(array),
+		0);
+};
+var _elm_lang$core$Array$slice = _elm_lang$core$Native_Array.slice;
+var _elm_lang$core$Array$set = _elm_lang$core$Native_Array.set;
+var _elm_lang$core$Array$get = F2(
+	function (i, array) {
+		return ((_elm_lang$core$Native_Utils.cmp(0, i) < 1) && (_elm_lang$core$Native_Utils.cmp(
+			i,
+			_elm_lang$core$Native_Array.length(array)) < 0)) ? _elm_lang$core$Maybe$Just(
+			A2(_elm_lang$core$Native_Array.get, i, array)) : _elm_lang$core$Maybe$Nothing;
+	});
+var _elm_lang$core$Array$push = _elm_lang$core$Native_Array.push;
+var _elm_lang$core$Array$empty = _elm_lang$core$Native_Array.empty;
+var _elm_lang$core$Array$filter = F2(
+	function (isOkay, arr) {
+		var update = F2(
+			function (x, xs) {
+				return isOkay(x) ? A2(_elm_lang$core$Native_Array.push, x, xs) : xs;
+			});
+		return A3(_elm_lang$core$Native_Array.foldl, update, _elm_lang$core$Native_Array.empty, arr);
+	});
+var _elm_lang$core$Array$foldr = _elm_lang$core$Native_Array.foldr;
+var _elm_lang$core$Array$foldl = _elm_lang$core$Native_Array.foldl;
+var _elm_lang$core$Array$indexedMap = _elm_lang$core$Native_Array.indexedMap;
+var _elm_lang$core$Array$map = _elm_lang$core$Native_Array.map;
+var _elm_lang$core$Array$toIndexedList = function (array) {
+	return A3(
+		_elm_lang$core$List$map2,
+		F2(
+			function (v0, v1) {
+				return {ctor: '_Tuple2', _0: v0, _1: v1};
+			}),
+		_elm_lang$core$Native_List.range(
+			0,
+			_elm_lang$core$Native_Array.length(array) - 1),
+		_elm_lang$core$Native_Array.toList(array));
+};
+var _elm_lang$core$Array$toList = _elm_lang$core$Native_Array.toList;
+var _elm_lang$core$Array$fromList = _elm_lang$core$Native_Array.fromList;
+var _elm_lang$core$Array$initialize = _elm_lang$core$Native_Array.initialize;
+var _elm_lang$core$Array$repeat = F2(
+	function (n, e) {
+		return A2(
+			_elm_lang$core$Array$initialize,
+			n,
+			_elm_lang$core$Basics$always(e));
+	});
+var _elm_lang$core$Array$Array = {ctor: 'Array'};
+
+//import Maybe, Native.Array, Native.List, Native.Utils, Result //
+
+var _elm_lang$core$Native_Json = function() {
+
+
+// CORE DECODERS
+
+function succeed(msg)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'succeed',
+		msg: msg
+	};
+}
+
+function fail(msg)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'fail',
+		msg: msg
+	};
+}
+
+function decodePrimitive(tag)
+{
+	return {
+		ctor: '<decoder>',
+		tag: tag
+	};
+}
+
+function decodeContainer(tag, decoder)
+{
+	return {
+		ctor: '<decoder>',
+		tag: tag,
+		decoder: decoder
+	};
+}
+
+function decodeNull(value)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'null',
+		value: value
+	};
+}
+
+function decodeField(field, decoder)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'field',
+		field: field,
+		decoder: decoder
+	};
+}
+
+function decodeKeyValuePairs(decoder)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'key-value',
+		decoder: decoder
+	};
+}
+
+function decodeObject(f, decoders)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'map-many',
+		func: f,
+		decoders: decoders
+	};
+}
+
+function decodeTuple(f, decoders)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'tuple',
+		func: f,
+		decoders: decoders
+	};
+}
+
+function andThen(decoder, callback)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'andThen',
+		decoder: decoder,
+		callback: callback
+	};
+}
+
+function customAndThen(decoder, callback)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'customAndThen',
+		decoder: decoder,
+		callback: callback
+	};
+}
+
+function oneOf(decoders)
+{
+	return {
+		ctor: '<decoder>',
+		tag: 'oneOf',
+		decoders: decoders
+	};
+}
+
+
+// DECODING OBJECTS
+
+function decodeObject1(f, d1)
+{
+	return decodeObject(f, [d1]);
+}
+
+function decodeObject2(f, d1, d2)
+{
+	return decodeObject(f, [d1, d2]);
+}
+
+function decodeObject3(f, d1, d2, d3)
+{
+	return decodeObject(f, [d1, d2, d3]);
+}
+
+function decodeObject4(f, d1, d2, d3, d4)
+{
+	return decodeObject(f, [d1, d2, d3, d4]);
+}
+
+function decodeObject5(f, d1, d2, d3, d4, d5)
+{
+	return decodeObject(f, [d1, d2, d3, d4, d5]);
+}
+
+function decodeObject6(f, d1, d2, d3, d4, d5, d6)
+{
+	return decodeObject(f, [d1, d2, d3, d4, d5, d6]);
+}
+
+function decodeObject7(f, d1, d2, d3, d4, d5, d6, d7)
+{
+	return decodeObject(f, [d1, d2, d3, d4, d5, d6, d7]);
+}
+
+function decodeObject8(f, d1, d2, d3, d4, d5, d6, d7, d8)
+{
+	return decodeObject(f, [d1, d2, d3, d4, d5, d6, d7, d8]);
+}
+
+
+// DECODING TUPLES
+
+function decodeTuple1(f, d1)
+{
+	return decodeTuple(f, [d1]);
+}
+
+function decodeTuple2(f, d1, d2)
+{
+	return decodeTuple(f, [d1, d2]);
+}
+
+function decodeTuple3(f, d1, d2, d3)
+{
+	return decodeTuple(f, [d1, d2, d3]);
+}
+
+function decodeTuple4(f, d1, d2, d3, d4)
+{
+	return decodeTuple(f, [d1, d2, d3, d4]);
+}
+
+function decodeTuple5(f, d1, d2, d3, d4, d5)
+{
+	return decodeTuple(f, [d1, d2, d3, d4, d5]);
+}
+
+function decodeTuple6(f, d1, d2, d3, d4, d5, d6)
+{
+	return decodeTuple(f, [d1, d2, d3, d4, d5, d6]);
+}
+
+function decodeTuple7(f, d1, d2, d3, d4, d5, d6, d7)
+{
+	return decodeTuple(f, [d1, d2, d3, d4, d5, d6, d7]);
+}
+
+function decodeTuple8(f, d1, d2, d3, d4, d5, d6, d7, d8)
+{
+	return decodeTuple(f, [d1, d2, d3, d4, d5, d6, d7, d8]);
+}
+
+
+// DECODE HELPERS
+
+function ok(value)
+{
+	return { tag: 'ok', value: value };
+}
+
+function badPrimitive(type, value)
+{
+	return { tag: 'primitive', type: type, value: value };
+}
+
+function badIndex(index, nestedProblems)
+{
+	return { tag: 'index', index: index, rest: nestedProblems };
+}
+
+function badField(field, nestedProblems)
+{
+	return { tag: 'field', field: field, rest: nestedProblems };
+}
+
+function badOneOf(problems)
+{
+	return { tag: 'oneOf', problems: problems };
+}
+
+function badCustom(msg)
+{
+	return { tag: 'custom', msg: msg };
+}
+
+function bad(msg)
+{
+	return { tag: 'fail', msg: msg };
+}
+
+function badToString(problem)
+{
+	var context = '_';
+	while (problem)
+	{
+		switch (problem.tag)
+		{
+			case 'primitive':
+				return 'Expecting ' + problem.type
+					+ (context === '_' ? '' : ' at ' + context)
+					+ ' but instead got: ' + jsToString(problem.value);
+
+			case 'index':
+				context += '[' + problem.index + ']';
+				problem = problem.rest;
+				break;
+
+			case 'field':
+				context += '.' + problem.field;
+				problem = problem.rest;
+				break;
+
+			case 'oneOf':
+				var problems = problem.problems;
+				for (var i = 0; i < problems.length; i++)
+				{
+					problems[i] = badToString(problems[i]);
+				}
+				return 'I ran into the following problems'
+					+ (context === '_' ? '' : ' at ' + context)
+					+ ':\n\n' + problems.join('\n');
+
+			case 'custom':
+				return 'A `customDecoder` failed'
+					+ (context === '_' ? '' : ' at ' + context)
+					+ ' with the message: ' + problem.msg;
+
+			case 'fail':
+				return 'I ran into a `fail` decoder'
+					+ (context === '_' ? '' : ' at ' + context)
+					+ ': ' + problem.msg;
+		}
+	}
+}
+
+function jsToString(value)
+{
+	return value === undefined
+		? 'undefined'
+		: JSON.stringify(value);
+}
+
+
+// DECODE
+
+function runOnString(decoder, string)
+{
+	var json;
+	try
+	{
+		json = JSON.parse(string);
+	}
+	catch (e)
+	{
+		return _elm_lang$core$Result$Err('Given an invalid JSON: ' + e.message);
+	}
+	return run(decoder, json);
+}
+
+function run(decoder, value)
+{
+	var result = runHelp(decoder, value);
+	return (result.tag === 'ok')
+		? _elm_lang$core$Result$Ok(result.value)
+		: _elm_lang$core$Result$Err(badToString(result));
+}
+
+function runHelp(decoder, value)
+{
+	switch (decoder.tag)
+	{
+		case 'bool':
+			return (typeof value === 'boolean')
+				? ok(value)
+				: badPrimitive('a Bool', value);
+
+		case 'int':
+			if (typeof value !== 'number') {
+				return badPrimitive('an Int', value);
+			}
+
+			if (-2147483647 < value && value < 2147483647 && (value | 0) === value) {
+				return ok(value);
+			}
+
+			if (isFinite(value) && !(value % 1)) {
+				return ok(value);
+			}
+
+			return badPrimitive('an Int', value);
+
+		case 'float':
+			return (typeof value === 'number')
+				? ok(value)
+				: badPrimitive('a Float', value);
+
+		case 'string':
+			return (typeof value === 'string')
+				? ok(value)
+				: (value instanceof String)
+					? ok(value + '')
+					: badPrimitive('a String', value);
+
+		case 'null':
+			return (value === null)
+				? ok(decoder.value)
+				: badPrimitive('null', value);
+
+		case 'value':
+			return ok(value);
+
+		case 'list':
+			if (!(value instanceof Array))
+			{
+				return badPrimitive('a List', value);
+			}
+
+			var list = _elm_lang$core$Native_List.Nil;
+			for (var i = value.length; i--; )
+			{
+				var result = runHelp(decoder.decoder, value[i]);
+				if (result.tag !== 'ok')
+				{
+					return badIndex(i, result)
+				}
+				list = _elm_lang$core$Native_List.Cons(result.value, list);
+			}
+			return ok(list);
+
+		case 'array':
+			if (!(value instanceof Array))
+			{
+				return badPrimitive('an Array', value);
+			}
+
+			var len = value.length;
+			var array = new Array(len);
+			for (var i = len; i--; )
+			{
+				var result = runHelp(decoder.decoder, value[i]);
+				if (result.tag !== 'ok')
+				{
+					return badIndex(i, result);
+				}
+				array[i] = result.value;
+			}
+			return ok(_elm_lang$core$Native_Array.fromJSArray(array));
+
+		case 'maybe':
+			var result = runHelp(decoder.decoder, value);
+			return (result.tag === 'ok')
+				? ok(_elm_lang$core$Maybe$Just(result.value))
+				: ok(_elm_lang$core$Maybe$Nothing);
+
+		case 'field':
+			var field = decoder.field;
+			if (typeof value !== 'object' || value === null || !(field in value))
+			{
+				return badPrimitive('an object with a field named `' + field + '`', value);
+			}
+
+			var result = runHelp(decoder.decoder, value[field]);
+			return (result.tag === 'ok')
+				? result
+				: badField(field, result);
+
+		case 'key-value':
+			if (typeof value !== 'object' || value === null || value instanceof Array)
+			{
+				return badPrimitive('an object', value);
+			}
+
+			var keyValuePairs = _elm_lang$core$Native_List.Nil;
+			for (var key in value)
+			{
+				var result = runHelp(decoder.decoder, value[key]);
+				if (result.tag !== 'ok')
+				{
+					return badField(key, result);
+				}
+				var pair = _elm_lang$core$Native_Utils.Tuple2(key, result.value);
+				keyValuePairs = _elm_lang$core$Native_List.Cons(pair, keyValuePairs);
+			}
+			return ok(keyValuePairs);
+
+		case 'map-many':
+			var answer = decoder.func;
+			var decoders = decoder.decoders;
+			for (var i = 0; i < decoders.length; i++)
+			{
+				var result = runHelp(decoders[i], value);
+				if (result.tag !== 'ok')
+				{
+					return result;
+				}
+				answer = answer(result.value);
+			}
+			return ok(answer);
+
+		case 'tuple':
+			var decoders = decoder.decoders;
+			var len = decoders.length;
+
+			if ( !(value instanceof Array) || value.length !== len )
+			{
+				return badPrimitive('a Tuple with ' + len + ' entries', value);
+			}
+
+			var answer = decoder.func;
+			for (var i = 0; i < len; i++)
+			{
+				var result = runHelp(decoders[i], value[i]);
+				if (result.tag !== 'ok')
+				{
+					return badIndex(i, result);
+				}
+				answer = answer(result.value);
+			}
+			return ok(answer);
+
+		case 'customAndThen':
+			var result = runHelp(decoder.decoder, value);
+			if (result.tag !== 'ok')
+			{
+				return result;
+			}
+			var realResult = decoder.callback(result.value);
+			if (realResult.ctor === 'Err')
+			{
+				return badCustom(realResult._0);
+			}
+			return ok(realResult._0);
+
+		case 'andThen':
+			var result = runHelp(decoder.decoder, value);
+			return (result.tag !== 'ok')
+				? result
+				: runHelp(decoder.callback(result.value), value);
+
+		case 'oneOf':
+			var errors = [];
+			var temp = decoder.decoders;
+			while (temp.ctor !== '[]')
+			{
+				var result = runHelp(temp._0, value);
+
+				if (result.tag === 'ok')
+				{
+					return result;
+				}
+
+				errors.push(result);
+
+				temp = temp._1;
+			}
+			return badOneOf(errors);
+
+		case 'fail':
+			return bad(decoder.msg);
+
+		case 'succeed':
+			return ok(decoder.msg);
+	}
+}
+
+
+// EQUALITY
+
+function equality(a, b)
+{
+	if (a === b)
+	{
+		return true;
+	}
+
+	if (a.tag !== b.tag)
+	{
+		return false;
+	}
+
+	switch (a.tag)
+	{
+		case 'succeed':
+		case 'fail':
+			return a.msg === b.msg;
+
+		case 'bool':
+		case 'int':
+		case 'float':
+		case 'string':
+		case 'value':
+			return true;
+
+		case 'null':
+			return a.value === b.value;
+
+		case 'list':
+		case 'array':
+		case 'maybe':
+		case 'key-value':
+			return equality(a.decoder, b.decoder);
+
+		case 'field':
+			return a.field === b.field && equality(a.decoder, b.decoder);
+
+		case 'map-many':
+		case 'tuple':
+			if (a.func !== b.func)
+			{
+				return false;
+			}
+			return listEquality(a.decoders, b.decoders);
+
+		case 'andThen':
+		case 'customAndThen':
+			return a.callback === b.callback && equality(a.decoder, b.decoder);
+
+		case 'oneOf':
+			return listEquality(a.decoders, b.decoders);
+	}
+}
+
+function listEquality(aDecoders, bDecoders)
+{
+	var len = aDecoders.length;
+	if (len !== bDecoders.length)
+	{
+		return false;
+	}
+	for (var i = 0; i < len; i++)
+	{
+		if (!equality(aDecoders[i], bDecoders[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+
+// ENCODE
+
+function encode(indentLevel, value)
+{
+	return JSON.stringify(value, null, indentLevel);
+}
+
+function identity(value)
+{
+	return value;
+}
+
+function encodeObject(keyValuePairs)
+{
+	var obj = {};
+	while (keyValuePairs.ctor !== '[]')
+	{
+		var pair = keyValuePairs._0;
+		obj[pair._0] = pair._1;
+		keyValuePairs = keyValuePairs._1;
+	}
+	return obj;
+}
+
+return {
+	encode: F2(encode),
+	runOnString: F2(runOnString),
+	run: F2(run),
+
+	decodeNull: decodeNull,
+	decodePrimitive: decodePrimitive,
+	decodeContainer: F2(decodeContainer),
+
+	decodeField: F2(decodeField),
+
+	decodeObject1: F2(decodeObject1),
+	decodeObject2: F3(decodeObject2),
+	decodeObject3: F4(decodeObject3),
+	decodeObject4: F5(decodeObject4),
+	decodeObject5: F6(decodeObject5),
+	decodeObject6: F7(decodeObject6),
+	decodeObject7: F8(decodeObject7),
+	decodeObject8: F9(decodeObject8),
+	decodeKeyValuePairs: decodeKeyValuePairs,
+
+	decodeTuple1: F2(decodeTuple1),
+	decodeTuple2: F3(decodeTuple2),
+	decodeTuple3: F4(decodeTuple3),
+	decodeTuple4: F5(decodeTuple4),
+	decodeTuple5: F6(decodeTuple5),
+	decodeTuple6: F7(decodeTuple6),
+	decodeTuple7: F8(decodeTuple7),
+	decodeTuple8: F9(decodeTuple8),
+
+	andThen: F2(andThen),
+	customAndThen: F2(customAndThen),
+	fail: fail,
+	succeed: succeed,
+	oneOf: oneOf,
+
+	identity: identity,
+	encodeNull: null,
+	encodeArray: _elm_lang$core$Native_Array.toJSArray,
+	encodeList: _elm_lang$core$Native_List.toArray,
+	encodeObject: encodeObject,
+
+	equality: equality
+};
+
+}();
+
+var _elm_lang$core$Json_Encode$list = _elm_lang$core$Native_Json.encodeList;
+var _elm_lang$core$Json_Encode$array = _elm_lang$core$Native_Json.encodeArray;
+var _elm_lang$core$Json_Encode$object = _elm_lang$core$Native_Json.encodeObject;
+var _elm_lang$core$Json_Encode$null = _elm_lang$core$Native_Json.encodeNull;
+var _elm_lang$core$Json_Encode$bool = _elm_lang$core$Native_Json.identity;
+var _elm_lang$core$Json_Encode$float = _elm_lang$core$Native_Json.identity;
+var _elm_lang$core$Json_Encode$int = _elm_lang$core$Native_Json.identity;
+var _elm_lang$core$Json_Encode$string = _elm_lang$core$Native_Json.identity;
+var _elm_lang$core$Json_Encode$encode = _elm_lang$core$Native_Json.encode;
+var _elm_lang$core$Json_Encode$Value = {ctor: 'Value'};
+
+var _RobertWalter83$calliope$Ports$configureAce = _elm_lang$core$Native_Platform.outgoingPort(
+	'configureAce',
+	function (v) {
+		return v;
+	});
+var _RobertWalter83$calliope$Ports$save = _elm_lang$core$Native_Platform.outgoingPort(
+	'save',
+	function (v) {
+		return v;
+	});
+var _RobertWalter83$calliope$Ports$updateEditorContent = _elm_lang$core$Native_Platform.incomingPort('updateEditorContent', _elm_lang$core$Json_Decode$string);
 
 //import Result //
 
@@ -3048,13 +4861,21 @@ function endsWith(sub, str)
 function indexes(sub, str)
 {
 	var subLen = sub.length;
+	
+	if (subLen < 1)
+	{
+		return _elm_lang$core$Native_List.Nil;
+	}
+
 	var i = 0;
 	var is = [];
+
 	while ((i = str.indexOf(sub, i)) > -1)
 	{
 		is.push(i);
 		i = i + subLen;
-	}
+	}	
+	
 	return _elm_lang$core$Native_List.fromArray(is);
 }
 
@@ -3183,6 +5004,7 @@ return {
 };
 
 }();
+
 //import Native.Utils //
 
 var _elm_lang$core$Native_Char = function() {
@@ -5457,1702 +7279,6 @@ var _rluiten$elm_date_extra$Date_Extra_Format$utcIsoString = function (date) {
 };
 var _rluiten$elm_date_extra$Date_Extra_Format$isoFormat = '%Y-%m-%dT%H:%M:%S';
 
-//import Native.List //
-
-var _elm_lang$core$Native_Array = function() {
-
-// A RRB-Tree has two distinct data types.
-// Leaf -> "height"  is always 0
-//         "table"   is an array of elements
-// Node -> "height"  is always greater than 0
-//         "table"   is an array of child nodes
-//         "lengths" is an array of accumulated lengths of the child nodes
-
-// M is the maximal table size. 32 seems fast. E is the allowed increase
-// of search steps when concatting to find an index. Lower values will
-// decrease balancing, but will increase search steps.
-var M = 32;
-var E = 2;
-
-// An empty array.
-var empty = {
-	ctor: '_Array',
-	height: 0,
-	table: []
-};
-
-
-function get(i, array)
-{
-	if (i < 0 || i >= length(array))
-	{
-		throw new Error(
-			'Index ' + i + ' is out of range. Check the length of ' +
-			'your array first or use getMaybe or getWithDefault.');
-	}
-	return unsafeGet(i, array);
-}
-
-
-function unsafeGet(i, array)
-{
-	for (var x = array.height; x > 0; x--)
-	{
-		var slot = i >> (x * 5);
-		while (array.lengths[slot] <= i)
-		{
-			slot++;
-		}
-		if (slot > 0)
-		{
-			i -= array.lengths[slot - 1];
-		}
-		array = array.table[slot];
-	}
-	return array.table[i];
-}
-
-
-// Sets the value at the index i. Only the nodes leading to i will get
-// copied and updated.
-function set(i, item, array)
-{
-	if (i < 0 || length(array) <= i)
-	{
-		return array;
-	}
-	return unsafeSet(i, item, array);
-}
-
-
-function unsafeSet(i, item, array)
-{
-	array = nodeCopy(array);
-
-	if (array.height === 0)
-	{
-		array.table[i] = item;
-	}
-	else
-	{
-		var slot = getSlot(i, array);
-		if (slot > 0)
-		{
-			i -= array.lengths[slot - 1];
-		}
-		array.table[slot] = unsafeSet(i, item, array.table[slot]);
-	}
-	return array;
-}
-
-
-function initialize(len, f)
-{
-	if (len <= 0)
-	{
-		return empty;
-	}
-	var h = Math.floor( Math.log(len) / Math.log(M) );
-	return initialize_(f, h, 0, len);
-}
-
-function initialize_(f, h, from, to)
-{
-	if (h === 0)
-	{
-		var table = new Array((to - from) % (M + 1));
-		for (var i = 0; i < table.length; i++)
-		{
-		  table[i] = f(from + i);
-		}
-		return {
-			ctor: '_Array',
-			height: 0,
-			table: table
-		};
-	}
-
-	var step = Math.pow(M, h);
-	var table = new Array(Math.ceil((to - from) / step));
-	var lengths = new Array(table.length);
-	for (var i = 0; i < table.length; i++)
-	{
-		table[i] = initialize_(f, h - 1, from + (i * step), Math.min(from + ((i + 1) * step), to));
-		lengths[i] = length(table[i]) + (i > 0 ? lengths[i-1] : 0);
-	}
-	return {
-		ctor: '_Array',
-		height: h,
-		table: table,
-		lengths: lengths
-	};
-}
-
-function fromList(list)
-{
-	if (list.ctor === '[]')
-	{
-		return empty;
-	}
-
-	// Allocate M sized blocks (table) and write list elements to it.
-	var table = new Array(M);
-	var nodes = [];
-	var i = 0;
-
-	while (list.ctor !== '[]')
-	{
-		table[i] = list._0;
-		list = list._1;
-		i++;
-
-		// table is full, so we can push a leaf containing it into the
-		// next node.
-		if (i === M)
-		{
-			var leaf = {
-				ctor: '_Array',
-				height: 0,
-				table: table
-			};
-			fromListPush(leaf, nodes);
-			table = new Array(M);
-			i = 0;
-		}
-	}
-
-	// Maybe there is something left on the table.
-	if (i > 0)
-	{
-		var leaf = {
-			ctor: '_Array',
-			height: 0,
-			table: table.splice(0, i)
-		};
-		fromListPush(leaf, nodes);
-	}
-
-	// Go through all of the nodes and eventually push them into higher nodes.
-	for (var h = 0; h < nodes.length - 1; h++)
-	{
-		if (nodes[h].table.length > 0)
-		{
-			fromListPush(nodes[h], nodes);
-		}
-	}
-
-	var head = nodes[nodes.length - 1];
-	if (head.height > 0 && head.table.length === 1)
-	{
-		return head.table[0];
-	}
-	else
-	{
-		return head;
-	}
-}
-
-// Push a node into a higher node as a child.
-function fromListPush(toPush, nodes)
-{
-	var h = toPush.height;
-
-	// Maybe the node on this height does not exist.
-	if (nodes.length === h)
-	{
-		var node = {
-			ctor: '_Array',
-			height: h + 1,
-			table: [],
-			lengths: []
-		};
-		nodes.push(node);
-	}
-
-	nodes[h].table.push(toPush);
-	var len = length(toPush);
-	if (nodes[h].lengths.length > 0)
-	{
-		len += nodes[h].lengths[nodes[h].lengths.length - 1];
-	}
-	nodes[h].lengths.push(len);
-
-	if (nodes[h].table.length === M)
-	{
-		fromListPush(nodes[h], nodes);
-		nodes[h] = {
-			ctor: '_Array',
-			height: h + 1,
-			table: [],
-			lengths: []
-		};
-	}
-}
-
-// Pushes an item via push_ to the bottom right of a tree.
-function push(item, a)
-{
-	var pushed = push_(item, a);
-	if (pushed !== null)
-	{
-		return pushed;
-	}
-
-	var newTree = create(item, a.height);
-	return siblise(a, newTree);
-}
-
-// Recursively tries to push an item to the bottom-right most
-// tree possible. If there is no space left for the item,
-// null will be returned.
-function push_(item, a)
-{
-	// Handle resursion stop at leaf level.
-	if (a.height === 0)
-	{
-		if (a.table.length < M)
-		{
-			var newA = {
-				ctor: '_Array',
-				height: 0,
-				table: a.table.slice()
-			};
-			newA.table.push(item);
-			return newA;
-		}
-		else
-		{
-		  return null;
-		}
-	}
-
-	// Recursively push
-	var pushed = push_(item, botRight(a));
-
-	// There was space in the bottom right tree, so the slot will
-	// be updated.
-	if (pushed !== null)
-	{
-		var newA = nodeCopy(a);
-		newA.table[newA.table.length - 1] = pushed;
-		newA.lengths[newA.lengths.length - 1]++;
-		return newA;
-	}
-
-	// When there was no space left, check if there is space left
-	// for a new slot with a tree which contains only the item
-	// at the bottom.
-	if (a.table.length < M)
-	{
-		var newSlot = create(item, a.height - 1);
-		var newA = nodeCopy(a);
-		newA.table.push(newSlot);
-		newA.lengths.push(newA.lengths[newA.lengths.length - 1] + length(newSlot));
-		return newA;
-	}
-	else
-	{
-		return null;
-	}
-}
-
-// Converts an array into a list of elements.
-function toList(a)
-{
-	return toList_(_elm_lang$core$Native_List.Nil, a);
-}
-
-function toList_(list, a)
-{
-	for (var i = a.table.length - 1; i >= 0; i--)
-	{
-		list =
-			a.height === 0
-				? _elm_lang$core$Native_List.Cons(a.table[i], list)
-				: toList_(list, a.table[i]);
-	}
-	return list;
-}
-
-// Maps a function over the elements of an array.
-function map(f, a)
-{
-	var newA = {
-		ctor: '_Array',
-		height: a.height,
-		table: new Array(a.table.length)
-	};
-	if (a.height > 0)
-	{
-		newA.lengths = a.lengths;
-	}
-	for (var i = 0; i < a.table.length; i++)
-	{
-		newA.table[i] =
-			a.height === 0
-				? f(a.table[i])
-				: map(f, a.table[i]);
-	}
-	return newA;
-}
-
-// Maps a function over the elements with their index as first argument.
-function indexedMap(f, a)
-{
-	return indexedMap_(f, a, 0);
-}
-
-function indexedMap_(f, a, from)
-{
-	var newA = {
-		ctor: '_Array',
-		height: a.height,
-		table: new Array(a.table.length)
-	};
-	if (a.height > 0)
-	{
-		newA.lengths = a.lengths;
-	}
-	for (var i = 0; i < a.table.length; i++)
-	{
-		newA.table[i] =
-			a.height === 0
-				? A2(f, from + i, a.table[i])
-				: indexedMap_(f, a.table[i], i == 0 ? from : from + a.lengths[i - 1]);
-	}
-	return newA;
-}
-
-function foldl(f, b, a)
-{
-	if (a.height === 0)
-	{
-		for (var i = 0; i < a.table.length; i++)
-		{
-			b = A2(f, a.table[i], b);
-		}
-	}
-	else
-	{
-		for (var i = 0; i < a.table.length; i++)
-		{
-			b = foldl(f, b, a.table[i]);
-		}
-	}
-	return b;
-}
-
-function foldr(f, b, a)
-{
-	if (a.height === 0)
-	{
-		for (var i = a.table.length; i--; )
-		{
-			b = A2(f, a.table[i], b);
-		}
-	}
-	else
-	{
-		for (var i = a.table.length; i--; )
-		{
-			b = foldr(f, b, a.table[i]);
-		}
-	}
-	return b;
-}
-
-// TODO: currently, it slices the right, then the left. This can be
-// optimized.
-function slice(from, to, a)
-{
-	if (from < 0)
-	{
-		from += length(a);
-	}
-	if (to < 0)
-	{
-		to += length(a);
-	}
-	return sliceLeft(from, sliceRight(to, a));
-}
-
-function sliceRight(to, a)
-{
-	if (to === length(a))
-	{
-		return a;
-	}
-
-	// Handle leaf level.
-	if (a.height === 0)
-	{
-		var newA = { ctor:'_Array', height:0 };
-		newA.table = a.table.slice(0, to);
-		return newA;
-	}
-
-	// Slice the right recursively.
-	var right = getSlot(to, a);
-	var sliced = sliceRight(to - (right > 0 ? a.lengths[right - 1] : 0), a.table[right]);
-
-	// Maybe the a node is not even needed, as sliced contains the whole slice.
-	if (right === 0)
-	{
-		return sliced;
-	}
-
-	// Create new node.
-	var newA = {
-		ctor: '_Array',
-		height: a.height,
-		table: a.table.slice(0, right),
-		lengths: a.lengths.slice(0, right)
-	};
-	if (sliced.table.length > 0)
-	{
-		newA.table[right] = sliced;
-		newA.lengths[right] = length(sliced) + (right > 0 ? newA.lengths[right - 1] : 0);
-	}
-	return newA;
-}
-
-function sliceLeft(from, a)
-{
-	if (from === 0)
-	{
-		return a;
-	}
-
-	// Handle leaf level.
-	if (a.height === 0)
-	{
-		var newA = { ctor:'_Array', height:0 };
-		newA.table = a.table.slice(from, a.table.length + 1);
-		return newA;
-	}
-
-	// Slice the left recursively.
-	var left = getSlot(from, a);
-	var sliced = sliceLeft(from - (left > 0 ? a.lengths[left - 1] : 0), a.table[left]);
-
-	// Maybe the a node is not even needed, as sliced contains the whole slice.
-	if (left === a.table.length - 1)
-	{
-		return sliced;
-	}
-
-	// Create new node.
-	var newA = {
-		ctor: '_Array',
-		height: a.height,
-		table: a.table.slice(left, a.table.length + 1),
-		lengths: new Array(a.table.length - left)
-	};
-	newA.table[0] = sliced;
-	var len = 0;
-	for (var i = 0; i < newA.table.length; i++)
-	{
-		len += length(newA.table[i]);
-		newA.lengths[i] = len;
-	}
-
-	return newA;
-}
-
-// Appends two trees.
-function append(a,b)
-{
-	if (a.table.length === 0)
-	{
-		return b;
-	}
-	if (b.table.length === 0)
-	{
-		return a;
-	}
-
-	var c = append_(a, b);
-
-	// Check if both nodes can be crunshed together.
-	if (c[0].table.length + c[1].table.length <= M)
-	{
-		if (c[0].table.length === 0)
-		{
-			return c[1];
-		}
-		if (c[1].table.length === 0)
-		{
-			return c[0];
-		}
-
-		// Adjust .table and .lengths
-		c[0].table = c[0].table.concat(c[1].table);
-		if (c[0].height > 0)
-		{
-			var len = length(c[0]);
-			for (var i = 0; i < c[1].lengths.length; i++)
-			{
-				c[1].lengths[i] += len;
-			}
-			c[0].lengths = c[0].lengths.concat(c[1].lengths);
-		}
-
-		return c[0];
-	}
-
-	if (c[0].height > 0)
-	{
-		var toRemove = calcToRemove(a, b);
-		if (toRemove > E)
-		{
-			c = shuffle(c[0], c[1], toRemove);
-		}
-	}
-
-	return siblise(c[0], c[1]);
-}
-
-// Returns an array of two nodes; right and left. One node _may_ be empty.
-function append_(a, b)
-{
-	if (a.height === 0 && b.height === 0)
-	{
-		return [a, b];
-	}
-
-	if (a.height !== 1 || b.height !== 1)
-	{
-		if (a.height === b.height)
-		{
-			a = nodeCopy(a);
-			b = nodeCopy(b);
-			var appended = append_(botRight(a), botLeft(b));
-
-			insertRight(a, appended[1]);
-			insertLeft(b, appended[0]);
-		}
-		else if (a.height > b.height)
-		{
-			a = nodeCopy(a);
-			var appended = append_(botRight(a), b);
-
-			insertRight(a, appended[0]);
-			b = parentise(appended[1], appended[1].height + 1);
-		}
-		else
-		{
-			b = nodeCopy(b);
-			var appended = append_(a, botLeft(b));
-
-			var left = appended[0].table.length === 0 ? 0 : 1;
-			var right = left === 0 ? 1 : 0;
-			insertLeft(b, appended[left]);
-			a = parentise(appended[right], appended[right].height + 1);
-		}
-	}
-
-	// Check if balancing is needed and return based on that.
-	if (a.table.length === 0 || b.table.length === 0)
-	{
-		return [a, b];
-	}
-
-	var toRemove = calcToRemove(a, b);
-	if (toRemove <= E)
-	{
-		return [a, b];
-	}
-	return shuffle(a, b, toRemove);
-}
-
-// Helperfunctions for append_. Replaces a child node at the side of the parent.
-function insertRight(parent, node)
-{
-	var index = parent.table.length - 1;
-	parent.table[index] = node;
-	parent.lengths[index] = length(node);
-	parent.lengths[index] += index > 0 ? parent.lengths[index - 1] : 0;
-}
-
-function insertLeft(parent, node)
-{
-	if (node.table.length > 0)
-	{
-		parent.table[0] = node;
-		parent.lengths[0] = length(node);
-
-		var len = length(parent.table[0]);
-		for (var i = 1; i < parent.lengths.length; i++)
-		{
-			len += length(parent.table[i]);
-			parent.lengths[i] = len;
-		}
-	}
-	else
-	{
-		parent.table.shift();
-		for (var i = 1; i < parent.lengths.length; i++)
-		{
-			parent.lengths[i] = parent.lengths[i] - parent.lengths[0];
-		}
-		parent.lengths.shift();
-	}
-}
-
-// Returns the extra search steps for E. Refer to the paper.
-function calcToRemove(a, b)
-{
-	var subLengths = 0;
-	for (var i = 0; i < a.table.length; i++)
-	{
-		subLengths += a.table[i].table.length;
-	}
-	for (var i = 0; i < b.table.length; i++)
-	{
-		subLengths += b.table[i].table.length;
-	}
-
-	var toRemove = a.table.length + b.table.length;
-	return toRemove - (Math.floor((subLengths - 1) / M) + 1);
-}
-
-// get2, set2 and saveSlot are helpers for accessing elements over two arrays.
-function get2(a, b, index)
-{
-	return index < a.length
-		? a[index]
-		: b[index - a.length];
-}
-
-function set2(a, b, index, value)
-{
-	if (index < a.length)
-	{
-		a[index] = value;
-	}
-	else
-	{
-		b[index - a.length] = value;
-	}
-}
-
-function saveSlot(a, b, index, slot)
-{
-	set2(a.table, b.table, index, slot);
-
-	var l = (index === 0 || index === a.lengths.length)
-		? 0
-		: get2(a.lengths, a.lengths, index - 1);
-
-	set2(a.lengths, b.lengths, index, l + length(slot));
-}
-
-// Creates a node or leaf with a given length at their arrays for perfomance.
-// Is only used by shuffle.
-function createNode(h, length)
-{
-	if (length < 0)
-	{
-		length = 0;
-	}
-	var a = {
-		ctor: '_Array',
-		height: h,
-		table: new Array(length)
-	};
-	if (h > 0)
-	{
-		a.lengths = new Array(length);
-	}
-	return a;
-}
-
-// Returns an array of two balanced nodes.
-function shuffle(a, b, toRemove)
-{
-	var newA = createNode(a.height, Math.min(M, a.table.length + b.table.length - toRemove));
-	var newB = createNode(a.height, newA.table.length - (a.table.length + b.table.length - toRemove));
-
-	// Skip the slots with size M. More precise: copy the slot references
-	// to the new node
-	var read = 0;
-	while (get2(a.table, b.table, read).table.length % M === 0)
-	{
-		set2(newA.table, newB.table, read, get2(a.table, b.table, read));
-		set2(newA.lengths, newB.lengths, read, get2(a.lengths, b.lengths, read));
-		read++;
-	}
-
-	// Pulling items from left to right, caching in a slot before writing
-	// it into the new nodes.
-	var write = read;
-	var slot = new createNode(a.height - 1, 0);
-	var from = 0;
-
-	// If the current slot is still containing data, then there will be at
-	// least one more write, so we do not break this loop yet.
-	while (read - write - (slot.table.length > 0 ? 1 : 0) < toRemove)
-	{
-		// Find out the max possible items for copying.
-		var source = get2(a.table, b.table, read);
-		var to = Math.min(M - slot.table.length, source.table.length);
-
-		// Copy and adjust size table.
-		slot.table = slot.table.concat(source.table.slice(from, to));
-		if (slot.height > 0)
-		{
-			var len = slot.lengths.length;
-			for (var i = len; i < len + to - from; i++)
-			{
-				slot.lengths[i] = length(slot.table[i]);
-				slot.lengths[i] += (i > 0 ? slot.lengths[i - 1] : 0);
-			}
-		}
-
-		from += to;
-
-		// Only proceed to next slots[i] if the current one was
-		// fully copied.
-		if (source.table.length <= to)
-		{
-			read++; from = 0;
-		}
-
-		// Only create a new slot if the current one is filled up.
-		if (slot.table.length === M)
-		{
-			saveSlot(newA, newB, write, slot);
-			slot = createNode(a.height - 1, 0);
-			write++;
-		}
-	}
-
-	// Cleanup after the loop. Copy the last slot into the new nodes.
-	if (slot.table.length > 0)
-	{
-		saveSlot(newA, newB, write, slot);
-		write++;
-	}
-
-	// Shift the untouched slots to the left
-	while (read < a.table.length + b.table.length )
-	{
-		saveSlot(newA, newB, write, get2(a.table, b.table, read));
-		read++;
-		write++;
-	}
-
-	return [newA, newB];
-}
-
-// Navigation functions
-function botRight(a)
-{
-	return a.table[a.table.length - 1];
-}
-function botLeft(a)
-{
-	return a.table[0];
-}
-
-// Copies a node for updating. Note that you should not use this if
-// only updating only one of "table" or "lengths" for performance reasons.
-function nodeCopy(a)
-{
-	var newA = {
-		ctor: '_Array',
-		height: a.height,
-		table: a.table.slice()
-	};
-	if (a.height > 0)
-	{
-		newA.lengths = a.lengths.slice();
-	}
-	return newA;
-}
-
-// Returns how many items are in the tree.
-function length(array)
-{
-	if (array.height === 0)
-	{
-		return array.table.length;
-	}
-	else
-	{
-		return array.lengths[array.lengths.length - 1];
-	}
-}
-
-// Calculates in which slot of "table" the item probably is, then
-// find the exact slot via forward searching in  "lengths". Returns the index.
-function getSlot(i, a)
-{
-	var slot = i >> (5 * a.height);
-	while (a.lengths[slot] <= i)
-	{
-		slot++;
-	}
-	return slot;
-}
-
-// Recursively creates a tree with a given height containing
-// only the given item.
-function create(item, h)
-{
-	if (h === 0)
-	{
-		return {
-			ctor: '_Array',
-			height: 0,
-			table: [item]
-		};
-	}
-	return {
-		ctor: '_Array',
-		height: h,
-		table: [create(item, h - 1)],
-		lengths: [1]
-	};
-}
-
-// Recursively creates a tree that contains the given tree.
-function parentise(tree, h)
-{
-	if (h === tree.height)
-	{
-		return tree;
-	}
-
-	return {
-		ctor: '_Array',
-		height: h,
-		table: [parentise(tree, h - 1)],
-		lengths: [length(tree)]
-	};
-}
-
-// Emphasizes blood brotherhood beneath two trees.
-function siblise(a, b)
-{
-	return {
-		ctor: '_Array',
-		height: a.height + 1,
-		table: [a, b],
-		lengths: [length(a), length(a) + length(b)]
-	};
-}
-
-function toJSArray(a)
-{
-	var jsArray = new Array(length(a));
-	toJSArray_(jsArray, 0, a);
-	return jsArray;
-}
-
-function toJSArray_(jsArray, i, a)
-{
-	for (var t = 0; t < a.table.length; t++)
-	{
-		if (a.height === 0)
-		{
-			jsArray[i + t] = a.table[t];
-		}
-		else
-		{
-			var inc = t === 0 ? 0 : a.lengths[t - 1];
-			toJSArray_(jsArray, i + inc, a.table[t]);
-		}
-	}
-}
-
-function fromJSArray(jsArray)
-{
-	if (jsArray.length === 0)
-	{
-		return empty;
-	}
-	var h = Math.floor(Math.log(jsArray.length) / Math.log(M));
-	return fromJSArray_(jsArray, h, 0, jsArray.length);
-}
-
-function fromJSArray_(jsArray, h, from, to)
-{
-	if (h === 0)
-	{
-		return {
-			ctor: '_Array',
-			height: 0,
-			table: jsArray.slice(from, to)
-		};
-	}
-
-	var step = Math.pow(M, h);
-	var table = new Array(Math.ceil((to - from) / step));
-	var lengths = new Array(table.length);
-	for (var i = 0; i < table.length; i++)
-	{
-		table[i] = fromJSArray_(jsArray, h - 1, from + (i * step), Math.min(from + ((i + 1) * step), to));
-		lengths[i] = length(table[i]) + (i > 0 ? lengths[i - 1] : 0);
-	}
-	return {
-		ctor: '_Array',
-		height: h,
-		table: table,
-		lengths: lengths
-	};
-}
-
-return {
-	empty: empty,
-	fromList: fromList,
-	toList: toList,
-	initialize: F2(initialize),
-	append: F2(append),
-	push: F2(push),
-	slice: F3(slice),
-	get: F2(get),
-	set: F3(set),
-	map: F2(map),
-	indexedMap: F2(indexedMap),
-	foldl: F3(foldl),
-	foldr: F3(foldr),
-	length: length,
-
-	toJSArray: toJSArray,
-	fromJSArray: fromJSArray
-};
-
-}();
-var _elm_lang$core$Array$append = _elm_lang$core$Native_Array.append;
-var _elm_lang$core$Array$length = _elm_lang$core$Native_Array.length;
-var _elm_lang$core$Array$isEmpty = function (array) {
-	return _elm_lang$core$Native_Utils.eq(
-		_elm_lang$core$Array$length(array),
-		0);
-};
-var _elm_lang$core$Array$slice = _elm_lang$core$Native_Array.slice;
-var _elm_lang$core$Array$set = _elm_lang$core$Native_Array.set;
-var _elm_lang$core$Array$get = F2(
-	function (i, array) {
-		return ((_elm_lang$core$Native_Utils.cmp(0, i) < 1) && (_elm_lang$core$Native_Utils.cmp(
-			i,
-			_elm_lang$core$Native_Array.length(array)) < 0)) ? _elm_lang$core$Maybe$Just(
-			A2(_elm_lang$core$Native_Array.get, i, array)) : _elm_lang$core$Maybe$Nothing;
-	});
-var _elm_lang$core$Array$push = _elm_lang$core$Native_Array.push;
-var _elm_lang$core$Array$empty = _elm_lang$core$Native_Array.empty;
-var _elm_lang$core$Array$filter = F2(
-	function (isOkay, arr) {
-		var update = F2(
-			function (x, xs) {
-				return isOkay(x) ? A2(_elm_lang$core$Native_Array.push, x, xs) : xs;
-			});
-		return A3(_elm_lang$core$Native_Array.foldl, update, _elm_lang$core$Native_Array.empty, arr);
-	});
-var _elm_lang$core$Array$foldr = _elm_lang$core$Native_Array.foldr;
-var _elm_lang$core$Array$foldl = _elm_lang$core$Native_Array.foldl;
-var _elm_lang$core$Array$indexedMap = _elm_lang$core$Native_Array.indexedMap;
-var _elm_lang$core$Array$map = _elm_lang$core$Native_Array.map;
-var _elm_lang$core$Array$toIndexedList = function (array) {
-	return A3(
-		_elm_lang$core$List$map2,
-		F2(
-			function (v0, v1) {
-				return {ctor: '_Tuple2', _0: v0, _1: v1};
-			}),
-		_elm_lang$core$Native_List.range(
-			0,
-			_elm_lang$core$Native_Array.length(array) - 1),
-		_elm_lang$core$Native_Array.toList(array));
-};
-var _elm_lang$core$Array$toList = _elm_lang$core$Native_Array.toList;
-var _elm_lang$core$Array$fromList = _elm_lang$core$Native_Array.fromList;
-var _elm_lang$core$Array$initialize = _elm_lang$core$Native_Array.initialize;
-var _elm_lang$core$Array$repeat = F2(
-	function (n, e) {
-		return A2(
-			_elm_lang$core$Array$initialize,
-			n,
-			_elm_lang$core$Basics$always(e));
-	});
-var _elm_lang$core$Array$Array = {ctor: 'Array'};
-
-//import Maybe, Native.Array, Native.List, Native.Utils, Result //
-
-var _elm_lang$core$Native_Json = function() {
-
-
-// CORE DECODERS
-
-function succeed(msg)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'succeed',
-		msg: msg
-	};
-}
-
-function fail(msg)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'fail',
-		msg: msg
-	};
-}
-
-function decodePrimitive(tag)
-{
-	return {
-		ctor: '<decoder>',
-		tag: tag
-	};
-}
-
-function decodeContainer(tag, decoder)
-{
-	return {
-		ctor: '<decoder>',
-		tag: tag,
-		decoder: decoder
-	};
-}
-
-function decodeNull(value)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'null',
-		value: value
-	};
-}
-
-function decodeField(field, decoder)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'field',
-		field: field,
-		decoder: decoder
-	};
-}
-
-function decodeKeyValuePairs(decoder)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'key-value',
-		decoder: decoder
-	};
-}
-
-function decodeObject(f, decoders)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'map-many',
-		func: f,
-		decoders: decoders
-	};
-}
-
-function decodeTuple(f, decoders)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'tuple',
-		func: f,
-		decoders: decoders
-	};
-}
-
-function andThen(decoder, callback)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'andThen',
-		decoder: decoder,
-		callback: callback
-	};
-}
-
-function customAndThen(decoder, callback)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'customAndThen',
-		decoder: decoder,
-		callback: callback
-	};
-}
-
-function oneOf(decoders)
-{
-	return {
-		ctor: '<decoder>',
-		tag: 'oneOf',
-		decoders: decoders
-	};
-}
-
-
-// DECODING OBJECTS
-
-function decodeObject1(f, d1)
-{
-	return decodeObject(f, [d1]);
-}
-
-function decodeObject2(f, d1, d2)
-{
-	return decodeObject(f, [d1, d2]);
-}
-
-function decodeObject3(f, d1, d2, d3)
-{
-	return decodeObject(f, [d1, d2, d3]);
-}
-
-function decodeObject4(f, d1, d2, d3, d4)
-{
-	return decodeObject(f, [d1, d2, d3, d4]);
-}
-
-function decodeObject5(f, d1, d2, d3, d4, d5)
-{
-	return decodeObject(f, [d1, d2, d3, d4, d5]);
-}
-
-function decodeObject6(f, d1, d2, d3, d4, d5, d6)
-{
-	return decodeObject(f, [d1, d2, d3, d4, d5, d6]);
-}
-
-function decodeObject7(f, d1, d2, d3, d4, d5, d6, d7)
-{
-	return decodeObject(f, [d1, d2, d3, d4, d5, d6, d7]);
-}
-
-function decodeObject8(f, d1, d2, d3, d4, d5, d6, d7, d8)
-{
-	return decodeObject(f, [d1, d2, d3, d4, d5, d6, d7, d8]);
-}
-
-
-// DECODING TUPLES
-
-function decodeTuple1(f, d1)
-{
-	return decodeTuple(f, [d1]);
-}
-
-function decodeTuple2(f, d1, d2)
-{
-	return decodeTuple(f, [d1, d2]);
-}
-
-function decodeTuple3(f, d1, d2, d3)
-{
-	return decodeTuple(f, [d1, d2, d3]);
-}
-
-function decodeTuple4(f, d1, d2, d3, d4)
-{
-	return decodeTuple(f, [d1, d2, d3, d4]);
-}
-
-function decodeTuple5(f, d1, d2, d3, d4, d5)
-{
-	return decodeTuple(f, [d1, d2, d3, d4, d5]);
-}
-
-function decodeTuple6(f, d1, d2, d3, d4, d5, d6)
-{
-	return decodeTuple(f, [d1, d2, d3, d4, d5, d6]);
-}
-
-function decodeTuple7(f, d1, d2, d3, d4, d5, d6, d7)
-{
-	return decodeTuple(f, [d1, d2, d3, d4, d5, d6, d7]);
-}
-
-function decodeTuple8(f, d1, d2, d3, d4, d5, d6, d7, d8)
-{
-	return decodeTuple(f, [d1, d2, d3, d4, d5, d6, d7, d8]);
-}
-
-
-// DECODE HELPERS
-
-function ok(value)
-{
-	return { tag: 'ok', value: value };
-}
-
-function badPrimitive(type, value)
-{
-	return { tag: 'primitive', type: type, value: value };
-}
-
-function badIndex(index, nestedProblems)
-{
-	return { tag: 'index', index: index, rest: nestedProblems };
-}
-
-function badField(field, nestedProblems)
-{
-	return { tag: 'field', field: field, rest: nestedProblems };
-}
-
-function badOneOf(problems)
-{
-	return { tag: 'oneOf', problems: problems };
-}
-
-function badCustom(msg)
-{
-	return { tag: 'custom', msg: msg };
-}
-
-function bad(msg)
-{
-	return { tag: 'fail', msg: msg };
-}
-
-function badToString(problem)
-{
-	var context = '_';
-	while (problem)
-	{
-		switch (problem.tag)
-		{
-			case 'primitive':
-				return 'Expecting ' + problem.type
-					+ (context === '_' ? '' : ' at ' + context)
-					+ ' but instead got: ' + jsToString(problem.value);
-
-			case 'index':
-				context += '[' + problem.index + ']';
-				problem = problem.rest;
-				break;
-
-			case 'field':
-				context += '.' + problem.field;
-				problem = problem.rest;
-				break;
-
-			case 'oneOf':
-				var problems = problem.problems;
-				for (var i = 0; i < problems.length; i++)
-				{
-					problems[i] = badToString(problems[i]);
-				}
-				return 'I ran into the following problems'
-					+ (context === '_' ? '' : ' at ' + context)
-					+ ':\n\n' + problems.join('\n');
-
-			case 'custom':
-				return 'A `customDecode` failed'
-					+ (context === '_' ? '' : ' at ' + context)
-					+ ' with the message: ' + problem.msg;
-
-			case 'fail':
-				return 'I ran into a `fail` decoder'
-					+ (context === '_' ? '' : ' at ' + context)
-					+ ': ' + problem.msg;
-		}
-	}
-}
-
-function jsToString(value)
-{
-	return value === undefined
-		? 'undefined'
-		: JSON.stringify(value);
-}
-
-
-// DECODE
-
-function runOnString(decoder, string)
-{
-	var json;
-	try
-	{
-		json = JSON.parse(string);
-	}
-	catch (e)
-	{
-		return _elm_lang$core$Result$Err('Given an invalid JSON: ' + e.message);
-	}
-	return run(decoder, json);
-}
-
-function run(decoder, value)
-{
-	var result = runHelp(decoder, value);
-	return (result.tag === 'ok')
-		? _elm_lang$core$Result$Ok(result.value)
-		: _elm_lang$core$Result$Err(badToString(result));
-}
-
-function runHelp(decoder, value)
-{
-	switch (decoder.tag)
-	{
-		case 'bool':
-			return (typeof value === 'boolean')
-				? ok(value)
-				: badPrimitive('a Bool', value);
-
-		case 'int':
-			if (typeof value !== 'number') {
-				return badPrimitive('an Int', value);
-			}
-
-			if (-2147483647 < value && value < 2147483647 && (value | 0) === value) {
-				return ok(value);
-			}
-
-			if (isFinite(value) && !(value % 1)) {
-				return ok(value);
-			}
-
-			return badPrimitive('an Int', value);
-
-		case 'float':
-			return (typeof value === 'number')
-				? ok(value)
-				: badPrimitive('a Float', value);
-
-		case 'string':
-			return (typeof value === 'string')
-				? ok(value)
-				: (value instanceof String)
-					? ok(value + '')
-					: badPrimitive('a String', value);
-
-		case 'null':
-			return (value === null)
-				? ok(decoder.value)
-				: badPrimitive('null', value);
-
-		case 'value':
-			return ok(value);
-
-		case 'list':
-			if (!(value instanceof Array))
-			{
-				return badPrimitive('a List', value);
-			}
-
-			var list = _elm_lang$core$Native_List.Nil;
-			for (var i = value.length; i--; )
-			{
-				var result = runHelp(decoder.decoder, value[i]);
-				if (result.tag !== 'ok')
-				{
-					return badIndex(i, result)
-				}
-				list = _elm_lang$core$Native_List.Cons(result.value, list);
-			}
-			return ok(list);
-
-		case 'array':
-			if (!(value instanceof Array))
-			{
-				return badPrimitive('an Array', value);
-			}
-
-			var len = value.length;
-			var array = new Array(len);
-			for (var i = len; i--; )
-			{
-				var result = runHelp(decoder.decoder, value[i]);
-				if (result.tag !== 'ok')
-				{
-					return badIndex(i, result);
-				}
-				array[i] = result.value;
-			}
-			return ok(_elm_lang$core$Native_Array.fromJSArray(array));
-
-		case 'maybe':
-			var result = runHelp(decoder.decoder, value);
-			return (result.tag === 'ok')
-				? ok(_elm_lang$core$Maybe$Just(result.value))
-				: ok(_elm_lang$core$Maybe$Nothing);
-
-		case 'field':
-			var field = decoder.field;
-			if (typeof value !== 'object' || value === null || !(field in value))
-			{
-				return badPrimitive('an object with a field named `' + field + '`', value);
-			}
-
-			var result = runHelp(decoder.decoder, value[field]);
-			return (result.tag === 'ok')
-				? result
-				: badField(field, result);
-
-		case 'key-value':
-			if (typeof value !== 'object' || value === null || value instanceof Array)
-			{
-				return badPrimitive('an object', value);
-			}
-
-			var keyValuePairs = _elm_lang$core$Native_List.Nil;
-			for (var key in value)
-			{
-				var result = runHelp(decoder.decoder, value[key]);
-				if (result.tag !== 'ok')
-				{
-					return badField(key, result);
-				}
-				var pair = _elm_lang$core$Native_Utils.Tuple2(key, result.value);
-				keyValuePairs = _elm_lang$core$Native_List.Cons(pair, keyValuePairs);
-			}
-			return ok(keyValuePairs);
-
-		case 'map-many':
-			var answer = decoder.func;
-			var decoders = decoder.decoders;
-			for (var i = 0; i < decoders.length; i++)
-			{
-				var result = runHelp(decoders[i], value);
-				if (result.tag !== 'ok')
-				{
-					return result;
-				}
-				answer = answer(result.value);
-			}
-			return ok(answer);
-
-		case 'tuple':
-			var decoders = decoder.decoders;
-			var len = decoders.length;
-
-			if ( !(value instanceof Array) || value.length !== len )
-			{
-				return badPrimitive('a Tuple with ' + len + ' entries', value);
-			}
-
-			var answer = decoder.func;
-			for (var i = 0; i < len; i++)
-			{
-				var result = runHelp(decoders[i], value[i]);
-				if (result.tag !== 'ok')
-				{
-					return badIndex(i, result);
-				}
-				answer = answer(result.value);
-			}
-			return ok(answer);
-
-		case 'customAndThen':
-			var result = runHelp(decoder.decoder, value);
-			if (result.tag !== 'ok')
-			{
-				return result;
-			}
-			var realResult = decoder.callback(result.value);
-			if (realResult.ctor === 'Err')
-			{
-				return badCustom(realResult._0);
-			}
-			return ok(realResult._0);
-
-		case 'andThen':
-			var result = runHelp(decoder.decoder, value);
-			return (result.tag !== 'ok')
-				? result
-				: runHelp(decoder.callback(result.value), value);
-
-		case 'oneOf':
-			var errors = [];
-			var temp = decoder.decoders;
-			while (temp.ctor !== '[]')
-			{
-				var result = runHelp(temp._0, value);
-
-				if (result.tag === 'ok')
-				{
-					return result;
-				}
-
-				errors.push(result);
-
-				temp = temp._1;
-			}
-			return badOneOf(errors);
-
-		case 'fail':
-			return bad(decoder.msg);
-
-		case 'succeed':
-			return ok(decoder.msg);
-	}
-}
-
-
-// EQUALITY
-
-function equality(a, b)
-{
-	if (a === b)
-	{
-		return true;
-	}
-
-	if (a.tag !== b.tag)
-	{
-		return false;
-	}
-
-	switch (a.tag)
-	{
-		case 'succeed':
-		case 'fail':
-			return a.msg === b.msg;
-
-		case 'bool':
-		case 'int':
-		case 'float':
-		case 'string':
-		case 'value':
-			return true;
-
-		case 'null':
-			return a.value === b.value;
-
-		case 'list':
-		case 'array':
-		case 'maybe':
-		case 'key-value':
-			return equality(a.decoder, b.decoder);
-
-		case 'field':
-			return a.field === b.field && equality(a.decoder, b.decoder);
-
-		case 'map-many':
-		case 'tuple':
-			if (a.func !== b.func)
-			{
-				return false;
-			}
-			return listEquality(a.decoders, b.decoders);
-
-		case 'andThen':
-		case 'customAndThen':
-			return a.callback === b.callback && equality(a.decoder, b.decoder);
-
-		case 'oneOf':
-			return listEquality(a.decoders, b.decoders);
-	}
-}
-
-function listEquality(aDecoders, bDecoders)
-{
-	var len = aDecoders.length;
-	if (len !== bDecoders.length)
-	{
-		return false;
-	}
-	for (var i = 0; i < len; i++)
-	{
-		if (!equality(aDecoders[i], bDecoders[i]))
-		{
-			return false;
-		}
-	}
-	return true;
-}
-
-
-// ENCODE
-
-function encode(indentLevel, value)
-{
-	return JSON.stringify(value, null, indentLevel);
-}
-
-function identity(value)
-{
-	return value;
-}
-
-function encodeObject(keyValuePairs)
-{
-	var obj = {};
-	while (keyValuePairs.ctor !== '[]')
-	{
-		var pair = keyValuePairs._0;
-		obj[pair._0] = pair._1;
-		keyValuePairs = keyValuePairs._1;
-	}
-	return obj;
-}
-
-return {
-	encode: F2(encode),
-	runOnString: F2(runOnString),
-	run: F2(run),
-
-	decodeNull: decodeNull,
-	decodePrimitive: decodePrimitive,
-	decodeContainer: F2(decodeContainer),
-
-	decodeField: F2(decodeField),
-
-	decodeObject1: F2(decodeObject1),
-	decodeObject2: F3(decodeObject2),
-	decodeObject3: F4(decodeObject3),
-	decodeObject4: F5(decodeObject4),
-	decodeObject5: F6(decodeObject5),
-	decodeObject6: F7(decodeObject6),
-	decodeObject7: F8(decodeObject7),
-	decodeObject8: F9(decodeObject8),
-	decodeKeyValuePairs: decodeKeyValuePairs,
-
-	decodeTuple1: F2(decodeTuple1),
-	decodeTuple2: F3(decodeTuple2),
-	decodeTuple3: F4(decodeTuple3),
-	decodeTuple4: F5(decodeTuple4),
-	decodeTuple5: F6(decodeTuple5),
-	decodeTuple6: F7(decodeTuple6),
-	decodeTuple7: F8(decodeTuple7),
-	decodeTuple8: F9(decodeTuple8),
-
-	andThen: F2(andThen),
-	customAndThen: F2(customAndThen),
-	fail: fail,
-	succeed: succeed,
-	oneOf: oneOf,
-
-	identity: identity,
-	encodeNull: null,
-	encodeArray: _elm_lang$core$Native_Array.toJSArray,
-	encodeList: _elm_lang$core$Native_List.toArray,
-	encodeObject: encodeObject,
-
-	equality: equality
-};
-
-}();
-
-var _elm_lang$core$Json_Encode$list = _elm_lang$core$Native_Json.encodeList;
-var _elm_lang$core$Json_Encode$array = _elm_lang$core$Native_Json.encodeArray;
-var _elm_lang$core$Json_Encode$object = _elm_lang$core$Native_Json.encodeObject;
-var _elm_lang$core$Json_Encode$null = _elm_lang$core$Native_Json.encodeNull;
-var _elm_lang$core$Json_Encode$bool = _elm_lang$core$Native_Json.identity;
-var _elm_lang$core$Json_Encode$float = _elm_lang$core$Native_Json.identity;
-var _elm_lang$core$Json_Encode$int = _elm_lang$core$Native_Json.identity;
-var _elm_lang$core$Json_Encode$string = _elm_lang$core$Native_Json.identity;
-var _elm_lang$core$Json_Encode$encode = _elm_lang$core$Native_Json.encode;
-var _elm_lang$core$Json_Encode$Value = {ctor: 'Value'};
-
 var _elm_lang$core$Json_Decode$tuple8 = _elm_lang$core$Native_Json.decodeTuple8;
 var _elm_lang$core$Json_Decode$tuple7 = _elm_lang$core$Native_Json.decodeTuple7;
 var _elm_lang$core$Json_Decode$tuple6 = _elm_lang$core$Native_Json.decodeTuple6;
@@ -9253,1017 +9379,6 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
-var _debois$elm_mdl$Material_Options_Internal$None = {ctor: 'None'};
-var _debois$elm_mdl$Material_Options_Internal$Set = function (a) {
-	return {ctor: 'Set', _0: a};
-};
-var _debois$elm_mdl$Material_Options_Internal$Many = function (a) {
-	return {ctor: 'Many', _0: a};
-};
-var _debois$elm_mdl$Material_Options_Internal$Attribute = function (a) {
-	return {ctor: 'Attribute', _0: a};
-};
-var _debois$elm_mdl$Material_Options_Internal$attribute = _debois$elm_mdl$Material_Options_Internal$Attribute;
-var _debois$elm_mdl$Material_Options_Internal$CSS = function (a) {
-	return {ctor: 'CSS', _0: a};
-};
-var _debois$elm_mdl$Material_Options_Internal$Class = function (a) {
-	return {ctor: 'Class', _0: a};
-};
-
-var _debois$elm_mdl$Material_Options$attribute = _debois$elm_mdl$Material_Options_Internal$Attribute;
-var _debois$elm_mdl$Material_Options$stylesheet = function (css) {
-	return A3(
-		_elm_lang$html$Html$node,
-		'style',
-		_elm_lang$core$Native_List.fromArray(
-			[]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(css)
-			]));
-};
-var _debois$elm_mdl$Material_Options$data = F2(
-	function (key, val) {
-		return _debois$elm_mdl$Material_Options_Internal$Attribute(
-			A2(
-				_elm_lang$html$Html_Attributes$attribute,
-				A2(_elm_lang$core$Basics_ops['++'], 'data-', key),
-				val));
-	});
-var _debois$elm_mdl$Material_Options$set = _debois$elm_mdl$Material_Options_Internal$Set;
-var _debois$elm_mdl$Material_Options$nop = _debois$elm_mdl$Material_Options_Internal$None;
-var _debois$elm_mdl$Material_Options$when = F2(
-	function (prop, guard) {
-		return guard ? prop : _debois$elm_mdl$Material_Options$nop;
-	});
-var _debois$elm_mdl$Material_Options$maybe = function (prop) {
-	return A2(_elm_lang$core$Maybe$withDefault, _debois$elm_mdl$Material_Options$nop, prop);
-};
-var _debois$elm_mdl$Material_Options$many = _debois$elm_mdl$Material_Options_Internal$Many;
-var _debois$elm_mdl$Material_Options$css = F2(
-	function (key, value) {
-		return _debois$elm_mdl$Material_Options_Internal$CSS(
-			{ctor: '_Tuple2', _0: key, _1: value});
-	});
-var _debois$elm_mdl$Material_Options$center = _debois$elm_mdl$Material_Options$many(
-	_elm_lang$core$Native_List.fromArray(
-		[
-			A2(_debois$elm_mdl$Material_Options$css, 'display', 'flex'),
-			A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'center'),
-			A2(_debois$elm_mdl$Material_Options$css, 'justify-content', 'center')
-		]));
-var _debois$elm_mdl$Material_Options$scrim = function (opacity) {
-	return A2(
-		_debois$elm_mdl$Material_Options$css,
-		'background',
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, ',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(opacity),
-				'))')));
-};
-var _debois$elm_mdl$Material_Options$cs = function (c) {
-	return _debois$elm_mdl$Material_Options_Internal$Class(c);
-};
-var _debois$elm_mdl$Material_Options$disabled = function (v) {
-	return _debois$elm_mdl$Material_Options_Internal$Attribute(
-		_elm_lang$html$Html_Attributes$disabled(v));
-};
-var _debois$elm_mdl$Material_Options$addAttributes = F2(
-	function (summary, attrs) {
-		return _elm_lang$core$List$concat(
-			_elm_lang$core$Native_List.fromArray(
-				[
-					attrs,
-					_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$style(summary.css)
-					]),
-					_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html_Attributes$class(
-						A2(_elm_lang$core$String$join, ' ', summary.classes))
-					]),
-					summary.attrs
-				]));
-	});
-var _debois$elm_mdl$Material_Options$collect1 = F3(
-	function (f, option, acc) {
-		var _p0 = option;
-		switch (_p0.ctor) {
-			case 'Class':
-				return _elm_lang$core$Native_Utils.update(
-					acc,
-					{
-						classes: A2(_elm_lang$core$List_ops['::'], _p0._0, acc.classes)
-					});
-			case 'CSS':
-				return _elm_lang$core$Native_Utils.update(
-					acc,
-					{
-						css: A2(_elm_lang$core$List_ops['::'], _p0._0, acc.css)
-					});
-			case 'Attribute':
-				return _elm_lang$core$Native_Utils.update(
-					acc,
-					{
-						attrs: A2(_elm_lang$core$List_ops['::'], _p0._0, acc.attrs)
-					});
-			case 'Many':
-				return A3(
-					_elm_lang$core$List$foldl,
-					_debois$elm_mdl$Material_Options$collect1(f),
-					acc,
-					_p0._0);
-			case 'Set':
-				return _elm_lang$core$Native_Utils.update(
-					acc,
-					{
-						config: A2(f, _p0._0, acc.config)
-					});
-			default:
-				return acc;
-		}
-	});
-var _debois$elm_mdl$Material_Options$recollect = _elm_lang$core$List$foldl(
-	_debois$elm_mdl$Material_Options$collect1(
-		F2(
-			function (x, y) {
-				return x(y);
-			})));
-var _debois$elm_mdl$Material_Options$collect = function (config0) {
-	return _debois$elm_mdl$Material_Options$recollect(
-		{
-			classes: _elm_lang$core$Native_List.fromArray(
-				[]),
-			css: _elm_lang$core$Native_List.fromArray(
-				[]),
-			attrs: _elm_lang$core$Native_List.fromArray(
-				[]),
-			config: config0
-		});
-};
-var _debois$elm_mdl$Material_Options$apply = F4(
-	function (summary, ctor, options, attrs) {
-		return ctor(
-			A2(
-				_debois$elm_mdl$Material_Options$addAttributes,
-				A2(_debois$elm_mdl$Material_Options$recollect, summary, options),
-				attrs));
-	});
-var _debois$elm_mdl$Material_Options$collect$ = function (options) {
-	return A3(
-		_elm_lang$core$List$foldl,
-		_debois$elm_mdl$Material_Options$collect1(
-			F2(
-				function (_p2, _p1) {
-					return {ctor: '_Tuple0'};
-				})),
-		{
-			classes: _elm_lang$core$Native_List.fromArray(
-				[]),
-			css: _elm_lang$core$Native_List.fromArray(
-				[]),
-			attrs: _elm_lang$core$Native_List.fromArray(
-				[]),
-			config: {ctor: '_Tuple0'}
-		},
-		options);
-};
-var _debois$elm_mdl$Material_Options$styled = F2(
-	function (ctor, props) {
-		return ctor(
-			A2(
-				_debois$elm_mdl$Material_Options$addAttributes,
-				_debois$elm_mdl$Material_Options$collect$(props),
-				_elm_lang$core$Native_List.fromArray(
-					[])));
-	});
-var _debois$elm_mdl$Material_Options$div = _debois$elm_mdl$Material_Options$styled(_elm_lang$html$Html$div);
-var _debois$elm_mdl$Material_Options$span = _debois$elm_mdl$Material_Options$styled(_elm_lang$html$Html$span);
-var _debois$elm_mdl$Material_Options$styled$ = F3(
-	function (ctor, props, attrs) {
-		return ctor(
-			A2(
-				_debois$elm_mdl$Material_Options$addAttributes,
-				_debois$elm_mdl$Material_Options$collect$(props),
-				attrs));
-	});
-var _debois$elm_mdl$Material_Options$img = F2(
-	function (options, attrs) {
-		return A4(
-			_debois$elm_mdl$Material_Options$styled$,
-			_elm_lang$html$Html$img,
-			options,
-			attrs,
-			_elm_lang$core$Native_List.fromArray(
-				[]));
-	});
-var _debois$elm_mdl$Material_Options$Summary = F4(
-	function (a, b, c, d) {
-		return {classes: a, css: b, attrs: c, config: d};
-	});
-
-var _debois$elm_mdl$Material_Grid$clip = F3(
-	function (lower, upper, k) {
-		return A2(
-			_elm_lang$core$Basics$max,
-			lower,
-			A2(_elm_lang$core$Basics$min, k, upper));
-	});
-var _debois$elm_mdl$Material_Grid$stretch = _debois$elm_mdl$Material_Options$cs('mdl-cell--stretch');
-var _debois$elm_mdl$Material_Grid$align = function (a) {
-	var _p0 = a;
-	switch (_p0.ctor) {
-		case 'Top':
-			return _debois$elm_mdl$Material_Options$cs('mdl-cell--top');
-		case 'Middle':
-			return _debois$elm_mdl$Material_Options$cs('mdl-cell--middle');
-		default:
-			return _debois$elm_mdl$Material_Options$cs('mdl-cell--bottom');
-	}
-};
-var _debois$elm_mdl$Material_Grid$suffix = function (device) {
-	var _p1 = device;
-	switch (_p1.ctor) {
-		case 'All':
-			return '';
-		case 'Desktop':
-			return '-desktop';
-		case 'Tablet':
-			return '-tablet';
-		default:
-			return '-phone';
-	}
-};
-var _debois$elm_mdl$Material_Grid$size = F2(
-	function (device, k) {
-		var c = function () {
-			var _p2 = device;
-			switch (_p2.ctor) {
-				case 'All':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
-				case 'Desktop':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
-				case 'Tablet':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 8, k);
-				default:
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 4, k);
-			}
-		}();
-		return _debois$elm_mdl$Material_Options$cs(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'mdl-cell--',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(c),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'-col',
-						_debois$elm_mdl$Material_Grid$suffix(device)))));
-	});
-var _debois$elm_mdl$Material_Grid$offset = F2(
-	function (device, k) {
-		var c = function () {
-			var _p3 = device;
-			switch (_p3.ctor) {
-				case 'All':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 11, k);
-				case 'Desktop':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 11, k);
-				case 'Tablet':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 7, k);
-				default:
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 3, k);
-			}
-		}();
-		return _debois$elm_mdl$Material_Options$cs(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'mdl-cell--',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(c),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'-offset',
-						_debois$elm_mdl$Material_Grid$suffix(device)))));
-	});
-var _debois$elm_mdl$Material_Grid$hide = function (device) {
-	return _debois$elm_mdl$Material_Options$cs(
-		function () {
-			var _p4 = device;
-			if (_p4.ctor === 'All') {
-				return '';
-			} else {
-				return A2(
-					_elm_lang$core$Basics_ops['++'],
-					'mdl-cell--hide-',
-					_debois$elm_mdl$Material_Grid$suffix(device));
-			}
-		}());
-};
-var _debois$elm_mdl$Material_Grid$order = F2(
-	function (device, n) {
-		return _debois$elm_mdl$Material_Options$cs(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'mdl-cell--order-',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(
-						A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, n)),
-					_debois$elm_mdl$Material_Grid$suffix(device))));
-	});
-var _debois$elm_mdl$Material_Grid$grid = F2(
-	function (styling, cells) {
-		return A2(
-			_debois$elm_mdl$Material_Options$div,
-			A2(
-				_elm_lang$core$List_ops['::'],
-				_debois$elm_mdl$Material_Options$cs('mdl-grid'),
-				styling),
-			A2(
-				_elm_lang$core$List$map,
-				function (_p5) {
-					var _p6 = _p5;
-					return _p6._0;
-				},
-				cells));
-	});
-var _debois$elm_mdl$Material_Grid$maxWidth = function (w) {
-	return A2(_debois$elm_mdl$Material_Options$css, 'max-width', w);
-};
-var _debois$elm_mdl$Material_Grid$noSpacing = _debois$elm_mdl$Material_Options$cs('mdl-grid--no-spacing');
-var _debois$elm_mdl$Material_Grid$Phone = {ctor: 'Phone'};
-var _debois$elm_mdl$Material_Grid$Tablet = {ctor: 'Tablet'};
-var _debois$elm_mdl$Material_Grid$Desktop = {ctor: 'Desktop'};
-var _debois$elm_mdl$Material_Grid$All = {ctor: 'All'};
-var _debois$elm_mdl$Material_Grid$Cell = function (a) {
-	return {ctor: 'Cell', _0: a};
-};
-var _debois$elm_mdl$Material_Grid$cell = F2(
-	function (styling, elms) {
-		return _debois$elm_mdl$Material_Grid$Cell(
-			A2(
-				_debois$elm_mdl$Material_Options$div,
-				A2(
-					_elm_lang$core$List_ops['::'],
-					_debois$elm_mdl$Material_Options$cs('mdl-cell'),
-					styling),
-				elms));
-	});
-var _debois$elm_mdl$Material_Grid$Bottom = {ctor: 'Bottom'};
-var _debois$elm_mdl$Material_Grid$Middle = {ctor: 'Middle'};
-var _debois$elm_mdl$Material_Grid$Top = {ctor: 'Top'};
-
-var _debois$elm_mdl$Material_Color$text = function (_p0) {
-	var _p1 = _p0;
-	return _debois$elm_mdl$Material_Options$cs(
-		A2(_elm_lang$core$Basics_ops['++'], 'mdl-color-text--', _p1._0));
-};
-var _debois$elm_mdl$Material_Color$background = function (_p2) {
-	var _p3 = _p2;
-	return _debois$elm_mdl$Material_Options$cs(
-		A2(_elm_lang$core$Basics_ops['++'], 'mdl-color--', _p3._0));
-};
-var _debois$elm_mdl$Material_Color$shadeName = function (shade) {
-	var _p4 = shade;
-	switch (_p4.ctor) {
-		case 'S50':
-			return '50';
-		case 'S100':
-			return '100';
-		case 'S200':
-			return '200';
-		case 'S300':
-			return '300';
-		case 'S400':
-			return '400';
-		case 'S500':
-			return '500';
-		case 'S600':
-			return '600';
-		case 'S700':
-			return '700';
-		case 'S800':
-			return '800';
-		case 'S900':
-			return '900';
-		case 'A100':
-			return 'A100';
-		case 'A200':
-			return 'A200';
-		case 'A400':
-			return 'A400';
-		default:
-			return 'A700';
-	}
-};
-var _debois$elm_mdl$Material_Color$hueName = function (color) {
-	var _p5 = color;
-	switch (_p5.ctor) {
-		case 'Indigo':
-			return 'indigo';
-		case 'Blue':
-			return 'blue';
-		case 'LightBlue':
-			return 'light-blue';
-		case 'Cyan':
-			return 'cyan';
-		case 'Teal':
-			return 'teal';
-		case 'Green':
-			return 'green';
-		case 'LightGreen':
-			return 'light-green';
-		case 'Lime':
-			return 'lime';
-		case 'Yellow':
-			return 'yellow';
-		case 'Amber':
-			return 'amber';
-		case 'Orange':
-			return 'orange';
-		case 'Brown':
-			return 'brown';
-		case 'BlueGrey':
-			return 'blue-grey';
-		case 'Grey':
-			return 'grey';
-		case 'DeepOrange':
-			return 'deep-orange';
-		case 'Red':
-			return 'red';
-		case 'Pink':
-			return 'pink';
-		case 'Purple':
-			return 'purple';
-		default:
-			return 'deep-purple';
-	}
-};
-var _debois$elm_mdl$Material_Color$scheme = F2(
-	function (primary, accent) {
-		var q = _elm_lang$core$String$map(
-			function (x) {
-				return _elm_lang$core$Native_Utils.eq(
-					x,
-					_elm_lang$core$Native_Utils.chr('-')) ? _elm_lang$core$Native_Utils.chr('_') : x;
-			});
-		var cssFile = function () {
-			var _p6 = accent;
-			switch (_p6.ctor) {
-				case 'Grey':
-					return '';
-				case 'Brown':
-					return '';
-				case 'BlueGrey':
-					return '';
-				default:
-					return A2(
-						_elm_lang$core$Basics_ops['++'],
-						'.',
-						A2(
-							_elm_lang$core$Basics_ops['++'],
-							q(
-								_debois$elm_mdl$Material_Color$hueName(primary)),
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'-',
-								q(
-									_debois$elm_mdl$Material_Color$hueName(accent)))));
-			}
-		}();
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			'material',
-			A2(_elm_lang$core$Basics_ops['++'], cssFile, '.min.css'));
-	});
-var _debois$elm_mdl$Material_Color$DeepPurple = {ctor: 'DeepPurple'};
-var _debois$elm_mdl$Material_Color$Purple = {ctor: 'Purple'};
-var _debois$elm_mdl$Material_Color$Pink = {ctor: 'Pink'};
-var _debois$elm_mdl$Material_Color$Red = {ctor: 'Red'};
-var _debois$elm_mdl$Material_Color$DeepOrange = {ctor: 'DeepOrange'};
-var _debois$elm_mdl$Material_Color$Grey = {ctor: 'Grey'};
-var _debois$elm_mdl$Material_Color$BlueGrey = {ctor: 'BlueGrey'};
-var _debois$elm_mdl$Material_Color$Brown = {ctor: 'Brown'};
-var _debois$elm_mdl$Material_Color$Orange = {ctor: 'Orange'};
-var _debois$elm_mdl$Material_Color$Amber = {ctor: 'Amber'};
-var _debois$elm_mdl$Material_Color$Yellow = {ctor: 'Yellow'};
-var _debois$elm_mdl$Material_Color$Lime = {ctor: 'Lime'};
-var _debois$elm_mdl$Material_Color$LightGreen = {ctor: 'LightGreen'};
-var _debois$elm_mdl$Material_Color$Green = {ctor: 'Green'};
-var _debois$elm_mdl$Material_Color$Teal = {ctor: 'Teal'};
-var _debois$elm_mdl$Material_Color$Cyan = {ctor: 'Cyan'};
-var _debois$elm_mdl$Material_Color$LightBlue = {ctor: 'LightBlue'};
-var _debois$elm_mdl$Material_Color$Blue = {ctor: 'Blue'};
-var _debois$elm_mdl$Material_Color$Indigo = {ctor: 'Indigo'};
-var _debois$elm_mdl$Material_Color$hues = _elm_lang$core$Array$fromList(
-	_elm_lang$core$Native_List.fromArray(
-		[_debois$elm_mdl$Material_Color$Indigo, _debois$elm_mdl$Material_Color$Blue, _debois$elm_mdl$Material_Color$LightBlue, _debois$elm_mdl$Material_Color$Cyan, _debois$elm_mdl$Material_Color$Teal, _debois$elm_mdl$Material_Color$Green, _debois$elm_mdl$Material_Color$LightGreen, _debois$elm_mdl$Material_Color$Lime, _debois$elm_mdl$Material_Color$Yellow, _debois$elm_mdl$Material_Color$Amber, _debois$elm_mdl$Material_Color$Orange, _debois$elm_mdl$Material_Color$Brown, _debois$elm_mdl$Material_Color$BlueGrey, _debois$elm_mdl$Material_Color$Grey, _debois$elm_mdl$Material_Color$DeepOrange, _debois$elm_mdl$Material_Color$Red, _debois$elm_mdl$Material_Color$Pink, _debois$elm_mdl$Material_Color$Purple, _debois$elm_mdl$Material_Color$DeepPurple]));
-var _debois$elm_mdl$Material_Color$accentHues = _elm_lang$core$Array$fromList(
-	_elm_lang$core$Native_List.fromArray(
-		[_debois$elm_mdl$Material_Color$Indigo, _debois$elm_mdl$Material_Color$Blue, _debois$elm_mdl$Material_Color$LightBlue, _debois$elm_mdl$Material_Color$Cyan, _debois$elm_mdl$Material_Color$Teal, _debois$elm_mdl$Material_Color$Green, _debois$elm_mdl$Material_Color$LightGreen, _debois$elm_mdl$Material_Color$Lime, _debois$elm_mdl$Material_Color$Yellow, _debois$elm_mdl$Material_Color$Amber, _debois$elm_mdl$Material_Color$Orange, _debois$elm_mdl$Material_Color$DeepOrange, _debois$elm_mdl$Material_Color$Red, _debois$elm_mdl$Material_Color$Pink, _debois$elm_mdl$Material_Color$Purple, _debois$elm_mdl$Material_Color$DeepPurple]));
-var _debois$elm_mdl$Material_Color$A700 = {ctor: 'A700'};
-var _debois$elm_mdl$Material_Color$A400 = {ctor: 'A400'};
-var _debois$elm_mdl$Material_Color$A200 = {ctor: 'A200'};
-var _debois$elm_mdl$Material_Color$A100 = {ctor: 'A100'};
-var _debois$elm_mdl$Material_Color$S900 = {ctor: 'S900'};
-var _debois$elm_mdl$Material_Color$S800 = {ctor: 'S800'};
-var _debois$elm_mdl$Material_Color$S700 = {ctor: 'S700'};
-var _debois$elm_mdl$Material_Color$S600 = {ctor: 'S600'};
-var _debois$elm_mdl$Material_Color$S500 = {ctor: 'S500'};
-var _debois$elm_mdl$Material_Color$S400 = {ctor: 'S400'};
-var _debois$elm_mdl$Material_Color$S300 = {ctor: 'S300'};
-var _debois$elm_mdl$Material_Color$S200 = {ctor: 'S200'};
-var _debois$elm_mdl$Material_Color$S100 = {ctor: 'S100'};
-var _debois$elm_mdl$Material_Color$S50 = {ctor: 'S50'};
-var _debois$elm_mdl$Material_Color$shades = _elm_lang$core$Array$fromList(
-	_elm_lang$core$Native_List.fromArray(
-		[_debois$elm_mdl$Material_Color$S50, _debois$elm_mdl$Material_Color$S100, _debois$elm_mdl$Material_Color$S200, _debois$elm_mdl$Material_Color$S300, _debois$elm_mdl$Material_Color$S400, _debois$elm_mdl$Material_Color$S500, _debois$elm_mdl$Material_Color$S600, _debois$elm_mdl$Material_Color$S700, _debois$elm_mdl$Material_Color$S800, _debois$elm_mdl$Material_Color$S900, _debois$elm_mdl$Material_Color$A100, _debois$elm_mdl$Material_Color$A200, _debois$elm_mdl$Material_Color$A400, _debois$elm_mdl$Material_Color$A700]));
-var _debois$elm_mdl$Material_Color$C = function (a) {
-	return {ctor: 'C', _0: a};
-};
-var _debois$elm_mdl$Material_Color$color = F2(
-	function (hue, shade) {
-		return _debois$elm_mdl$Material_Color$C(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_debois$elm_mdl$Material_Color$hueName(hue),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					'-',
-					_debois$elm_mdl$Material_Color$shadeName(shade))));
-	});
-var _debois$elm_mdl$Material_Color$white = _debois$elm_mdl$Material_Color$C('white');
-var _debois$elm_mdl$Material_Color$black = _debois$elm_mdl$Material_Color$C('black');
-var _debois$elm_mdl$Material_Color$primary = _debois$elm_mdl$Material_Color$C('primary');
-var _debois$elm_mdl$Material_Color$primaryDark = _debois$elm_mdl$Material_Color$C('primary-dark');
-var _debois$elm_mdl$Material_Color$primaryContrast = _debois$elm_mdl$Material_Color$C('primary-contrast');
-var _debois$elm_mdl$Material_Color$accent = _debois$elm_mdl$Material_Color$C('accent');
-var _debois$elm_mdl$Material_Color$accentContrast = _debois$elm_mdl$Material_Color$C('accent-contrast');
-
-var _debois$elm_mdl$Material_Elevation$transition = function (duration) {
-	return A2(
-		_debois$elm_mdl$Material_Options$css,
-		'transition',
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'box-shadow ',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(duration),
-				'ms ease-in-out 0s')));
-};
-var _debois$elm_mdl$Material_Elevation$e0 = _debois$elm_mdl$Material_Options$nop;
-var _debois$elm_mdl$Material_Elevation$shadow = function (z) {
-	return _debois$elm_mdl$Material_Options$cs(
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'mdl-shadow--',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(z),
-				'dp')));
-};
-var _debois$elm_mdl$Material_Elevation$e2 = _debois$elm_mdl$Material_Elevation$shadow(2);
-var _debois$elm_mdl$Material_Elevation$e3 = _debois$elm_mdl$Material_Elevation$shadow(3);
-var _debois$elm_mdl$Material_Elevation$e4 = _debois$elm_mdl$Material_Elevation$shadow(4);
-var _debois$elm_mdl$Material_Elevation$e6 = _debois$elm_mdl$Material_Elevation$shadow(6);
-var _debois$elm_mdl$Material_Elevation$e8 = _debois$elm_mdl$Material_Elevation$shadow(8);
-var _debois$elm_mdl$Material_Elevation$e16 = _debois$elm_mdl$Material_Elevation$shadow(16);
-var _debois$elm_mdl$Material_Elevation$e24 = _debois$elm_mdl$Material_Elevation$shadow(24);
-var _debois$elm_mdl$Material_Elevation$elevations = _elm_lang$core$Array$fromList(
-	_elm_lang$core$Native_List.fromArray(
-		[
-			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e0, _1: 0},
-			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e2, _1: 2},
-			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e3, _1: 3},
-			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e4, _1: 4},
-			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e6, _1: 6},
-			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e8, _1: 8},
-			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e16, _1: 16},
-			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e24, _1: 24}
-		]));
-
-var _RobertWalter83$calliope$Util$withMaxWidth = F2(
-	function (maxWidth, cssProps) {
-		return A2(
-			_elm_lang$core$Basics_ops['++'],
-			cssProps,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(
-					_debois$elm_mdl$Material_Options$css,
-					'max-width',
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						_elm_lang$core$Basics$toString(maxWidth),
-						'px'))
-				]));
-	});
-var _RobertWalter83$calliope$Util$boxed = function (_p0) {
-	var _p1 = _p0;
-	var stTopBottom = A2(
-		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Basics$toString(_p1._1),
-		'px');
-	var stSides = A2(
-		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Basics$toString(_p1._0),
-		'px');
-	return _elm_lang$core$Native_List.fromArray(
-		[
-			A2(_debois$elm_mdl$Material_Options$css, 'margin', 'auto'),
-			A2(_debois$elm_mdl$Material_Options$css, 'padding-left', stSides),
-			A2(_debois$elm_mdl$Material_Options$css, 'padding-right', stSides),
-			A2(_debois$elm_mdl$Material_Options$css, 'padding-top', stTopBottom),
-			A2(_debois$elm_mdl$Material_Options$css, 'padding-bottom', stTopBottom)
-		]);
-};
-var _RobertWalter83$calliope$Util$boxedDefault = _RobertWalter83$calliope$Util$boxed(
-	{ctor: '_Tuple2', _0: 80, _1: 20});
-
-var _RobertWalter83$calliope$Calliope$encodeTier = function (tier) {
-	return _elm_lang$core$Json_Encode$object(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				{
-				ctor: '_Tuple2',
-				_0: 'id',
-				_1: _elm_lang$core$Json_Encode$string(tier.id)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'name',
-				_1: _elm_lang$core$Json_Encode$string(tier.name)
-			}
-			]));
-};
-var _RobertWalter83$calliope$Calliope$encodeStructure = function (structure) {
-	return _elm_lang$core$Json_Encode$object(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				{
-				ctor: '_Tuple2',
-				_0: 'tierList',
-				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Calliope$encodeTier, structure.tierList))
-			}
-			]));
-};
-var _RobertWalter83$calliope$Calliope$encodeScript = function (script) {
-	return _elm_lang$core$Json_Encode$object(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				{
-				ctor: '_Tuple2',
-				_0: 'content',
-				_1: _elm_lang$core$Json_Encode$string(script.content)
-			}
-			]));
-};
-var _RobertWalter83$calliope$Calliope$encodeProject = function (project) {
-	return _elm_lang$core$Json_Encode$object(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				{
-				ctor: '_Tuple2',
-				_0: 'title',
-				_1: _elm_lang$core$Json_Encode$string(project.title)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'script',
-				_1: _RobertWalter83$calliope$Calliope$encodeScript(project.script)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'structure',
-				_1: _RobertWalter83$calliope$Calliope$encodeStructure(project.structure)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'dateCreated',
-				_1: _elm_lang$core$Json_Encode$string(project.dateCreated)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'timeCreated',
-				_1: _elm_lang$core$Json_Encode$string(project.timeCreated)
-			}
-			]));
-};
-var _RobertWalter83$calliope$Calliope$title = function (t) {
-	return A3(
-		_debois$elm_mdl$Material_Options$styled,
-		_elm_lang$html$Html$h1,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$primary)
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(t)
-			]));
-};
-var _RobertWalter83$calliope$Calliope$cellFromTier = F2(
-	function (gridWidth, tier) {
-		return A2(
-			_debois$elm_mdl$Material_Grid$cell,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, gridWidth),
-					A2(_debois$elm_mdl$Material_Options$css, 'height', '200px')
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html$text(
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'Description of ',
-						A2(_elm_lang$core$Basics_ops['++'], tier.name, ' goes here!.')))
-				]));
-	});
-var _RobertWalter83$calliope$Calliope$cells = F2(
-	function (gridWidth, project) {
-		return A2(
-			_elm_lang$core$List$map,
-			_RobertWalter83$calliope$Calliope$cellFromTier(gridWidth),
-			project.structure.tierList);
-	});
-var _RobertWalter83$calliope$Calliope$widthFromTierList = function (tierList) {
-	var width = A2(
-		F2(
-			function (x, y) {
-				return (x / y) | 0;
-			}),
-		12,
-		A2(
-			F2(
-				function (x, y) {
-					return x + y;
-				}),
-			1,
-			_elm_lang$core$List$length(tierList)));
-	return (_elm_lang$core$Native_Utils.cmp(width, 3) < 0) ? 3 : width;
-};
-var _RobertWalter83$calliope$Calliope$cellHeader = F2(
-	function (gridWidth, stHeader) {
-		return A2(
-			_debois$elm_mdl$Material_Grid$cell,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, gridWidth)
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A3(
-					_debois$elm_mdl$Material_Options$styled,
-					_elm_lang$html$Html$h5,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$accent)
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html$text(stHeader)
-						]))
-				]));
-	});
-var _RobertWalter83$calliope$Calliope$cellHeaderFromTier = F2(
-	function (gridWidth, tier) {
-		return A2(_RobertWalter83$calliope$Calliope$cellHeader, gridWidth, tier.name);
-	});
-var _RobertWalter83$calliope$Calliope$cellHeaders = F2(
-	function (gridWidth, project) {
-		return A2(
-			_elm_lang$core$List$map,
-			_RobertWalter83$calliope$Calliope$cellHeaderFromTier(gridWidth),
-			project.structure.tierList);
-	});
-var _RobertWalter83$calliope$Calliope$renderStructure = function (project) {
-	var gridWidth = _RobertWalter83$calliope$Calliope$widthFromTierList(project.structure.tierList);
-	return A2(
-		_debois$elm_mdl$Material_Options$div,
-		_RobertWalter83$calliope$Util$boxedDefault,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_debois$elm_mdl$Material_Grid$grid,
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_RobertWalter83$calliope$Util$boxed(
-						{ctor: '_Tuple2', _0: 12, _1: 0}),
-					_elm_lang$core$Native_List.fromArray(
-						[_debois$elm_mdl$Material_Grid$noSpacing])),
-				A2(
-					_elm_lang$core$List$append,
-					A2(_RobertWalter83$calliope$Calliope$cellHeaders, gridWidth, project),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(_RobertWalter83$calliope$Calliope$cellHeader, gridWidth, 'Statistics')
-						]))),
-				A2(
-				_debois$elm_mdl$Material_Grid$grid,
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_RobertWalter83$calliope$Util$boxed(
-						{ctor: '_Tuple2', _0: 12, _1: 12}),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_debois$elm_mdl$Material_Grid$noSpacing,
-							_debois$elm_mdl$Material_Elevation$e6,
-							_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
-						])),
-				A2(_RobertWalter83$calliope$Calliope$cells, gridWidth, project))
-			]));
-};
-var _RobertWalter83$calliope$Calliope$updateScript = F2(
-	function (script, contentNew) {
-		return _elm_lang$core$Native_Utils.update(
-			script,
-			{content: contentNew});
-	});
-var _RobertWalter83$calliope$Calliope$updateProject = F2(
-	function (project, contentNew) {
-		return _elm_lang$core$Native_Utils.update(
-			project,
-			{
-				script: A2(_RobertWalter83$calliope$Calliope$updateScript, project.script, contentNew)
-			});
-	});
-var _RobertWalter83$calliope$Calliope$defaultStructure = {
-	tierList: _elm_lang$core$Native_List.fromArray(
-		[
-			{id: 'Scenes', name: 'Scenes'},
-			{id: 'Scripts', name: 'Scripts'}
-		])
-};
-var _RobertWalter83$calliope$Calliope$toStringTime = function (date) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Basics$toString(
-			_elm_lang$core$Date$hour(date)),
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			':',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(
-					_elm_lang$core$Date$minute(date)),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					':',
-					_elm_lang$core$Basics$toString(
-						_elm_lang$core$Date$second(date))))));
-};
-var _RobertWalter83$calliope$Calliope$toStringDate = function (date) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Basics$toString(
-			_elm_lang$core$Date$day(date)),
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(
-					_elm_lang$core$Date$month(date)),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					'/',
-					_elm_lang$core$Basics$toString(
-						_elm_lang$core$Date$year(date))))));
-};
-var _RobertWalter83$calliope$Calliope$createProject = function (timeNow) {
-	return {
-		title: 'New Project',
-		dateCreated: A3(
-			_rluiten$elm_date_extra$Date_Extra_Format$format,
-			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
-			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.date,
-			_elm_lang$core$Date$fromTime(timeNow)),
-		timeCreated: A3(
-			_rluiten$elm_date_extra$Date_Extra_Format$format,
-			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
-			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.time,
-			_elm_lang$core$Date$fromTime(timeNow)),
-		script: {content: ''},
-		structure: _RobertWalter83$calliope$Calliope$defaultStructure
-	};
-};
-var _RobertWalter83$calliope$Calliope$defaultProject = {
-	title: 'New Project',
-	dateCreated: '1/1/1990',
-	timeCreated: '12:00:00',
-	script: {content: ''},
-	structure: _RobertWalter83$calliope$Calliope$defaultStructure
-};
-var _RobertWalter83$calliope$Calliope$Project = F5(
-	function (a, b, c, d, e) {
-		return {title: a, dateCreated: b, timeCreated: c, script: d, structure: e};
-	});
-var _RobertWalter83$calliope$Calliope$Script = function (a) {
-	return {content: a};
-};
-var _RobertWalter83$calliope$Calliope$Scene = F2(
-	function (a, b) {
-		return {name: a, location: b};
-	});
-var _RobertWalter83$calliope$Calliope$Structure = function (a) {
-	return {tierList: a};
-};
-var _RobertWalter83$calliope$Calliope$Tier = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _RobertWalter83$calliope$Calliope$EditorReady = {ctor: 'EditorReady'};
-var _RobertWalter83$calliope$Calliope$renderScript = F2(
-	function (script, refresh) {
-		return A3(
-			_elm_lang$html$Html$node,
-			'juicy-ace-editor',
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html_Attributes$id('editor-container'),
-					A2(
-					_elm_lang$html$Html_Events$on,
-					'editor-ready',
-					_elm_lang$core$Json_Decode$succeed(_RobertWalter83$calliope$Calliope$EditorReady))
-				]),
-			refresh ? _elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html$text(script.content)
-				]) : _elm_lang$core$Native_List.fromArray(
-				[]));
-	});
-var _RobertWalter83$calliope$Calliope$renderDialog = F2(
-	function (project, refresh) {
-		return A2(
-			_debois$elm_mdl$Material_Options$div,
-			A2(_RobertWalter83$calliope$Util$withMaxWidth, 812, _RobertWalter83$calliope$Util$boxedDefault),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(
-					_debois$elm_mdl$Material_Options$div,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_debois$elm_mdl$Material_Elevation$e6,
-							A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px'),
-							A2(_debois$elm_mdl$Material_Options$css, 'position', 'relative'),
-							_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(_RobertWalter83$calliope$Calliope$renderScript, project.script, refresh)
-						]))
-				]));
-	});
-
-var _elm_lang$html$Html_App$programWithFlags = _elm_lang$virtual_dom$VirtualDom$programWithFlags;
-var _elm_lang$html$Html_App$program = function (app) {
-	return _elm_lang$html$Html_App$programWithFlags(
-		_elm_lang$core$Native_Utils.update(
-			app,
-			{
-				init: function (_p0) {
-					return app.init;
-				}
-			}));
-};
-var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
-	var _p2 = _p1;
-	return _elm_lang$html$Html_App$programWithFlags(
-		{
-			init: function (_p3) {
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_p2.model,
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			},
-			update: F2(
-				function (msg, model) {
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_p2.update, msg, model),
-						_elm_lang$core$Native_List.fromArray(
-							[]));
-				}),
-			view: _p2.view,
-			subscriptions: function (_p4) {
-				return _elm_lang$core$Platform_Sub$none;
-			}
-		});
-};
-var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
-
 var _debois$elm_parts$Parts$map2nd = F2(
 	function (f, _p0) {
 		var _p1 = _p0;
@@ -10551,6 +9666,258 @@ var _debois$elm_mdl$Material_Helpers$filter = F3(
 				html));
 	});
 
+var _elm_lang$html$Html_App$programWithFlags = _elm_lang$virtual_dom$VirtualDom$programWithFlags;
+var _elm_lang$html$Html_App$program = function (app) {
+	return _elm_lang$html$Html_App$programWithFlags(
+		_elm_lang$core$Native_Utils.update(
+			app,
+			{
+				init: function (_p0) {
+					return app.init;
+				}
+			}));
+};
+var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
+	var _p2 = _p1;
+	return _elm_lang$html$Html_App$programWithFlags(
+		{
+			init: function (_p3) {
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_p2.model,
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			},
+			update: F2(
+				function (msg, model) {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						A2(_p2.update, msg, model),
+						_elm_lang$core$Native_List.fromArray(
+							[]));
+				}),
+			view: _p2.view,
+			subscriptions: function (_p4) {
+				return _elm_lang$core$Platform_Sub$none;
+			}
+		});
+};
+var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
+
+var _debois$elm_mdl$Material_Options_Internal$None = {ctor: 'None'};
+var _debois$elm_mdl$Material_Options_Internal$Set = function (a) {
+	return {ctor: 'Set', _0: a};
+};
+var _debois$elm_mdl$Material_Options_Internal$Many = function (a) {
+	return {ctor: 'Many', _0: a};
+};
+var _debois$elm_mdl$Material_Options_Internal$Attribute = function (a) {
+	return {ctor: 'Attribute', _0: a};
+};
+var _debois$elm_mdl$Material_Options_Internal$attribute = _debois$elm_mdl$Material_Options_Internal$Attribute;
+var _debois$elm_mdl$Material_Options_Internal$CSS = function (a) {
+	return {ctor: 'CSS', _0: a};
+};
+var _debois$elm_mdl$Material_Options_Internal$Class = function (a) {
+	return {ctor: 'Class', _0: a};
+};
+
+var _debois$elm_mdl$Material_Options$attribute = _debois$elm_mdl$Material_Options_Internal$Attribute;
+var _debois$elm_mdl$Material_Options$stylesheet = function (css) {
+	return A3(
+		_elm_lang$html$Html$node,
+		'style',
+		_elm_lang$core$Native_List.fromArray(
+			[]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(css)
+			]));
+};
+var _debois$elm_mdl$Material_Options$data = F2(
+	function (key, val) {
+		return _debois$elm_mdl$Material_Options_Internal$Attribute(
+			A2(
+				_elm_lang$html$Html_Attributes$attribute,
+				A2(_elm_lang$core$Basics_ops['++'], 'data-', key),
+				val));
+	});
+var _debois$elm_mdl$Material_Options$set = _debois$elm_mdl$Material_Options_Internal$Set;
+var _debois$elm_mdl$Material_Options$nop = _debois$elm_mdl$Material_Options_Internal$None;
+var _debois$elm_mdl$Material_Options$when = F2(
+	function (prop, guard) {
+		return guard ? prop : _debois$elm_mdl$Material_Options$nop;
+	});
+var _debois$elm_mdl$Material_Options$maybe = function (prop) {
+	return A2(_elm_lang$core$Maybe$withDefault, _debois$elm_mdl$Material_Options$nop, prop);
+};
+var _debois$elm_mdl$Material_Options$many = _debois$elm_mdl$Material_Options_Internal$Many;
+var _debois$elm_mdl$Material_Options$css = F2(
+	function (key, value) {
+		return _debois$elm_mdl$Material_Options_Internal$CSS(
+			{ctor: '_Tuple2', _0: key, _1: value});
+	});
+var _debois$elm_mdl$Material_Options$center = _debois$elm_mdl$Material_Options$many(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			A2(_debois$elm_mdl$Material_Options$css, 'display', 'flex'),
+			A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'center'),
+			A2(_debois$elm_mdl$Material_Options$css, 'justify-content', 'center')
+		]));
+var _debois$elm_mdl$Material_Options$scrim = function (opacity) {
+	return A2(
+		_debois$elm_mdl$Material_Options$css,
+		'background',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, ',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(opacity),
+				'))')));
+};
+var _debois$elm_mdl$Material_Options$cs = function (c) {
+	return _debois$elm_mdl$Material_Options_Internal$Class(c);
+};
+var _debois$elm_mdl$Material_Options$disabled = function (v) {
+	return _debois$elm_mdl$Material_Options_Internal$Attribute(
+		_elm_lang$html$Html_Attributes$disabled(v));
+};
+var _debois$elm_mdl$Material_Options$addAttributes = F2(
+	function (summary, attrs) {
+		return _elm_lang$core$List$concat(
+			_elm_lang$core$Native_List.fromArray(
+				[
+					attrs,
+					_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$style(summary.css)
+					]),
+					_elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$class(
+						A2(_elm_lang$core$String$join, ' ', summary.classes))
+					]),
+					summary.attrs
+				]));
+	});
+var _debois$elm_mdl$Material_Options$collect1 = F3(
+	function (f, option, acc) {
+		var _p0 = option;
+		switch (_p0.ctor) {
+			case 'Class':
+				return _elm_lang$core$Native_Utils.update(
+					acc,
+					{
+						classes: A2(_elm_lang$core$List_ops['::'], _p0._0, acc.classes)
+					});
+			case 'CSS':
+				return _elm_lang$core$Native_Utils.update(
+					acc,
+					{
+						css: A2(_elm_lang$core$List_ops['::'], _p0._0, acc.css)
+					});
+			case 'Attribute':
+				return _elm_lang$core$Native_Utils.update(
+					acc,
+					{
+						attrs: A2(_elm_lang$core$List_ops['::'], _p0._0, acc.attrs)
+					});
+			case 'Many':
+				return A3(
+					_elm_lang$core$List$foldl,
+					_debois$elm_mdl$Material_Options$collect1(f),
+					acc,
+					_p0._0);
+			case 'Set':
+				return _elm_lang$core$Native_Utils.update(
+					acc,
+					{
+						config: A2(f, _p0._0, acc.config)
+					});
+			default:
+				return acc;
+		}
+	});
+var _debois$elm_mdl$Material_Options$recollect = _elm_lang$core$List$foldl(
+	_debois$elm_mdl$Material_Options$collect1(
+		F2(
+			function (x, y) {
+				return x(y);
+			})));
+var _debois$elm_mdl$Material_Options$collect = function (config0) {
+	return _debois$elm_mdl$Material_Options$recollect(
+		{
+			classes: _elm_lang$core$Native_List.fromArray(
+				[]),
+			css: _elm_lang$core$Native_List.fromArray(
+				[]),
+			attrs: _elm_lang$core$Native_List.fromArray(
+				[]),
+			config: config0
+		});
+};
+var _debois$elm_mdl$Material_Options$apply = F4(
+	function (summary, ctor, options, attrs) {
+		return ctor(
+			A2(
+				_debois$elm_mdl$Material_Options$addAttributes,
+				A2(_debois$elm_mdl$Material_Options$recollect, summary, options),
+				attrs));
+	});
+var _debois$elm_mdl$Material_Options$collect$ = function (options) {
+	return A3(
+		_elm_lang$core$List$foldl,
+		_debois$elm_mdl$Material_Options$collect1(
+			F2(
+				function (_p2, _p1) {
+					return {ctor: '_Tuple0'};
+				})),
+		{
+			classes: _elm_lang$core$Native_List.fromArray(
+				[]),
+			css: _elm_lang$core$Native_List.fromArray(
+				[]),
+			attrs: _elm_lang$core$Native_List.fromArray(
+				[]),
+			config: {ctor: '_Tuple0'}
+		},
+		options);
+};
+var _debois$elm_mdl$Material_Options$styled = F2(
+	function (ctor, props) {
+		return ctor(
+			A2(
+				_debois$elm_mdl$Material_Options$addAttributes,
+				_debois$elm_mdl$Material_Options$collect$(props),
+				_elm_lang$core$Native_List.fromArray(
+					[])));
+	});
+var _debois$elm_mdl$Material_Options$div = _debois$elm_mdl$Material_Options$styled(_elm_lang$html$Html$div);
+var _debois$elm_mdl$Material_Options$span = _debois$elm_mdl$Material_Options$styled(_elm_lang$html$Html$span);
+var _debois$elm_mdl$Material_Options$styled$ = F3(
+	function (ctor, props, attrs) {
+		return ctor(
+			A2(
+				_debois$elm_mdl$Material_Options$addAttributes,
+				_debois$elm_mdl$Material_Options$collect$(props),
+				attrs));
+	});
+var _debois$elm_mdl$Material_Options$img = F2(
+	function (options, attrs) {
+		return A4(
+			_debois$elm_mdl$Material_Options$styled$,
+			_elm_lang$html$Html$img,
+			options,
+			attrs,
+			_elm_lang$core$Native_List.fromArray(
+				[]));
+	});
+var _debois$elm_mdl$Material_Options$Summary = F4(
+	function (a, b, c, d) {
+		return {classes: a, css: b, attrs: c, config: d};
+	});
+
 var _debois$elm_dom$DOM$className = A2(
 	_elm_lang$core$Json_Decode$at,
 	_elm_lang$core$Native_List.fromArray(
@@ -10763,7 +10130,7 @@ var _debois$elm_mdl$Material_Ripple$DOMState = F6(
 var _debois$elm_mdl$Material_Ripple$geometryDecoder = A7(
 	_elm_lang$core$Json_Decode$object6,
 	_debois$elm_mdl$Material_Ripple$DOMState,
-	_debois$elm_dom$DOM$target(_debois$elm_dom$DOM$boundingClientRect),
+	A2(_elm_lang$core$Json_Decode_ops[':='], 'currentTarget', _debois$elm_dom$DOM$boundingClientRect),
 	_elm_lang$core$Json_Decode$maybe(
 		A2(_elm_lang$core$Json_Decode_ops[':='], 'clientX', _elm_lang$core$Json_Decode$float)),
 	_elm_lang$core$Json_Decode$maybe(
@@ -10925,7 +10292,7 @@ var _debois$elm_mdl$Material_Button$blurAndForward = function (event) {
 var _debois$elm_mdl$Material_Button$accent = _debois$elm_mdl$Material_Options$cs('mdl-button--accent');
 var _debois$elm_mdl$Material_Button$primary = _debois$elm_mdl$Material_Options$cs('mdl-button--primary');
 var _debois$elm_mdl$Material_Button$colored = _debois$elm_mdl$Material_Options$cs('mdl-button--colored');
-var _debois$elm_mdl$Material_Button$plain = _debois$elm_mdl$Material_Options$cs('mdl-button--colored');
+var _debois$elm_mdl$Material_Button$plain = _debois$elm_mdl$Material_Options$nop;
 var _debois$elm_mdl$Material_Button$disabled = _debois$elm_mdl$Material_Options$set(
 	function (options) {
 		return _elm_lang$core$Native_Utils.update(
@@ -11081,47 +10448,50 @@ var _debois$elm_mdl$Material_Textfield$rows = function (rows) {
 				});
 		});
 };
-var _debois$elm_mdl$Material_Textfield$onFocus = function (f) {
+var _debois$elm_mdl$Material_Textfield$style = function (style) {
 	return _debois$elm_mdl$Material_Options$set(
 		function (config) {
 			return _elm_lang$core$Native_Utils.update(
 				config,
 				{
-					onFocus: _elm_lang$core$Maybe$Just(
-						A2(
-							_elm_lang$html$Html_Events$on,
-							'focusin',
-							_elm_lang$core$Json_Decode$succeed(f)))
+					style: A2(_elm_lang$core$Basics_ops['++'], style, config.style)
 				});
 		});
+};
+var _debois$elm_mdl$Material_Textfield$on = F2(
+	function (event, decoder) {
+		return _debois$elm_mdl$Material_Options$set(
+			function (config) {
+				return _elm_lang$core$Native_Utils.update(
+					config,
+					{
+						listeners: A2(
+							_elm_lang$core$Basics_ops['++'],
+							config.listeners,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(_elm_lang$html$Html_Events$on, event, decoder)
+								]))
+					});
+			});
+	});
+var _debois$elm_mdl$Material_Textfield$onInput = function (f) {
+	return A2(
+		_debois$elm_mdl$Material_Textfield$on,
+		'input',
+		A2(_elm_lang$core$Json_Decode$map, f, _elm_lang$html$Html_Events$targetValue));
 };
 var _debois$elm_mdl$Material_Textfield$onBlur = function (f) {
-	return _debois$elm_mdl$Material_Options$set(
-		function (config) {
-			return _elm_lang$core$Native_Utils.update(
-				config,
-				{
-					onBlur: _elm_lang$core$Maybe$Just(
-						A2(
-							_elm_lang$html$Html_Events$on,
-							'focusout',
-							_elm_lang$core$Json_Decode$succeed(f)))
-				});
-		});
+	return A2(
+		_debois$elm_mdl$Material_Textfield$on,
+		'blur',
+		_elm_lang$core$Json_Decode$succeed(f));
 };
-var _debois$elm_mdl$Material_Textfield$onInput = function (f) {
-	return _debois$elm_mdl$Material_Options$set(
-		function (config) {
-			return _elm_lang$core$Native_Utils.update(
-				config,
-				{
-					onInput: _elm_lang$core$Maybe$Just(
-						A2(
-							_elm_lang$html$Html_Events$on,
-							'input',
-							A2(_elm_lang$core$Json_Decode$map, f, _elm_lang$html$Html_Events$targetValue)))
-				});
-		});
+var _debois$elm_mdl$Material_Textfield$onFocus = function (f) {
+	return A2(
+		_debois$elm_mdl$Material_Textfield$on,
+		'focus',
+		_elm_lang$core$Json_Decode$succeed(f));
 };
 var _debois$elm_mdl$Material_Textfield$disabled = _debois$elm_mdl$Material_Options$set(
 	function (config) {
@@ -11194,7 +10564,7 @@ var _debois$elm_mdl$Material_Textfield$Config = function (a) {
 										return function (k) {
 											return function (l) {
 												return function (m) {
-													return {labelText: a, labelFloat: b, error: c, value: d, disabled: e, onInput: f, kind: g, rows: h, cols: i, autofocus: j, maxlength: k, onBlur: l, onFocus: m};
+													return {labelText: a, labelFloat: b, error: c, value: d, disabled: e, onInput: f, kind: g, rows: h, cols: i, autofocus: j, maxlength: k, style: l, listeners: m};
 												};
 											};
 										};
@@ -11227,7 +10597,23 @@ var _debois$elm_mdl$Material_Textfield$textarea = _debois$elm_mdl$Material_Optio
 			{kind: _debois$elm_mdl$Material_Textfield$Textarea});
 	});
 var _debois$elm_mdl$Material_Textfield$Text = {ctor: 'Text'};
-var _debois$elm_mdl$Material_Textfield$defaultConfig = {labelText: _elm_lang$core$Maybe$Nothing, labelFloat: false, error: _elm_lang$core$Maybe$Nothing, value: _elm_lang$core$Maybe$Nothing, disabled: false, kind: _debois$elm_mdl$Material_Textfield$Text, onInput: _elm_lang$core$Maybe$Nothing, rows: _elm_lang$core$Maybe$Nothing, cols: _elm_lang$core$Maybe$Nothing, autofocus: false, maxlength: _elm_lang$core$Maybe$Nothing, onBlur: _elm_lang$core$Maybe$Nothing, onFocus: _elm_lang$core$Maybe$Nothing};
+var _debois$elm_mdl$Material_Textfield$defaultConfig = {
+	labelText: _elm_lang$core$Maybe$Nothing,
+	labelFloat: false,
+	error: _elm_lang$core$Maybe$Nothing,
+	value: _elm_lang$core$Maybe$Nothing,
+	disabled: false,
+	kind: _debois$elm_mdl$Material_Textfield$Text,
+	onInput: _elm_lang$core$Maybe$Nothing,
+	rows: _elm_lang$core$Maybe$Nothing,
+	cols: _elm_lang$core$Maybe$Nothing,
+	autofocus: false,
+	maxlength: _elm_lang$core$Maybe$Nothing,
+	style: _elm_lang$core$Native_List.fromArray(
+		[]),
+	listeners: _elm_lang$core$Native_List.fromArray(
+		[])
+};
 var _debois$elm_mdl$Material_Textfield$text$ = _debois$elm_mdl$Material_Options$set(
 	function (config) {
 		return _elm_lang$core$Native_Utils.update(
@@ -11305,6 +10691,37 @@ var _debois$elm_mdl$Material_Textfield$view = F3(
 					[]);
 			}
 		}();
+		var listeners = config.listeners;
+		var textValue = function () {
+			var _p6 = config.value;
+			if (_p6.ctor === 'Just') {
+				return _elm_lang$core$Native_List.fromArray(
+					[
+						_elm_lang$html$Html_Attributes$value(_p6._0)
+					]);
+			} else {
+				return _elm_lang$core$Native_List.fromArray(
+					[]);
+			}
+		}();
+		var defaultInput = function () {
+			var _p7 = config.value;
+			if (_p7.ctor === 'Just') {
+				return _elm_lang$core$Maybe$Nothing;
+			} else {
+				return _elm_lang$core$Maybe$Just(
+					A2(
+						_elm_lang$html$Html_Events$on,
+						'input',
+						A2(
+							_elm_lang$core$Json_Decode$map,
+							function (_p8) {
+								return lift(
+									_debois$elm_mdl$Material_Textfield$Input(_p8));
+							},
+							_elm_lang$html$Html_Events$targetValue)));
+			}
+		}();
 		return A5(
 			_debois$elm_mdl$Material_Options$apply,
 			summary,
@@ -11324,46 +10741,46 @@ var _debois$elm_mdl$Material_Textfield$view = F3(
 				_elm_lang$core$List$filterMap,
 				_elm_lang$core$Basics$identity,
 				_elm_lang$core$Native_List.fromArray(
-					[config.onInput, config.onBlur, config.onFocus])),
+					[
+						_elm_lang$core$Maybe$Just(
+						A2(
+							_elm_lang$html$Html_Events$on,
+							'focusin',
+							_elm_lang$core$Json_Decode$succeed(
+								lift(_debois$elm_mdl$Material_Textfield$Focus)))),
+						_elm_lang$core$Maybe$Just(
+						A2(
+							_elm_lang$html$Html_Events$on,
+							'focusout',
+							_elm_lang$core$Json_Decode$succeed(
+								lift(_debois$elm_mdl$Material_Textfield$Blur)))),
+						defaultInput
+					])),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(
+					A4(
+					_debois$elm_mdl$Material_Options$styled$,
 					elementFunction,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_debois$elm_mdl$Material_Options$many(config.style),
+							_debois$elm_mdl$Material_Options$cs('mdl-textfield__input'),
+							A2(_debois$elm_mdl$Material_Options$css, 'outline', 'none')
+						]),
 					A2(
 						_elm_lang$core$Basics_ops['++'],
 						_elm_lang$core$Native_List.fromArray(
 							[
-								_elm_lang$html$Html_Attributes$class('mdl-textfield__input'),
-								_elm_lang$html$Html_Attributes$style(
-								_elm_lang$core$Native_List.fromArray(
-									[
-										{ctor: '_Tuple2', _0: 'outline', _1: 'none'}
-									])),
 								_elm_lang$html$Html_Attributes$disabled(config.disabled),
-								_elm_lang$html$Html_Events$onBlur(
-								lift(_debois$elm_mdl$Material_Textfield$Blur)),
-								_elm_lang$html$Html_Events$onFocus(
-								lift(_debois$elm_mdl$Material_Textfield$Focus)),
-								function () {
-								var _p6 = config.value;
-								if (_p6.ctor === 'Just') {
-									return _elm_lang$html$Html_Attributes$value(_p6._0);
-								} else {
-									return A2(
-										_elm_lang$html$Html_Events$on,
-										'input',
-										A2(
-											_elm_lang$core$Json_Decode$map,
-											function (_p7) {
-												return lift(
-													_debois$elm_mdl$Material_Textfield$Input(_p7));
-											},
-											_elm_lang$html$Html_Events$targetValue));
-								}
-							}(),
 								_elm_lang$html$Html_Attributes$autofocus(config.autofocus)
 							]),
-						A2(_elm_lang$core$Basics_ops['++'], typeAttributes, maxlength)),
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							textValue,
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								typeAttributes,
+								A2(_elm_lang$core$Basics_ops['++'], maxlength, listeners)))),
 					_elm_lang$core$Native_List.fromArray(
 						[])),
 					A2(
@@ -11373,11 +10790,11 @@ var _debois$elm_mdl$Material_Textfield$view = F3(
 							_elm_lang$html$Html_Attributes$class('mdl-textfield__label')
 						]),
 					function () {
-						var _p8 = config.labelText;
-						if (_p8.ctor === 'Just') {
+						var _p9 = config.labelText;
+						if (_p9.ctor === 'Just') {
 							return _elm_lang$core$Native_List.fromArray(
 								[
-									_elm_lang$html$Html$text(_p8._0)
+									_elm_lang$html$Html$text(_p9._0)
 								]);
 						} else {
 							return _elm_lang$core$Native_List.fromArray(
@@ -11413,7 +10830,7 @@ var _debois$elm_mdl$Material_Textfield$render = A5(
 	_debois$elm_parts$Parts$create,
 	_debois$elm_mdl$Material_Textfield$view,
 	F3(
-		function (_p9, msg, model) {
+		function (_p10, msg, model) {
 			return _elm_lang$core$Maybe$Just(
 				{
 					ctor: '_Tuple2',
@@ -11732,55 +11149,13 @@ var _debois$elm_mdl$Material_Menu_Geometry$decode = A6(
 			A2(
 				_debois$elm_dom$DOM$childNode,
 				1,
-				A2(
-					_elm_lang$core$Json_Decode$andThen,
-					_debois$elm_dom$DOM$childNodes(_debois$elm_dom$DOM$offsetTop),
-					function (_p0) {
-						return _elm_lang$core$Json_Decode$succeed(
-							_elm_lang$core$Array$fromList(_p0));
-					})))),
+				_debois$elm_dom$DOM$childNodes(_debois$elm_dom$DOM$offsetTop)))),
 	_debois$elm_dom$DOM$target(
 		_debois$elm_dom$DOM$nextSibling(
 			A2(
 				_debois$elm_dom$DOM$childNode,
 				1,
-				A2(
-					_elm_lang$core$Json_Decode$andThen,
-					_debois$elm_dom$DOM$childNodes(_debois$elm_dom$DOM$offsetHeight),
-					function (_p1) {
-						return _elm_lang$core$Json_Decode$succeed(
-							_elm_lang$core$Array$fromList(_p1));
-					})))));
-var _debois$elm_mdl$Material_Menu_Geometry$decode$ = A6(
-	_elm_lang$core$Json_Decode$object5,
-	_debois$elm_mdl$Material_Menu_Geometry$Geometry,
-	_debois$elm_dom$DOM$target(
-		_debois$elm_dom$DOM$parentElement(
-			_debois$elm_dom$DOM$parentElement(
-				_debois$elm_dom$DOM$previousSibling(_debois$elm_mdl$Material_Menu_Geometry$element)))),
-	_debois$elm_dom$DOM$target(
-		_debois$elm_dom$DOM$parentElement(_debois$elm_mdl$Material_Menu_Geometry$element)),
-	_debois$elm_dom$DOM$target(
-		_debois$elm_dom$DOM$parentElement(
-			_debois$elm_dom$DOM$parentElement(_debois$elm_mdl$Material_Menu_Geometry$element))),
-	_debois$elm_dom$DOM$target(
-		_debois$elm_dom$DOM$parentElement(
-			A2(
-				_elm_lang$core$Json_Decode$andThen,
-				_debois$elm_dom$DOM$childNodes(_debois$elm_dom$DOM$offsetTop),
-				function (_p2) {
-					return _elm_lang$core$Json_Decode$succeed(
-						_elm_lang$core$Array$fromList(_p2));
-				}))),
-	_debois$elm_dom$DOM$target(
-		_debois$elm_dom$DOM$parentElement(
-			A2(
-				_elm_lang$core$Json_Decode$andThen,
-				_debois$elm_dom$DOM$childNodes(_debois$elm_dom$DOM$offsetHeight),
-				function (_p3) {
-					return _elm_lang$core$Json_Decode$succeed(
-						_elm_lang$core$Array$fromList(_p3));
-				}))));
+				_debois$elm_dom$DOM$childNodes(_debois$elm_dom$DOM$offsetHeight)))));
 
 var _debois$elm_mdl$Material_Menu$toPx = function (_p0) {
 	return A3(
@@ -11823,6 +11198,13 @@ var _debois$elm_mdl$Material_Menu$onClick = F2(
 			'click',
 			A2(_elm_lang$core$Json_Decode$map, action, decoder));
 	});
+var _debois$elm_mdl$Material_Menu$withGeometry = F2(
+	function (model, f) {
+		return A2(
+			_elm_lang$core$Maybe$withDefault,
+			_debois$elm_mdl$Material_Options$nop,
+			A2(_elm_lang$core$Maybe$map, f, model.geometry));
+	});
 var _debois$elm_mdl$Material_Menu$icon = function (name) {
 	return _debois$elm_mdl$Material_Options$set(
 		function (config) {
@@ -11860,7 +11242,8 @@ var _debois$elm_mdl$Material_Menu$divider = _debois$elm_mdl$Material_Options$set
 			{divider: true});
 	});
 var _debois$elm_mdl$Material_Menu$defaultItemConfig = {enabled: true, divider: false, onSelect: _elm_lang$core$Maybe$Nothing};
-var _debois$elm_mdl$Material_Menu$constant = {transitionDurationSeconds: 0.4, transitionDurationFraction: 0.8, closeTimeout: 150};
+var _debois$elm_mdl$Material_Menu$constant = {transitionDurationSeconds: 0.3, transitionDurationFraction: 0.8, closeTimeout: 150};
+var _debois$elm_mdl$Material_Menu$transitionDuration = _debois$elm_mdl$Material_Menu$constant.transitionDurationSeconds * _debois$elm_mdl$Material_Menu$constant.transitionDurationFraction;
 var _debois$elm_mdl$Material_Menu$Model = F4(
 	function (a, b, c, d) {
 		return {ripples: a, animationState: b, geometry: c, index: d};
@@ -11880,6 +11263,31 @@ var _debois$elm_mdl$Material_Menu$Config = F3(
 	});
 var _debois$elm_mdl$Material_Menu$Closing = {ctor: 'Closing'};
 var _debois$elm_mdl$Material_Menu$Opened = {ctor: 'Opened'};
+var _debois$elm_mdl$Material_Menu$clip = F3(
+	function (model, config, geometry) {
+		var height = geometry.menu.bounds.height;
+		var width = geometry.menu.bounds.width;
+		return A2(
+			_debois$elm_mdl$Material_Options$css,
+			'clip',
+			function () {
+				if (_elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Opened) || _elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Closing)) {
+					return A4(_debois$elm_mdl$Material_Menu$rect, 0, width, height, 0);
+				} else {
+					var _p1 = config.alignment;
+					switch (_p1.ctor) {
+						case 'BottomRight':
+							return A4(_debois$elm_mdl$Material_Menu$rect, 0, width, 0, width);
+						case 'TopLeft':
+							return A4(_debois$elm_mdl$Material_Menu$rect, height, 0, height, 0);
+						case 'TopRight':
+							return A4(_debois$elm_mdl$Material_Menu$rect, height, width, height, width);
+						default:
+							return '';
+					}
+				}
+			}());
+	});
 var _debois$elm_mdl$Material_Menu$Opening = {ctor: 'Opening'};
 var _debois$elm_mdl$Material_Menu$isActive = function (model) {
 	return _elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Opened) || _elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Opening);
@@ -11910,8 +11318,8 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 	function (fwd, msg, model) {
 		update:
 		while (true) {
-			var _p1 = msg;
-			switch (_p1.ctor) {
+			var _p2 = msg;
+			switch (_p2.ctor) {
 				case 'Open':
 					return {
 						ctor: '_Tuple2',
@@ -11919,14 +11327,14 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 							model,
 							{
 								animationState: function () {
-									var _p2 = model.animationState;
-									if (_p2.ctor === 'Opened') {
+									var _p3 = model.animationState;
+									if (_p3.ctor === 'Opened') {
 										return _debois$elm_mdl$Material_Menu$Opened;
 									} else {
 										return _debois$elm_mdl$Material_Menu$Opening;
 									}
 								}(),
-								geometry: _elm_lang$core$Maybe$Just(_p1._0)
+								geometry: _elm_lang$core$Maybe$Just(_p2._0)
 							}),
 						_1: _debois$elm_mdl$Material_Helpers$cmd(
 							fwd(_debois$elm_mdl$Material_Menu$Tick))
@@ -11952,7 +11360,7 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 									_debois$elm_mdl$Material_Helpers$delay,
 									_debois$elm_mdl$Material_Menu$constant.closeTimeout,
 									fwd(_debois$elm_mdl$Material_Menu$Close))),
-								A2(_elm_lang$core$Maybe$map, _debois$elm_mdl$Material_Helpers$cmd, _p1._1)
+								A2(_elm_lang$core$Maybe$map, _debois$elm_mdl$Material_Helpers$cmd, _p2._1)
 							]));
 					var model$ = _elm_lang$core$Native_Utils.update(
 						model,
@@ -11963,66 +11371,66 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 						_1: _elm_lang$core$Platform_Cmd$batch(cmds)
 					};
 				case 'Ripple':
-					var _p5 = _p1._0;
-					var _p3 = A2(
+					var _p6 = _p2._0;
+					var _p4 = A2(
 						_debois$elm_mdl$Material_Ripple$update,
-						_p1._1,
+						_p2._1,
 						A2(
 							_elm_lang$core$Maybe$withDefault,
 							_debois$elm_mdl$Material_Ripple$model,
-							A2(_elm_lang$core$Dict$get, _p5, model.ripples)));
-					var model$ = _p3._0;
-					var effects = _p3._1;
+							A2(_elm_lang$core$Dict$get, _p6, model.ripples)));
+					var model$ = _p4._0;
+					var effects = _p4._1;
 					return {
 						ctor: '_Tuple2',
 						_0: _elm_lang$core$Native_Utils.update(
 							model,
 							{
-								ripples: A3(_elm_lang$core$Dict$insert, _p5, model$, model.ripples)
+								ripples: A3(_elm_lang$core$Dict$insert, _p6, model$, model.ripples)
 							}),
 						_1: A2(
 							_elm_lang$core$Platform_Cmd$map,
-							function (_p4) {
+							function (_p5) {
 								return fwd(
-									A2(_debois$elm_mdl$Material_Menu$Ripple, _p5, _p4));
+									A2(_debois$elm_mdl$Material_Menu$Ripple, _p6, _p5));
 							},
 							effects)
 					};
 				case 'Click':
 					if (_debois$elm_mdl$Material_Menu$isActive(model)) {
-						var _p6 = model.geometry;
-						if (_p6.ctor === 'Just') {
+						var _p7 = model.geometry;
+						if (_p7.ctor === 'Just') {
 							var inside = F2(
-								function (_p8, _p7) {
-									var _p9 = _p8;
-									var _p14 = _p9.y;
-									var _p13 = _p9.x;
-									var _p10 = _p7;
-									var _p12 = _p10.top;
-									var _p11 = _p10.left;
+								function (_p9, _p8) {
+									var _p10 = _p9;
+									var _p15 = _p10.y;
+									var _p14 = _p10.x;
+									var _p11 = _p8;
+									var _p13 = _p11.top;
+									var _p12 = _p11.left;
 									return (_elm_lang$core$Native_Utils.cmp(
-										_p11,
-										_elm_lang$core$Basics$toFloat(_p13)) < 1) && ((_elm_lang$core$Native_Utils.cmp(
-										_elm_lang$core$Basics$toFloat(_p13),
-										_p11 + _p10.width) < 1) && ((_elm_lang$core$Native_Utils.cmp(
 										_p12,
-										_elm_lang$core$Basics$toFloat(_p14)) < 1) && (_elm_lang$core$Native_Utils.cmp(
+										_elm_lang$core$Basics$toFloat(_p14)) < 1) && ((_elm_lang$core$Native_Utils.cmp(
 										_elm_lang$core$Basics$toFloat(_p14),
-										_p12 + _p10.height) < 1)));
+										_p12 + _p11.width) < 1) && ((_elm_lang$core$Native_Utils.cmp(
+										_p13,
+										_elm_lang$core$Basics$toFloat(_p15)) < 1) && (_elm_lang$core$Native_Utils.cmp(
+										_elm_lang$core$Basics$toFloat(_p15),
+										_p13 + _p11.height) < 1)));
 								});
-							if (A2(inside, _p1._0, _p6._0.container.bounds)) {
+							if (A2(inside, _p2._0, _p7._0.menu.bounds)) {
 								return A2(
 									_elm_lang$core$Platform_Cmd_ops['!'],
 									model,
 									_elm_lang$core$Native_List.fromArray(
 										[]));
 							} else {
-								var _v5 = fwd,
-									_v6 = _debois$elm_mdl$Material_Menu$Close,
-									_v7 = model;
-								fwd = _v5;
-								msg = _v6;
-								model = _v7;
+								var _v6 = fwd,
+									_v7 = _debois$elm_mdl$Material_Menu$Close,
+									_v8 = model;
+								fwd = _v6;
+								msg = _v7;
+								model = _v8;
 								continue update;
 							}
 						} else {
@@ -12040,41 +11448,41 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 								[]));
 					}
 				default:
-					var _p23 = _p1._0;
-					var _p15 = _p1._1;
-					switch (_p15) {
+					var _p24 = _p2._0;
+					var _p16 = _p2._1;
+					switch (_p16) {
 						case 13:
 							if (_debois$elm_mdl$Material_Menu$isActive(model)) {
-								var _p16 = model.index;
-								if (_p16.ctor === 'Just') {
-									var _p18 = _p16._0;
+								var _p17 = model.index;
+								if (_p17.ctor === 'Just') {
+									var _p19 = _p17._0;
 									var cmd = A3(
 										_elm_lang$core$Basics$flip,
 										_elm_lang$core$Maybe$andThen,
-										function (_p17) {
+										function (_p18) {
 											return function (_) {
 												return _.onSelect;
 											}(
 												function (_) {
 													return _.config;
-												}(_p17));
+												}(_p18));
 										},
 										_elm_lang$core$List$head(
-											A2(_elm_lang$core$List$drop, _p18, _p23)));
-									var _v10 = fwd,
-										_v11 = A2(_debois$elm_mdl$Material_Menu$Select, _p18 + 1, cmd),
-										_v12 = model;
-									fwd = _v10;
-									msg = _v11;
-									model = _v12;
+											A2(_elm_lang$core$List$drop, _p19, _p24)));
+									var _v11 = fwd,
+										_v12 = A2(_debois$elm_mdl$Material_Menu$Select, _p19 + 1, cmd),
+										_v13 = model;
+									fwd = _v11;
+									msg = _v12;
+									model = _v13;
 									continue update;
 								} else {
-									var _v13 = fwd,
-										_v14 = _debois$elm_mdl$Material_Menu$Close,
-										_v15 = model;
-									fwd = _v13;
-									msg = _v14;
-									model = _v15;
+									var _v14 = fwd,
+										_v15 = _debois$elm_mdl$Material_Menu$Close,
+										_v16 = model;
+									fwd = _v14;
+									msg = _v15;
+									model = _v16;
 									continue update;
 								}
 							} else {
@@ -12085,21 +11493,21 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 										[]));
 							}
 						case 27:
-							var _v16 = fwd,
-								_v17 = _debois$elm_mdl$Material_Menu$Close,
-								_v18 = model;
-							fwd = _v16;
-							msg = _v17;
-							model = _v18;
+							var _v17 = fwd,
+								_v18 = _debois$elm_mdl$Material_Menu$Close,
+								_v19 = model;
+							fwd = _v17;
+							msg = _v18;
+							model = _v19;
 							continue update;
 						case 32:
 							if (_debois$elm_mdl$Material_Menu$isActive(model)) {
-								var _v19 = fwd,
-									_v20 = A2(_debois$elm_mdl$Material_Menu$Key, _p23, 13),
-									_v21 = model;
-								fwd = _v19;
-								msg = _v20;
-								model = _v21;
+								var _v20 = fwd,
+									_v21 = A2(_debois$elm_mdl$Material_Menu$Key, _p24, 13),
+									_v22 = model;
+								fwd = _v20;
+								msg = _v21;
+								model = _v22;
 								continue update;
 							} else {
 								return A2(
@@ -12116,7 +11524,7 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 										function (v0, v1) {
 											return {ctor: '_Tuple2', _0: v0, _1: v1};
 										}),
-									_p23);
+									_p24);
 								return A3(
 									_elm_lang$core$Basics$flip,
 									F2(
@@ -12130,7 +11538,7 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 										model,
 										A2(
 											_elm_lang$core$Maybe$map,
-											function (_p19) {
+											function (_p20) {
 												return function (index$) {
 													return _elm_lang$core$Native_Utils.update(
 														model,
@@ -12138,19 +11546,19 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 															index: _elm_lang$core$Maybe$Just(index$)
 														});
 												}(
-													_elm_lang$core$Basics$fst(_p19));
+													_elm_lang$core$Basics$fst(_p20));
 											},
 											_elm_lang$core$List$head(
 												A2(
 													_elm_lang$core$List$filter,
-													function (_p20) {
+													function (_p21) {
 														return function (_) {
 															return _.enabled;
 														}(
 															function (_) {
 																return _.config;
 															}(
-																_elm_lang$core$Basics$snd(_p20)));
+																_elm_lang$core$Basics$snd(_p21)));
 													},
 													A2(
 														_elm_lang$core$List$drop,
@@ -12171,14 +11579,14 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 										function (v0, v1) {
 											return {ctor: '_Tuple2', _0: v0, _1: v1};
 										}),
-									_p23);
+									_p24);
 								return _debois$elm_mdl$Material_Helpers$pure(
 									A2(
 										_elm_lang$core$Maybe$withDefault,
 										model,
 										A2(
 											_elm_lang$core$Maybe$map,
-											function (_p21) {
+											function (_p22) {
 												return function (index$) {
 													return _elm_lang$core$Native_Utils.update(
 														model,
@@ -12186,23 +11594,23 @@ var _debois$elm_mdl$Material_Menu$update = F3(
 															index: _elm_lang$core$Maybe$Just(index$)
 														});
 												}(
-													_elm_lang$core$Basics$fst(_p21));
+													_elm_lang$core$Basics$fst(_p22));
 											},
 											_elm_lang$core$List$head(
 												A2(
 													_elm_lang$core$List$filter,
-													function (_p22) {
+													function (_p23) {
 														return function (_) {
 															return _.enabled;
 														}(
 															function (_) {
 																return _.config;
 															}(
-																_elm_lang$core$Basics$snd(_p22)));
+																_elm_lang$core$Basics$snd(_p23)));
 													},
 													A2(
 														_elm_lang$core$List$drop,
-														_elm_lang$core$List$length(_p23) - A2(_elm_lang$core$Maybe$withDefault, 0, model.index),
+														_elm_lang$core$List$length(_p24) - A2(_elm_lang$core$Maybe$withDefault, 0, model.index),
 														_elm_lang$core$List$reverse(
 															A2(_elm_lang$core$Basics_ops['++'], items, items))))))));
 							} else {
@@ -12241,21 +11649,25 @@ var _debois$elm_mdl$Material_Menu$pack = A4(
 		}),
 	_debois$elm_mdl$Material_Menu$defaultModel);
 var _debois$elm_mdl$Material_Menu$subs = function (lift) {
-	return function (_p24) {
+	return function (_p25) {
 		return _elm_lang$core$Platform_Sub$batch(
-			A2(
-				_elm_lang$core$List$map,
-				function (_p25) {
-					var _p26 = _p25;
-					return A2(
-						_elm_lang$core$Platform_Sub$map,
-						A2(_debois$elm_mdl$Material_Menu$pack, lift, _p26._0),
-						_debois$elm_mdl$Material_Menu$subscriptions(_p26._1));
-				},
-				_elm_lang$core$Dict$toList(
-					function (_) {
-						return _.menu;
-					}(_p24))));
+			A3(
+				_elm_lang$core$Dict$foldl,
+				F3(
+					function (idx, model, ss) {
+						return A2(
+							_elm_lang$core$List_ops['::'],
+							A2(
+								_elm_lang$core$Platform_Sub$map,
+								A2(_debois$elm_mdl$Material_Menu$pack, lift, idx),
+								_debois$elm_mdl$Material_Menu$subscriptions(model)),
+							ss);
+					}),
+				_elm_lang$core$Native_List.fromArray(
+					[]),
+				function (_) {
+					return _.menu;
+				}(_p25)));
 	};
 };
 var _debois$elm_mdl$Material_Menu$Open = function (a) {
@@ -12275,74 +11687,24 @@ var _debois$elm_mdl$Material_Menu$topLeft = _debois$elm_mdl$Material_Options$set
 			config,
 			{alignment: _debois$elm_mdl$Material_Menu$TopLeft});
 	});
-var _debois$elm_mdl$Material_Menu$makeItem = F6(
-	function (lift, config, model, index, summary, item) {
-		var ripple = function (_p27) {
-			return lift(
-				A2(_debois$elm_mdl$Material_Menu$Ripple, index, _p27));
-		};
-		var height = A2(
-			_elm_lang$core$Maybe$withDefault,
-			0,
+var _debois$elm_mdl$Material_Menu$delay = F4(
+	function (alignment, height, offsetTop, offsetHeight) {
+		var t = (_elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$TopLeft) || _elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$TopRight)) ? ((((height - offsetTop) - offsetHeight) / height) * _debois$elm_mdl$Material_Menu$transitionDuration) : ((offsetTop / height) * _debois$elm_mdl$Material_Menu$transitionDuration);
+		return A2(
+			_debois$elm_mdl$Material_Options$css,
+			'transition-delay',
 			A2(
-				_elm_lang$core$Maybe$map,
-				function (geometry) {
-					return geometry.menu.bounds.height;
-				},
-				model.geometry));
-		var offsetHeight = function (n) {
-			return A2(
-				_elm_lang$core$Maybe$withDefault,
-				0,
-				A3(
-					_elm_lang$core$Basics$flip,
-					_elm_lang$core$Maybe$andThen,
-					function (_p28) {
-						return A2(
-							_elm_lang$core$Array$get,
-							n,
-							function (_) {
-								return _.offsetHeights;
-							}(_p28));
-					},
-					model.geometry));
-		};
-		var offsetTop = function (n) {
-			return A2(
-				_elm_lang$core$Maybe$withDefault,
-				0,
-				A3(
-					_elm_lang$core$Basics$flip,
-					_elm_lang$core$Maybe$andThen,
-					function (_p29) {
-						return A2(
-							_elm_lang$core$Array$get,
-							n,
-							function (_) {
-								return _.offsetTops;
-							}(_p29));
-					},
-					model.geometry));
-		};
-		var transitionDuration = _debois$elm_mdl$Material_Menu$constant.transitionDurationSeconds * _debois$elm_mdl$Material_Menu$constant.transitionDurationFraction;
-		var itemDelay = function (n) {
-			return (_elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$TopLeft) || _elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$TopRight)) ? A3(
-				_elm_lang$core$Basics$flip,
-				F2(
-					function (x, y) {
-						return A2(_elm_lang$core$Basics_ops['++'], x, y);
-					}),
-				's',
-				_elm_lang$core$Basics$toString(
-					(((height - offsetTop(n)) - offsetHeight(n)) / height) * transitionDuration)) : A3(
-				_elm_lang$core$Basics$flip,
-				F2(
-					function (x, y) {
-						return A2(_elm_lang$core$Basics_ops['++'], x, y);
-					}),
-				's',
-				_elm_lang$core$Basics$toString(
-					(offsetTop(n) / height) * transitionDuration));
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(t),
+				's'));
+	});
+var _debois$elm_mdl$Material_Menu$view1 = F8(
+	function (lift, config, model, offsetTop, offsetHeight, index, summary, item) {
+		var canSelect = summary.config.enabled && (!_elm_lang$core$Native_Utils.eq(summary.config.onSelect, _elm_lang$core$Maybe$Nothing));
+		var hasRipple = config.ripple && canSelect;
+		var ripple = function (_p26) {
+			return lift(
+				A2(_debois$elm_mdl$Material_Menu$Ripple, index, _p26));
 		};
 		return A5(
 			_debois$elm_mdl$Material_Options$apply,
@@ -12351,13 +11713,6 @@ var _debois$elm_mdl$Material_Menu$makeItem = F6(
 			_elm_lang$core$Native_List.fromArray(
 				[
 					_debois$elm_mdl$Material_Options$cs('mdl-menu__item'),
-					A2(
-					_debois$elm_mdl$Material_Options$when,
-					A2(
-						_debois$elm_mdl$Material_Options$css,
-						'transition-delay',
-						itemDelay(index)),
-					_debois$elm_mdl$Material_Menu$isActive(model)),
 					A2(
 					_debois$elm_mdl$Material_Options$when,
 					_debois$elm_mdl$Material_Options$cs('mdl-js-ripple-effect'),
@@ -12371,29 +11726,52 @@ var _debois$elm_mdl$Material_Menu$makeItem = F6(
 					A2(_debois$elm_mdl$Material_Options$css, 'background-color', 'rgb(238,238,238)'),
 					_elm_lang$core$Native_Utils.eq(
 						model.index,
-						_elm_lang$core$Maybe$Just(index)))
+						_elm_lang$core$Maybe$Just(index))),
+					function () {
+					var _p27 = {
+						ctor: '_Tuple2',
+						_0: model.geometry,
+						_1: _debois$elm_mdl$Material_Menu$isActive(model)
+					};
+					if (((_p27.ctor === '_Tuple2') && (_p27._0.ctor === 'Just')) && (_p27._1 === true)) {
+						return A4(_debois$elm_mdl$Material_Menu$delay, config.alignment, _p27._0._0.menu.bounds.height, offsetTop, offsetHeight);
+					} else {
+						return _debois$elm_mdl$Material_Options$nop;
+					}
+				}(),
+					A2(_debois$elm_mdl$Material_Options$css, 'display', 'flex'),
+					A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'center')
 				]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					summary.config.enabled ? A2(
-					_debois$elm_mdl$Material_Menu$onClick,
-					_debois$elm_mdl$Material_Menu_Geometry$decode$,
-					function (_p30) {
-						return lift(
-							A2(_debois$elm_mdl$Material_Menu$Select, index, summary.config.onSelect));
-					}) : A2(_elm_lang$html$Html_Attributes$attribute, 'disabled', 'disabled'),
-					A2(
-					_elm_lang$html$Html_Attributes$property,
-					'tabindex',
-					_elm_lang$core$Json_Encode$string('-1')),
-					A2(_debois$elm_mdl$Material_Ripple$downOn$, ripple, 'mousedown'),
-					A2(_debois$elm_mdl$Material_Ripple$downOn$, ripple, 'touchstart'),
-					A2(_debois$elm_mdl$Material_Ripple$upOn$, ripple, 'mouseup'),
-					A2(_debois$elm_mdl$Material_Ripple$upOn$, ripple, 'mouseleave'),
-					A2(_debois$elm_mdl$Material_Ripple$upOn$, ripple, 'touchend'),
-					A2(_debois$elm_mdl$Material_Ripple$upOn$, ripple, 'blur')
-				]),
-			config.ripple ? A2(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				A2(
+					_elm_lang$core$List$filterMap,
+					_elm_lang$core$Basics$identity,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							canSelect ? _elm_lang$core$Maybe$Just(
+							_elm_lang$html$Html_Events$onClick(
+								lift(
+									A2(_debois$elm_mdl$Material_Menu$Select, index, summary.config.onSelect)))) : _elm_lang$core$Maybe$Nothing,
+							_elm_lang$core$Basics$not(summary.config.enabled) ? _elm_lang$core$Maybe$Just(
+							A2(_elm_lang$html$Html_Attributes$attribute, 'disabled', 'disabled')) : _elm_lang$core$Maybe$Nothing,
+							_elm_lang$core$Maybe$Just(
+							A2(
+								_elm_lang$html$Html_Attributes$property,
+								'tabindex',
+								_elm_lang$core$Json_Encode$string('-1')))
+						])),
+				hasRipple ? _elm_lang$core$Native_List.fromArray(
+					[
+						A2(_debois$elm_mdl$Material_Ripple$downOn$, ripple, 'mousedown'),
+						A2(_debois$elm_mdl$Material_Ripple$downOn$, ripple, 'touchstart'),
+						A2(_debois$elm_mdl$Material_Ripple$upOn$, ripple, 'mouseup'),
+						A2(_debois$elm_mdl$Material_Ripple$upOn$, ripple, 'mouseleave'),
+						A2(_debois$elm_mdl$Material_Ripple$upOn$, ripple, 'touchend'),
+						A2(_debois$elm_mdl$Material_Ripple$upOn$, ripple, 'blur')
+					]) : _elm_lang$core$Native_List.fromArray(
+					[])),
+			hasRipple ? A2(
 				F2(
 					function (x, y) {
 						return A2(_elm_lang$core$Basics_ops['++'], x, y);
@@ -12403,12 +11781,9 @@ var _debois$elm_mdl$Material_Menu$makeItem = F6(
 					[
 						A2(
 						_elm_lang$html$Html_App$map,
-						function (_p31) {
-							return lift(
-								A2(_debois$elm_mdl$Material_Menu$Ripple, index, _p31));
-						},
+						ripple,
 						A2(
-							_debois$elm_mdl$Material_Ripple$view,
+							_debois$elm_mdl$Material_Ripple$view$,
 							_elm_lang$core$Native_List.fromArray(
 								[
 									_elm_lang$html$Html_Attributes$class('mdl-menu__item-ripple-container')
@@ -12435,68 +11810,82 @@ var _debois$elm_mdl$Material_Menu$bottomLeft = _debois$elm_mdl$Material_Options$
 			{alignment: _debois$elm_mdl$Material_Menu$BottomLeft});
 	});
 var _debois$elm_mdl$Material_Menu$containerGeometry = F2(
-	function (config, geometry) {
-		return _elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_debois$elm_mdl$Material_Options$css,
-				'width',
-				_debois$elm_mdl$Material_Menu$toPx(geometry.menu.bounds.width)),
-				A2(
-				_debois$elm_mdl$Material_Options$css,
-				'height',
-				_debois$elm_mdl$Material_Menu$toPx(geometry.menu.bounds.height)),
-				(_elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$BottomRight) || _elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$BottomLeft)) ? A2(
-				_debois$elm_mdl$Material_Options$css,
-				'top',
-				_debois$elm_mdl$Material_Menu$toPx(geometry.button.offsetTop + geometry.button.offsetHeight)) : _debois$elm_mdl$Material_Options$nop,
-				function () {
-				if (_elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$BottomRight) || _elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$TopRight)) {
-					var right = function (e) {
-						return e.bounds.left + e.bounds.width;
-					};
-					return A2(
-						_debois$elm_mdl$Material_Options$css,
-						'right',
-						_debois$elm_mdl$Material_Menu$toPx(
-							right(geometry.container) - right(geometry.menu)));
-				} else {
-					return _debois$elm_mdl$Material_Options$nop;
-				}
-			}(),
-				function () {
-				if (_elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$TopLeft) || _elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$TopRight)) {
-					var bottom = geometry.container.bounds.top + geometry.container.bounds.height;
-					return A2(
-						_debois$elm_mdl$Material_Options$css,
-						'bottom',
-						_debois$elm_mdl$Material_Menu$toPx(bottom - geometry.button.bounds.top));
-				} else {
-					return _debois$elm_mdl$Material_Options$nop;
-				}
-			}(),
-				(_elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$TopLeft) || _elm_lang$core$Native_Utils.eq(config.alignment, _debois$elm_mdl$Material_Menu$BottomLeft)) ? A2(
-				_debois$elm_mdl$Material_Options$css,
-				'left',
-				_debois$elm_mdl$Material_Menu$toPx(geometry.menu.offsetLeft)) : _debois$elm_mdl$Material_Options$nop
-			]);
+	function (alignment, geometry) {
+		return _debois$elm_mdl$Material_Options$many(
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_debois$elm_mdl$Material_Options$css,
+					'width',
+					_debois$elm_mdl$Material_Menu$toPx(geometry.menu.bounds.width)),
+					A2(
+					_debois$elm_mdl$Material_Options$css,
+					'height',
+					_debois$elm_mdl$Material_Menu$toPx(geometry.menu.bounds.height)),
+					(_elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$BottomRight) || _elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$BottomLeft)) ? A2(
+					_debois$elm_mdl$Material_Options$css,
+					'top',
+					_debois$elm_mdl$Material_Menu$toPx(geometry.button.offsetTop + geometry.button.offsetHeight)) : _debois$elm_mdl$Material_Options$nop,
+					function () {
+					if (_elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$BottomRight) || _elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$TopRight)) {
+						var right = function (e) {
+							return e.bounds.left + e.bounds.width;
+						};
+						return A2(
+							_debois$elm_mdl$Material_Options$css,
+							'right',
+							_debois$elm_mdl$Material_Menu$toPx(
+								right(geometry.container) - right(geometry.menu)));
+					} else {
+						return _debois$elm_mdl$Material_Options$nop;
+					}
+				}(),
+					function () {
+					if (_elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$TopLeft) || _elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$TopRight)) {
+						var bottom = geometry.container.bounds.top + geometry.container.bounds.height;
+						return A2(
+							_debois$elm_mdl$Material_Options$css,
+							'bottom',
+							_debois$elm_mdl$Material_Menu$toPx(bottom - geometry.button.bounds.top));
+					} else {
+						return _debois$elm_mdl$Material_Options$nop;
+					}
+				}(),
+					(_elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$TopLeft) || _elm_lang$core$Native_Utils.eq(alignment, _debois$elm_mdl$Material_Menu$BottomLeft)) ? A2(
+					_debois$elm_mdl$Material_Options$css,
+					'left',
+					_debois$elm_mdl$Material_Menu$toPx(geometry.menu.offsetLeft)) : _debois$elm_mdl$Material_Options$nop
+				]));
 	});
 var _debois$elm_mdl$Material_Menu$view = F4(
 	function (lift, model, properties, items) {
 		var itemSummaries = A2(
 			_elm_lang$core$List$map,
-			function (_p32) {
+			function (_p28) {
 				return A2(
 					_debois$elm_mdl$Material_Options$collect,
 					_debois$elm_mdl$Material_Menu$defaultItemConfig,
 					function (_) {
 						return _.options;
-					}(_p32));
+					}(_p28));
 			},
 			items);
 		var numItems = _elm_lang$core$List$length(items);
 		var summary = A2(_debois$elm_mdl$Material_Options$collect, _debois$elm_mdl$Material_Menu$defaultConfig, properties);
 		var config = summary.config;
+		var alignment = function () {
+			var _p29 = config.alignment;
+			switch (_p29.ctor) {
+				case 'BottomLeft':
+					return _debois$elm_mdl$Material_Options$cs('mdl-menu--bottom-left');
+				case 'BottomRight':
+					return _debois$elm_mdl$Material_Options$cs('mdl-menu--bottom-right');
+				case 'TopLeft':
+					return _debois$elm_mdl$Material_Options$cs('mdl-menu--top-left');
+				default:
+					return _debois$elm_mdl$Material_Options$cs('mdl-menu--top-right');
+			}
+		}();
 		return A2(
 			_elm_lang$html$Html$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -12506,8 +11895,8 @@ var _debois$elm_mdl$Material_Menu$view = F4(
 					A2(
 					_elm_lang$html$Html_App$map,
 					lift,
-					A4(
-						_debois$elm_mdl$Material_Options$styled$,
+					A3(
+						_debois$elm_mdl$Material_Options$styled,
 						_elm_lang$html$Html$button,
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -12519,14 +11908,12 @@ var _debois$elm_mdl$Material_Menu$view = F4(
 								_debois$elm_mdl$Material_Options_Internal$attribute(
 									_debois$elm_mdl$Material_Menu$onKeyDown(
 										_debois$elm_mdl$Material_Menu$Key(itemSummaries))),
-								_debois$elm_mdl$Material_Menu$isActive(model))
-							]),
-						_elm_lang$core$Native_List.fromArray(
-							[
+								_debois$elm_mdl$Material_Menu$isActive(model)),
 								A2(
-								_debois$elm_mdl$Material_Menu$onClick,
-								_debois$elm_mdl$Material_Menu_Geometry$decode,
-								_elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Opened) ? _elm_lang$core$Basics$always(_debois$elm_mdl$Material_Menu$Close) : _debois$elm_mdl$Material_Menu$Open)
+								_debois$elm_mdl$Material_Options$when,
+								_debois$elm_mdl$Material_Options_Internal$attribute(
+									A2(_debois$elm_mdl$Material_Menu$onClick, _debois$elm_mdl$Material_Menu_Geometry$decode, _debois$elm_mdl$Material_Menu$Open)),
+								!_elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Opened))
 							]),
 						_elm_lang$core$Native_List.fromArray(
 							[
@@ -12551,15 +11938,9 @@ var _debois$elm_mdl$Material_Menu$view = F4(
 							_debois$elm_mdl$Material_Options$cs('is-visible'),
 							_elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Opened) || _elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Closing)),
 							A2(
-							_elm_lang$core$Maybe$withDefault,
-							_debois$elm_mdl$Material_Options$nop,
-							A2(
-								_elm_lang$core$Maybe$map,
-								function (_p33) {
-									return _debois$elm_mdl$Material_Options$many(
-										A2(_debois$elm_mdl$Material_Menu$containerGeometry, config, _p33));
-								},
-								model.geometry))
+							_debois$elm_mdl$Material_Menu$withGeometry,
+							model,
+							_debois$elm_mdl$Material_Menu$containerGeometry(config.alignment))
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
@@ -12569,40 +11950,24 @@ var _debois$elm_mdl$Material_Menu$view = F4(
 							_elm_lang$core$Native_List.fromArray(
 								[
 									_debois$elm_mdl$Material_Options$cs('mdl-menu__outline'),
-									_debois$elm_mdl$Material_Options$many(
+									alignment,
 									A2(
-										_elm_lang$core$Maybe$withDefault,
-										_elm_lang$core$Native_List.fromArray(
-											[]),
-										A2(
-											_elm_lang$core$Maybe$map,
-											function (geometry) {
-												return _elm_lang$core$Native_List.fromArray(
-													[
-														A2(
-														_debois$elm_mdl$Material_Options$css,
-														'width',
-														_debois$elm_mdl$Material_Menu$toPx(geometry.menu.bounds.width)),
-														A2(
-														_debois$elm_mdl$Material_Options$css,
-														'height',
-														_debois$elm_mdl$Material_Menu$toPx(geometry.menu.bounds.height))
-													]);
-											},
-											model.geometry))),
-									function () {
-									var _p34 = config.alignment;
-									switch (_p34.ctor) {
-										case 'BottomLeft':
-											return _debois$elm_mdl$Material_Options$cs('mdl-menu--bottom-left');
-										case 'BottomRight':
-											return _debois$elm_mdl$Material_Options$cs('mdl-menu--bottom-right');
-										case 'TopLeft':
-											return _debois$elm_mdl$Material_Options$cs('mdl-menu--top-left');
-										default:
-											return _debois$elm_mdl$Material_Options$cs('mdl-menu--top-right');
-									}
-								}()
+									_debois$elm_mdl$Material_Menu$withGeometry,
+									model,
+									function (geometry) {
+										return _debois$elm_mdl$Material_Options$many(
+											_elm_lang$core$Native_List.fromArray(
+												[
+													A2(
+													_debois$elm_mdl$Material_Options$css,
+													'width',
+													_debois$elm_mdl$Material_Menu$toPx(geometry.menu.bounds.width)),
+													A2(
+													_debois$elm_mdl$Material_Options$css,
+													'height',
+													_debois$elm_mdl$Material_Menu$toPx(geometry.menu.bounds.height))
+												]));
+									})
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[])),
@@ -12613,60 +11978,37 @@ var _debois$elm_mdl$Material_Menu$view = F4(
 								[
 									_debois$elm_mdl$Material_Options$cs('mdl-menu'),
 									_debois$elm_mdl$Material_Options$cs('mdl-js-menu'),
-									function () {
-									var _p35 = config.alignment;
-									switch (_p35.ctor) {
-										case 'BottomLeft':
-											return _debois$elm_mdl$Material_Options$cs('mdl-menu--bottom-left');
-										case 'BottomRight':
-											return _debois$elm_mdl$Material_Options$cs('mdl-menu--bottom-right');
-										case 'TopLeft':
-											return _debois$elm_mdl$Material_Options$cs('mdl-menu--top-left');
-										default:
-											return _debois$elm_mdl$Material_Options$cs('mdl-menu--top-right');
-									}
-								}(),
 									A2(
 									_debois$elm_mdl$Material_Options$when,
 									_debois$elm_mdl$Material_Options$cs('is-animating'),
 									_elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Opening) || _elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Closing)),
 									A2(
-									_elm_lang$core$Maybe$withDefault,
-									_debois$elm_mdl$Material_Options$nop,
-									A2(
-										_elm_lang$core$Maybe$map,
-										function (geometry) {
-											var height = geometry.menu.bounds.height;
-											var width = geometry.menu.bounds.width;
-											return A2(
-												_debois$elm_mdl$Material_Options$css,
-												'clip',
-												function () {
-													if (_elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Opened) || _elm_lang$core$Native_Utils.eq(model.animationState, _debois$elm_mdl$Material_Menu$Closing)) {
-														return A4(_debois$elm_mdl$Material_Menu$rect, 0, width, height, 0);
-													} else {
-														var _p36 = config.alignment;
-														switch (_p36.ctor) {
-															case 'BottomRight':
-																return A4(_debois$elm_mdl$Material_Menu$rect, 0, width, 0, width);
-															case 'TopLeft':
-																return A4(_debois$elm_mdl$Material_Menu$rect, height, 0, height, 0);
-															case 'TopRight':
-																return A4(_debois$elm_mdl$Material_Menu$rect, height, width, height, width);
-															default:
-																return '';
-														}
-													}
-												}());
-										},
-										model.geometry))
+									_debois$elm_mdl$Material_Menu$withGeometry,
+									model,
+									A2(_debois$elm_mdl$Material_Menu$clip, model, config)),
+									alignment
 								]),
-							A4(
-								_elm_lang$core$List$map3,
-								A3(_debois$elm_mdl$Material_Menu$makeItem, lift, config, model),
-								_elm_lang$core$Native_List.range(0, numItems - 1),
-								itemSummaries,
-								items))
+							function () {
+								var _p30 = model.geometry;
+								if (_p30.ctor === 'Just') {
+									var _p31 = _p30._0;
+									return A6(
+										_elm_lang$core$List$map5,
+										A3(_debois$elm_mdl$Material_Menu$view1, lift, config, model),
+										_p31.offsetTops,
+										_p31.offsetHeights,
+										_elm_lang$core$Native_List.range(0, numItems - 1),
+										itemSummaries,
+										items);
+								} else {
+									return A4(
+										_elm_lang$core$List$map3,
+										A5(_debois$elm_mdl$Material_Menu$view1, lift, config, model, 0, 0),
+										_elm_lang$core$Native_List.range(0, numItems - 1),
+										itemSummaries,
+										items);
+								}
+							}())
 						]))
 				]));
 	});
@@ -13736,7 +13078,7 @@ var _debois$elm_mdl$Material_Layout$tabsView = F4(
 														{
 															canScrollLeft: _elm_lang$core$Native_Utils.cmp(scrollLeft, 0) > 0,
 															canScrollRight: _elm_lang$core$Native_Utils.cmp(scrollWidth - clientWidth, scrollLeft + 1) > 0,
-															width: _elm_lang$core$Maybe$Just(clientWidth)
+															width: _elm_lang$core$Maybe$Just(scrollWidth)
 														}));
 											}),
 										A2(_elm_lang$core$Json_Decode_ops[':='], 'scrollWidth', _elm_lang$core$Json_Decode$float),
@@ -13805,7 +13147,6 @@ var _debois$elm_mdl$Material_Layout$view = F4(
 		var _p33 = _p25.tabs;
 		var _p32 = _p25.header;
 		var _p31 = _p25.drawer;
-		var drawerIsVisible = model.isDrawerOpen;
 		var hasDrawer = !_elm_lang$core$Native_Utils.eq(
 			_p31,
 			_elm_lang$core$Native_List.fromArray(
@@ -13842,6 +13183,7 @@ var _debois$elm_mdl$Material_Layout$view = F4(
 		var contentDrawerButton = _p26._0;
 		var headerDrawerButton = _p26._1;
 		var drawerIsFixed = config.fixedDrawer && _elm_lang$core$Basics$not(model.isSmallScreen);
+		var drawerIsVisible = model.isDrawerOpen && _elm_lang$core$Basics$not(drawerIsFixed);
 		var tabsElems = _elm_lang$core$Basics$not(hasTabs) ? _elm_lang$core$Maybe$Nothing : _elm_lang$core$Maybe$Just(
 			A4(_debois$elm_mdl$Material_Layout$tabsView, lift, config, model, _p33));
 		return A2(
@@ -13883,7 +13225,7 @@ var _debois$elm_mdl$Material_Layout$view = F4(
 											{ctor: '_Tuple2', _0: 'mdl-layout--fixed-header', _1: config.fixedHeader && hasHeader},
 											{ctor: '_Tuple2', _0: 'mdl-layout--fixed-tabs', _1: config.fixedTabs && hasTabs}
 										]))),
-								(drawerIsVisible && _elm_lang$core$Basics$not(drawerIsFixed)) ? _elm_lang$core$Maybe$Just(
+								drawerIsVisible ? _elm_lang$core$Maybe$Just(
 								A2(
 									_elm_lang$html$Html_Events$on,
 									'keydown',
@@ -13922,10 +13264,7 @@ var _debois$elm_mdl$Material_Layout$view = F4(
 							{
 								ctor: '_Tuple2',
 								_0: 'elm-mdl-obfuscator',
-								_1: A2(
-									_debois$elm_mdl$Material_Layout$obfuscator,
-									lift,
-									drawerIsVisible && _elm_lang$core$Basics$not(drawerIsFixed))
+								_1: A2(_debois$elm_mdl$Material_Layout$obfuscator, lift, drawerIsVisible)
 							}),
 							A2(
 							_elm_lang$core$Maybe$map,
@@ -14858,6 +14197,18 @@ var _debois$elm_mdl$Material_Tabs$textLabel = F2(
 				]));
 	});
 
+var _debois$elm_mdl$Material$init = function (lift) {
+	return _debois$elm_mdl$Material_Layout$sub0(lift);
+};
+var _debois$elm_mdl$Material$subscriptions = F2(
+	function (lift, model) {
+		return _elm_lang$core$Platform_Sub$batch(
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_debois$elm_mdl$Material_Layout$subs, lift, model.mdl),
+					A2(_debois$elm_mdl$Material_Menu$subs, lift, model.mdl)
+				]));
+	});
 var _debois$elm_mdl$Material$update = F2(
 	function (msg, model) {
 		return A2(
@@ -14878,6 +14229,868 @@ var _debois$elm_mdl$Material$Model = F8(
 	function (a, b, c, d, e, f, g, h) {
 		return {button: a, textfield: b, menu: c, snackbar: d, layout: e, toggles: f, tooltip: g, tabs: h};
 	});
+
+var _debois$elm_mdl$Material_Grid$clip = F3(
+	function (lower, upper, k) {
+		return A2(
+			_elm_lang$core$Basics$max,
+			lower,
+			A2(_elm_lang$core$Basics$min, k, upper));
+	});
+var _debois$elm_mdl$Material_Grid$stretch = _debois$elm_mdl$Material_Options$cs('mdl-cell--stretch');
+var _debois$elm_mdl$Material_Grid$align = function (a) {
+	var _p0 = a;
+	switch (_p0.ctor) {
+		case 'Top':
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--top');
+		case 'Middle':
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--middle');
+		default:
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--bottom');
+	}
+};
+var _debois$elm_mdl$Material_Grid$suffix = function (device) {
+	var _p1 = device;
+	switch (_p1.ctor) {
+		case 'All':
+			return '';
+		case 'Desktop':
+			return '-desktop';
+		case 'Tablet':
+			return '-tablet';
+		default:
+			return '-phone';
+	}
+};
+var _debois$elm_mdl$Material_Grid$size = F2(
+	function (device, k) {
+		var c = function () {
+			var _p2 = device;
+			switch (_p2.ctor) {
+				case 'All':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
+				case 'Desktop':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
+				case 'Tablet':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 8, k);
+				default:
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 4, k);
+			}
+		}();
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(c),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'-col',
+						_debois$elm_mdl$Material_Grid$suffix(device)))));
+	});
+var _debois$elm_mdl$Material_Grid$offset = F2(
+	function (device, k) {
+		var c = function () {
+			var _p3 = device;
+			switch (_p3.ctor) {
+				case 'All':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 11, k);
+				case 'Desktop':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 11, k);
+				case 'Tablet':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 7, k);
+				default:
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 3, k);
+			}
+		}();
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(c),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'-offset',
+						_debois$elm_mdl$Material_Grid$suffix(device)))));
+	});
+var _debois$elm_mdl$Material_Grid$hide = function (device) {
+	return _debois$elm_mdl$Material_Options$cs(
+		function () {
+			var _p4 = device;
+			if (_p4.ctor === 'All') {
+				return '';
+			} else {
+				return A2(
+					_elm_lang$core$Basics_ops['++'],
+					'mdl-cell--hide-',
+					_debois$elm_mdl$Material_Grid$suffix(device));
+			}
+		}());
+};
+var _debois$elm_mdl$Material_Grid$order = F2(
+	function (device, n) {
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--order-',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(
+						A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, n)),
+					_debois$elm_mdl$Material_Grid$suffix(device))));
+	});
+var _debois$elm_mdl$Material_Grid$grid = F2(
+	function (styling, cells) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			A2(
+				_elm_lang$core$List_ops['::'],
+				_debois$elm_mdl$Material_Options$cs('mdl-grid'),
+				styling),
+			A2(
+				_elm_lang$core$List$map,
+				function (_p5) {
+					var _p6 = _p5;
+					return _p6._0;
+				},
+				cells));
+	});
+var _debois$elm_mdl$Material_Grid$maxWidth = function (w) {
+	return A2(_debois$elm_mdl$Material_Options$css, 'max-width', w);
+};
+var _debois$elm_mdl$Material_Grid$noSpacing = _debois$elm_mdl$Material_Options$cs('mdl-grid--no-spacing');
+var _debois$elm_mdl$Material_Grid$Phone = {ctor: 'Phone'};
+var _debois$elm_mdl$Material_Grid$Tablet = {ctor: 'Tablet'};
+var _debois$elm_mdl$Material_Grid$Desktop = {ctor: 'Desktop'};
+var _debois$elm_mdl$Material_Grid$All = {ctor: 'All'};
+var _debois$elm_mdl$Material_Grid$Cell = function (a) {
+	return {ctor: 'Cell', _0: a};
+};
+var _debois$elm_mdl$Material_Grid$cell = F2(
+	function (styling, elms) {
+		return _debois$elm_mdl$Material_Grid$Cell(
+			A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-cell'),
+					styling),
+				elms));
+	});
+var _debois$elm_mdl$Material_Grid$Bottom = {ctor: 'Bottom'};
+var _debois$elm_mdl$Material_Grid$Middle = {ctor: 'Middle'};
+var _debois$elm_mdl$Material_Grid$Top = {ctor: 'Top'};
+
+var _debois$elm_mdl$Material_Color$text = function (_p0) {
+	var _p1 = _p0;
+	return _debois$elm_mdl$Material_Options$cs(
+		A2(_elm_lang$core$Basics_ops['++'], 'mdl-color-text--', _p1._0));
+};
+var _debois$elm_mdl$Material_Color$background = function (_p2) {
+	var _p3 = _p2;
+	return _debois$elm_mdl$Material_Options$cs(
+		A2(_elm_lang$core$Basics_ops['++'], 'mdl-color--', _p3._0));
+};
+var _debois$elm_mdl$Material_Color$shadeName = function (shade) {
+	var _p4 = shade;
+	switch (_p4.ctor) {
+		case 'S50':
+			return '50';
+		case 'S100':
+			return '100';
+		case 'S200':
+			return '200';
+		case 'S300':
+			return '300';
+		case 'S400':
+			return '400';
+		case 'S500':
+			return '500';
+		case 'S600':
+			return '600';
+		case 'S700':
+			return '700';
+		case 'S800':
+			return '800';
+		case 'S900':
+			return '900';
+		case 'A100':
+			return 'A100';
+		case 'A200':
+			return 'A200';
+		case 'A400':
+			return 'A400';
+		default:
+			return 'A700';
+	}
+};
+var _debois$elm_mdl$Material_Color$hueName = function (color) {
+	var _p5 = color;
+	switch (_p5.ctor) {
+		case 'Indigo':
+			return 'indigo';
+		case 'Blue':
+			return 'blue';
+		case 'LightBlue':
+			return 'light-blue';
+		case 'Cyan':
+			return 'cyan';
+		case 'Teal':
+			return 'teal';
+		case 'Green':
+			return 'green';
+		case 'LightGreen':
+			return 'light-green';
+		case 'Lime':
+			return 'lime';
+		case 'Yellow':
+			return 'yellow';
+		case 'Amber':
+			return 'amber';
+		case 'Orange':
+			return 'orange';
+		case 'Brown':
+			return 'brown';
+		case 'BlueGrey':
+			return 'blue-grey';
+		case 'Grey':
+			return 'grey';
+		case 'DeepOrange':
+			return 'deep-orange';
+		case 'Red':
+			return 'red';
+		case 'Pink':
+			return 'pink';
+		case 'Purple':
+			return 'purple';
+		default:
+			return 'deep-purple';
+	}
+};
+var _debois$elm_mdl$Material_Color$scheme = F2(
+	function (primary, accent) {
+		var q = _elm_lang$core$String$map(
+			function (x) {
+				return _elm_lang$core$Native_Utils.eq(
+					x,
+					_elm_lang$core$Native_Utils.chr('-')) ? _elm_lang$core$Native_Utils.chr('_') : x;
+			});
+		var cssFile = function () {
+			var _p6 = accent;
+			switch (_p6.ctor) {
+				case 'Grey':
+					return '';
+				case 'Brown':
+					return '';
+				case 'BlueGrey':
+					return '';
+				default:
+					return A2(
+						_elm_lang$core$Basics_ops['++'],
+						'.',
+						A2(
+							_elm_lang$core$Basics_ops['++'],
+							q(
+								_debois$elm_mdl$Material_Color$hueName(primary)),
+							A2(
+								_elm_lang$core$Basics_ops['++'],
+								'-',
+								q(
+									_debois$elm_mdl$Material_Color$hueName(accent)))));
+			}
+		}();
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			'material',
+			A2(_elm_lang$core$Basics_ops['++'], cssFile, '.min.css'));
+	});
+var _debois$elm_mdl$Material_Color$DeepPurple = {ctor: 'DeepPurple'};
+var _debois$elm_mdl$Material_Color$Purple = {ctor: 'Purple'};
+var _debois$elm_mdl$Material_Color$Pink = {ctor: 'Pink'};
+var _debois$elm_mdl$Material_Color$Red = {ctor: 'Red'};
+var _debois$elm_mdl$Material_Color$DeepOrange = {ctor: 'DeepOrange'};
+var _debois$elm_mdl$Material_Color$Grey = {ctor: 'Grey'};
+var _debois$elm_mdl$Material_Color$BlueGrey = {ctor: 'BlueGrey'};
+var _debois$elm_mdl$Material_Color$Brown = {ctor: 'Brown'};
+var _debois$elm_mdl$Material_Color$Orange = {ctor: 'Orange'};
+var _debois$elm_mdl$Material_Color$Amber = {ctor: 'Amber'};
+var _debois$elm_mdl$Material_Color$Yellow = {ctor: 'Yellow'};
+var _debois$elm_mdl$Material_Color$Lime = {ctor: 'Lime'};
+var _debois$elm_mdl$Material_Color$LightGreen = {ctor: 'LightGreen'};
+var _debois$elm_mdl$Material_Color$Green = {ctor: 'Green'};
+var _debois$elm_mdl$Material_Color$Teal = {ctor: 'Teal'};
+var _debois$elm_mdl$Material_Color$Cyan = {ctor: 'Cyan'};
+var _debois$elm_mdl$Material_Color$LightBlue = {ctor: 'LightBlue'};
+var _debois$elm_mdl$Material_Color$Blue = {ctor: 'Blue'};
+var _debois$elm_mdl$Material_Color$Indigo = {ctor: 'Indigo'};
+var _debois$elm_mdl$Material_Color$hues = _elm_lang$core$Array$fromList(
+	_elm_lang$core$Native_List.fromArray(
+		[_debois$elm_mdl$Material_Color$Indigo, _debois$elm_mdl$Material_Color$Blue, _debois$elm_mdl$Material_Color$LightBlue, _debois$elm_mdl$Material_Color$Cyan, _debois$elm_mdl$Material_Color$Teal, _debois$elm_mdl$Material_Color$Green, _debois$elm_mdl$Material_Color$LightGreen, _debois$elm_mdl$Material_Color$Lime, _debois$elm_mdl$Material_Color$Yellow, _debois$elm_mdl$Material_Color$Amber, _debois$elm_mdl$Material_Color$Orange, _debois$elm_mdl$Material_Color$Brown, _debois$elm_mdl$Material_Color$BlueGrey, _debois$elm_mdl$Material_Color$Grey, _debois$elm_mdl$Material_Color$DeepOrange, _debois$elm_mdl$Material_Color$Red, _debois$elm_mdl$Material_Color$Pink, _debois$elm_mdl$Material_Color$Purple, _debois$elm_mdl$Material_Color$DeepPurple]));
+var _debois$elm_mdl$Material_Color$accentHues = _elm_lang$core$Array$fromList(
+	_elm_lang$core$Native_List.fromArray(
+		[_debois$elm_mdl$Material_Color$Indigo, _debois$elm_mdl$Material_Color$Blue, _debois$elm_mdl$Material_Color$LightBlue, _debois$elm_mdl$Material_Color$Cyan, _debois$elm_mdl$Material_Color$Teal, _debois$elm_mdl$Material_Color$Green, _debois$elm_mdl$Material_Color$LightGreen, _debois$elm_mdl$Material_Color$Lime, _debois$elm_mdl$Material_Color$Yellow, _debois$elm_mdl$Material_Color$Amber, _debois$elm_mdl$Material_Color$Orange, _debois$elm_mdl$Material_Color$DeepOrange, _debois$elm_mdl$Material_Color$Red, _debois$elm_mdl$Material_Color$Pink, _debois$elm_mdl$Material_Color$Purple, _debois$elm_mdl$Material_Color$DeepPurple]));
+var _debois$elm_mdl$Material_Color$A700 = {ctor: 'A700'};
+var _debois$elm_mdl$Material_Color$A400 = {ctor: 'A400'};
+var _debois$elm_mdl$Material_Color$A200 = {ctor: 'A200'};
+var _debois$elm_mdl$Material_Color$A100 = {ctor: 'A100'};
+var _debois$elm_mdl$Material_Color$S900 = {ctor: 'S900'};
+var _debois$elm_mdl$Material_Color$S800 = {ctor: 'S800'};
+var _debois$elm_mdl$Material_Color$S700 = {ctor: 'S700'};
+var _debois$elm_mdl$Material_Color$S600 = {ctor: 'S600'};
+var _debois$elm_mdl$Material_Color$S500 = {ctor: 'S500'};
+var _debois$elm_mdl$Material_Color$S400 = {ctor: 'S400'};
+var _debois$elm_mdl$Material_Color$S300 = {ctor: 'S300'};
+var _debois$elm_mdl$Material_Color$S200 = {ctor: 'S200'};
+var _debois$elm_mdl$Material_Color$S100 = {ctor: 'S100'};
+var _debois$elm_mdl$Material_Color$S50 = {ctor: 'S50'};
+var _debois$elm_mdl$Material_Color$shades = _elm_lang$core$Array$fromList(
+	_elm_lang$core$Native_List.fromArray(
+		[_debois$elm_mdl$Material_Color$S50, _debois$elm_mdl$Material_Color$S100, _debois$elm_mdl$Material_Color$S200, _debois$elm_mdl$Material_Color$S300, _debois$elm_mdl$Material_Color$S400, _debois$elm_mdl$Material_Color$S500, _debois$elm_mdl$Material_Color$S600, _debois$elm_mdl$Material_Color$S700, _debois$elm_mdl$Material_Color$S800, _debois$elm_mdl$Material_Color$S900, _debois$elm_mdl$Material_Color$A100, _debois$elm_mdl$Material_Color$A200, _debois$elm_mdl$Material_Color$A400, _debois$elm_mdl$Material_Color$A700]));
+var _debois$elm_mdl$Material_Color$C = function (a) {
+	return {ctor: 'C', _0: a};
+};
+var _debois$elm_mdl$Material_Color$color = F2(
+	function (hue, shade) {
+		return _debois$elm_mdl$Material_Color$C(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_debois$elm_mdl$Material_Color$hueName(hue),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'-',
+					_debois$elm_mdl$Material_Color$shadeName(shade))));
+	});
+var _debois$elm_mdl$Material_Color$white = _debois$elm_mdl$Material_Color$C('white');
+var _debois$elm_mdl$Material_Color$black = _debois$elm_mdl$Material_Color$C('black');
+var _debois$elm_mdl$Material_Color$primary = _debois$elm_mdl$Material_Color$C('primary');
+var _debois$elm_mdl$Material_Color$primaryDark = _debois$elm_mdl$Material_Color$C('primary-dark');
+var _debois$elm_mdl$Material_Color$primaryContrast = _debois$elm_mdl$Material_Color$C('primary-contrast');
+var _debois$elm_mdl$Material_Color$accent = _debois$elm_mdl$Material_Color$C('accent');
+var _debois$elm_mdl$Material_Color$accentContrast = _debois$elm_mdl$Material_Color$C('accent-contrast');
+
+var _debois$elm_mdl$Material_Elevation$transition = function (duration) {
+	return A2(
+		_debois$elm_mdl$Material_Options$css,
+		'transition',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'box-shadow ',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(duration),
+				'ms ease-in-out 0s')));
+};
+var _debois$elm_mdl$Material_Elevation$e0 = _debois$elm_mdl$Material_Options$nop;
+var _debois$elm_mdl$Material_Elevation$shadow = function (z) {
+	return _debois$elm_mdl$Material_Options$cs(
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'mdl-shadow--',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(z),
+				'dp')));
+};
+var _debois$elm_mdl$Material_Elevation$e2 = _debois$elm_mdl$Material_Elevation$shadow(2);
+var _debois$elm_mdl$Material_Elevation$e3 = _debois$elm_mdl$Material_Elevation$shadow(3);
+var _debois$elm_mdl$Material_Elevation$e4 = _debois$elm_mdl$Material_Elevation$shadow(4);
+var _debois$elm_mdl$Material_Elevation$e6 = _debois$elm_mdl$Material_Elevation$shadow(6);
+var _debois$elm_mdl$Material_Elevation$e8 = _debois$elm_mdl$Material_Elevation$shadow(8);
+var _debois$elm_mdl$Material_Elevation$e16 = _debois$elm_mdl$Material_Elevation$shadow(16);
+var _debois$elm_mdl$Material_Elevation$e24 = _debois$elm_mdl$Material_Elevation$shadow(24);
+var _debois$elm_mdl$Material_Elevation$elevations = _elm_lang$core$Array$fromList(
+	_elm_lang$core$Native_List.fromArray(
+		[
+			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e0, _1: 0},
+			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e2, _1: 2},
+			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e3, _1: 3},
+			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e4, _1: 4},
+			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e6, _1: 6},
+			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e8, _1: 8},
+			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e16, _1: 16},
+			{ctor: '_Tuple2', _0: _debois$elm_mdl$Material_Elevation$e24, _1: 24}
+		]));
+
+var _RobertWalter83$calliope$Util$withMaxWidth = F2(
+	function (maxWidth, cssProps) {
+		return A2(
+			_elm_lang$core$Basics_ops['++'],
+			cssProps,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_debois$elm_mdl$Material_Options$css,
+					'max-width',
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						_elm_lang$core$Basics$toString(maxWidth),
+						'px'))
+				]));
+	});
+var _RobertWalter83$calliope$Util$boxed = function (_p0) {
+	var _p1 = _p0;
+	var stTopBottom = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(_p1._1),
+		'px');
+	var stSides = A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(_p1._0),
+		'px');
+	return _elm_lang$core$Native_List.fromArray(
+		[
+			A2(_debois$elm_mdl$Material_Options$css, 'margin', 'auto'),
+			A2(_debois$elm_mdl$Material_Options$css, 'padding-left', stSides),
+			A2(_debois$elm_mdl$Material_Options$css, 'padding-right', stSides),
+			A2(_debois$elm_mdl$Material_Options$css, 'padding-top', stTopBottom),
+			A2(_debois$elm_mdl$Material_Options$css, 'padding-bottom', stTopBottom)
+		]);
+};
+var _RobertWalter83$calliope$Util$boxedDefault = _RobertWalter83$calliope$Util$boxed(
+	{ctor: '_Tuple2', _0: 80, _1: 20});
+
+var _RobertWalter83$calliope$Project$encodeTier = function (tier) {
+	return _elm_lang$core$Json_Encode$object(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{
+				ctor: '_Tuple2',
+				_0: 'id',
+				_1: _elm_lang$core$Json_Encode$string(tier.id)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'name',
+				_1: _elm_lang$core$Json_Encode$string(tier.name)
+			}
+			]));
+};
+var _RobertWalter83$calliope$Project$encodeStructure = function (structure) {
+	return _elm_lang$core$Json_Encode$object(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{
+				ctor: '_Tuple2',
+				_0: 'tierList',
+				_1: _elm_lang$core$Json_Encode$list(
+					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Project$encodeTier, structure.tierList))
+			}
+			]));
+};
+var _RobertWalter83$calliope$Project$encodeScript = function (script) {
+	return _elm_lang$core$Json_Encode$object(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{
+				ctor: '_Tuple2',
+				_0: 'content',
+				_1: _elm_lang$core$Json_Encode$string(script.content)
+			}
+			]));
+};
+var _RobertWalter83$calliope$Project$encodeProject = function (project) {
+	var data = project.projectData;
+	return _elm_lang$core$Json_Encode$object(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{
+				ctor: '_Tuple2',
+				_0: 'title',
+				_1: _elm_lang$core$Json_Encode$string(data.title)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'script',
+				_1: _RobertWalter83$calliope$Project$encodeScript(data.script)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'structure',
+				_1: _RobertWalter83$calliope$Project$encodeStructure(data.structure)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'dateCreated',
+				_1: _elm_lang$core$Json_Encode$string(data.dateCreated)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'timeCreated',
+				_1: _elm_lang$core$Json_Encode$string(data.timeCreated)
+			}
+			]));
+};
+var _RobertWalter83$calliope$Project$title = function (t) {
+	return A3(
+		_debois$elm_mdl$Material_Options$styled,
+		_elm_lang$html$Html$h1,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$primary)
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(t)
+			]));
+};
+var _RobertWalter83$calliope$Project$cellFromTier = F2(
+	function (gridWidth, tier) {
+		return A2(
+			_debois$elm_mdl$Material_Grid$cell,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, gridWidth),
+					A2(_debois$elm_mdl$Material_Options$css, 'height', '200px')
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'Description of ',
+						A2(_elm_lang$core$Basics_ops['++'], tier.name, ' goes here!.')))
+				]));
+	});
+var _RobertWalter83$calliope$Project$cells = F2(
+	function (gridWidth, project) {
+		return A2(
+			_elm_lang$core$List$map,
+			_RobertWalter83$calliope$Project$cellFromTier(gridWidth),
+			project.structure.tierList);
+	});
+var _RobertWalter83$calliope$Project$widthFromTierList = function (tierList) {
+	var width = A2(
+		F2(
+			function (x, y) {
+				return (x / y) | 0;
+			}),
+		12,
+		A2(
+			F2(
+				function (x, y) {
+					return x + y;
+				}),
+			1,
+			_elm_lang$core$List$length(tierList)));
+	return (_elm_lang$core$Native_Utils.cmp(width, 3) < 0) ? 3 : width;
+};
+var _RobertWalter83$calliope$Project$cellHeader = F2(
+	function (gridWidth, stHeader) {
+		return A2(
+			_debois$elm_mdl$Material_Grid$cell,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(_debois$elm_mdl$Material_Grid$size, _debois$elm_mdl$Material_Grid$All, gridWidth)
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A3(
+					_debois$elm_mdl$Material_Options$styled,
+					_elm_lang$html$Html$h5,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$accent)
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_elm_lang$html$Html$text(stHeader)
+						]))
+				]));
+	});
+var _RobertWalter83$calliope$Project$cellHeaderFromTier = F2(
+	function (gridWidth, tier) {
+		return A2(_RobertWalter83$calliope$Project$cellHeader, gridWidth, tier.name);
+	});
+var _RobertWalter83$calliope$Project$cellHeaders = F2(
+	function (gridWidth, project) {
+		return A2(
+			_elm_lang$core$List$map,
+			_RobertWalter83$calliope$Project$cellHeaderFromTier(gridWidth),
+			project.structure.tierList);
+	});
+var _RobertWalter83$calliope$Project$renderStructure = function (project) {
+	var gridWidth = _RobertWalter83$calliope$Project$widthFromTierList(project.projectData.structure.tierList);
+	return A2(
+		_debois$elm_mdl$Material_Options$div,
+		_RobertWalter83$calliope$Util$boxedDefault,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_debois$elm_mdl$Material_Grid$grid,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_RobertWalter83$calliope$Util$boxed(
+						{ctor: '_Tuple2', _0: 12, _1: 0}),
+					_elm_lang$core$Native_List.fromArray(
+						[_debois$elm_mdl$Material_Grid$noSpacing])),
+				A2(
+					_elm_lang$core$List$append,
+					A2(_RobertWalter83$calliope$Project$cellHeaders, gridWidth, project.projectData),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(_RobertWalter83$calliope$Project$cellHeader, gridWidth, 'Statistics')
+						]))),
+				A2(
+				_debois$elm_mdl$Material_Grid$grid,
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_RobertWalter83$calliope$Util$boxed(
+						{ctor: '_Tuple2', _0: 12, _1: 12}),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_debois$elm_mdl$Material_Grid$noSpacing,
+							_debois$elm_mdl$Material_Elevation$e6,
+							_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
+						])),
+				A2(_RobertWalter83$calliope$Project$cells, gridWidth, project.projectData))
+			]));
+};
+var _RobertWalter83$calliope$Project$updateScript = F2(
+	function (script, contentNew) {
+		return _elm_lang$core$Native_Utils.update(
+			script,
+			{content: contentNew});
+	});
+var _RobertWalter83$calliope$Project$update = F2(
+	function (msg, project) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'Mdl':
+				return A2(_debois$elm_mdl$Material$update, _p0._0, project);
+			case 'UpdateEditorContent':
+				var data = project.projectData;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						project,
+						{
+							projectData: _elm_lang$core$Native_Utils.update(
+								data,
+								{
+									script: A2(
+										_RobertWalter83$calliope$Project$updateScript,
+										data.script,
+										A2(_elm_lang$core$Debug$log, 'contentNew', _p0._0)),
+									refreshEditor: false
+								})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			case 'EditorReady':
+				return {ctor: '_Tuple2', _0: project, _1: _elm_lang$core$Platform_Cmd$none};
+			case 'TitleEditable':
+				var data = project.projectData;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						project,
+						{
+							projectData: _elm_lang$core$Native_Utils.update(
+								data,
+								{titleEditable: _p0._0})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+			default:
+				var data = project.projectData;
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						project,
+						{
+							projectData: _elm_lang$core$Native_Utils.update(
+								data,
+								{title: _p0._0})
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
+		}
+	});
+var _RobertWalter83$calliope$Project$defaultStructure = {
+	tierList: _elm_lang$core$Native_List.fromArray(
+		[
+			{id: 'Scenes', name: 'Scenes'},
+			{id: 'Scripts', name: 'Scripts'}
+		])
+};
+var _RobertWalter83$calliope$Project$toStringTime = function (date) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(
+			_elm_lang$core$Date$hour(date)),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			':',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(
+					_elm_lang$core$Date$minute(date)),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					':',
+					_elm_lang$core$Basics$toString(
+						_elm_lang$core$Date$second(date))))));
+};
+var _RobertWalter83$calliope$Project$toStringDate = function (date) {
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		_elm_lang$core$Basics$toString(
+			_elm_lang$core$Date$day(date)),
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			'/',
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				_elm_lang$core$Basics$toString(
+					_elm_lang$core$Date$month(date)),
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					'/',
+					_elm_lang$core$Basics$toString(
+						_elm_lang$core$Date$year(date))))));
+};
+var _RobertWalter83$calliope$Project$createProjectAt = F2(
+	function (date, time) {
+		return {
+			mdl: _debois$elm_mdl$Material$model,
+			projectData: {
+				title: 'New Project',
+				refreshEditor: false,
+				titleEditable: false,
+				dateCreated: date,
+				timeCreated: time,
+				script: {content: ''},
+				structure: _RobertWalter83$calliope$Project$defaultStructure
+			}
+		};
+	});
+var _RobertWalter83$calliope$Project$createProject = function (timeNow) {
+	return A2(
+		_RobertWalter83$calliope$Project$createProjectAt,
+		A3(
+			_rluiten$elm_date_extra$Date_Extra_Format$format,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.date,
+			_elm_lang$core$Date$fromTime(timeNow)),
+		A3(
+			_rluiten$elm_date_extra$Date_Extra_Format$format,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.time,
+			_elm_lang$core$Date$fromTime(timeNow)));
+};
+var _RobertWalter83$calliope$Project$defaultProject = A2(_RobertWalter83$calliope$Project$createProjectAt, '1/1/1990', '12:00:00');
+var _RobertWalter83$calliope$Project$Project = F2(
+	function (a, b) {
+		return {mdl: a, projectData: b};
+	});
+var _RobertWalter83$calliope$Project$ProjectData = F7(
+	function (a, b, c, d, e, f, g) {
+		return {title: a, refreshEditor: b, titleEditable: c, dateCreated: d, timeCreated: e, script: f, structure: g};
+	});
+var _RobertWalter83$calliope$Project$Script = function (a) {
+	return {content: a};
+};
+var _RobertWalter83$calliope$Project$Scene = F2(
+	function (a, b) {
+		return {name: a, location: b};
+	});
+var _RobertWalter83$calliope$Project$Structure = function (a) {
+	return {tierList: a};
+};
+var _RobertWalter83$calliope$Project$Tier = F2(
+	function (a, b) {
+		return {id: a, name: b};
+	});
+var _RobertWalter83$calliope$Project$EditTitle = function (a) {
+	return {ctor: 'EditTitle', _0: a};
+};
+var _RobertWalter83$calliope$Project$TitleEditable = function (a) {
+	return {ctor: 'TitleEditable', _0: a};
+};
+var _RobertWalter83$calliope$Project$EditorReady = {ctor: 'EditorReady'};
+var _RobertWalter83$calliope$Project$renderScript = F2(
+	function (script, refresh) {
+		return A3(
+			_elm_lang$html$Html$node,
+			'juicy-ace-editor',
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$id('editor-container'),
+					A2(
+					_elm_lang$html$Html_Events$on,
+					'editor-ready',
+					_elm_lang$core$Json_Decode$succeed(_RobertWalter83$calliope$Project$EditorReady))
+				]),
+			refresh ? _elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(script.content)
+				]) : _elm_lang$core$Native_List.fromArray(
+				[]));
+	});
+var _RobertWalter83$calliope$Project$renderDialog = F2(
+	function (project, refresh) {
+		var doRefresh = A2(_elm_lang$core$Debug$log, 'refresh:', refresh && project.projectData.refreshEditor);
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			A2(_RobertWalter83$calliope$Util$withMaxWidth, 812, _RobertWalter83$calliope$Util$boxedDefault),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_debois$elm_mdl$Material_Options$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_debois$elm_mdl$Material_Elevation$e6,
+							A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px'),
+							A2(_debois$elm_mdl$Material_Options$css, 'position', 'relative'),
+							_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(_RobertWalter83$calliope$Project$renderScript, project.projectData.script, doRefresh)
+						]))
+				]));
+	});
+var _RobertWalter83$calliope$Project$UpdateEditorContent = function (a) {
+	return {ctor: 'UpdateEditorContent', _0: a};
+};
+var _RobertWalter83$calliope$Project$subscriptions = function (project) {
+	return _RobertWalter83$calliope$Ports$updateEditorContent(_RobertWalter83$calliope$Project$UpdateEditorContent);
+};
+var _RobertWalter83$calliope$Project$Mdl = function (a) {
+	return {ctor: 'Mdl', _0: a};
+};
+var _RobertWalter83$calliope$Project$renderProjectTitle = function (project) {
+	var data = project.projectData;
+	return data.titleEditable ? A4(
+		_debois$elm_mdl$Material_Textfield$render,
+		_RobertWalter83$calliope$Project$Mdl,
+		_elm_lang$core$Native_List.fromArray(
+			[13]),
+		_debois$elm_mdl$Material$model,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_debois$elm_mdl$Material_Textfield$text$,
+				_debois$elm_mdl$Material_Textfield$onInput(_RobertWalter83$calliope$Project$EditTitle),
+				_debois$elm_mdl$Material_Textfield$onBlur(
+				_RobertWalter83$calliope$Project$TitleEditable(false)),
+				_debois$elm_mdl$Material_Textfield$value(data.title),
+				A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px')
+			])) : A2(
+		_debois$elm_mdl$Material_Options$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_debois$elm_mdl$Material_Options$attribute(
+				_elm_lang$html$Html_Events$onClick(
+					_RobertWalter83$calliope$Project$TitleEditable(true)))
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(data.title)
+			]));
+};
 
 var _debois$elm_mdl$Material_Card$stopClick = _debois$elm_mdl$Material_Options_Internal$attribute(
 	A2(_elm_lang$html$Html_Attributes$attribute, 'onclick', 'var event = arguments[0] || window.event; event.stopPropagation();'));
@@ -15019,24 +15232,19 @@ var _RobertWalter83$calliope$App$encodeAppState = function (appState) {
 				{
 				ctor: '_Tuple2',
 				_0: 'projectActive',
-				_1: _RobertWalter83$calliope$Calliope$encodeProject(appState.projectActive)
+				_1: _RobertWalter83$calliope$Project$encodeProject(appState.projectActive)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'projectsRecent',
 				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Calliope$encodeProject, appState.projectsRecent))
+					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Project$encodeProject, appState.projectsRecent))
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'projectsAll',
 				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Calliope$encodeProject, appState.projectsAll))
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'titleEditable',
-				_1: _elm_lang$core$Json_Encode$bool(appState.titleEditable)
+					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Project$encodeProject, appState.projectsAll))
 			},
 				{
 				ctor: '_Tuple2',
@@ -15088,12 +15296,6 @@ var _RobertWalter83$calliope$App$createParams = F5(
 	function (index, appWithMdl, msg, pathBackground, messageTuple) {
 		return {index: index, appWithMdl: appWithMdl, onClick: msg, pathBackground: pathBackground, messageTuple: messageTuple};
 	});
-var _RobertWalter83$calliope$App$updateProjectTitle = F2(
-	function (projectOld, titleNew) {
-		return _elm_lang$core$Native_Utils.update(
-			projectOld,
-			{title: titleNew});
-	});
 var _RobertWalter83$calliope$App$appMdlWithCmdNone = F2(
 	function (appWithMdl, appStateNew) {
 		return {
@@ -15104,15 +15306,14 @@ var _RobertWalter83$calliope$App$appMdlWithCmdNone = F2(
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	});
-var _RobertWalter83$calliope$App$setEditorContent = F2(
-	function (appStateCurrent, content) {
-		return _elm_lang$core$Native_Utils.update(
-			appStateCurrent,
-			{
-				projectActive: A2(_RobertWalter83$calliope$Calliope$updateProject, appStateCurrent.projectActive, content),
-				refreshEditorContent: false
-			});
-	});
+var _RobertWalter83$calliope$App$sortByTitle = function (input) {
+	return A2(
+		_elm_lang$core$List$sortBy,
+		function (p) {
+			return p.projectData.title;
+		},
+		input);
+};
 var _RobertWalter83$calliope$App$filter = F2(
 	function (list, item) {
 		return A2(
@@ -15129,42 +15330,12 @@ var _RobertWalter83$calliope$App$updateProjectList = F2(
 	});
 var _RobertWalter83$calliope$App$openProject = F2(
 	function (appStateCurrent, projectToOpen) {
-		var projectsAll = A2(
-			_elm_lang$core$List$sortBy,
-			function (_) {
-				return _.title;
-			},
+		var projectsAll = _RobertWalter83$calliope$App$sortByTitle(
 			A2(_RobertWalter83$calliope$App$updateProjectList, appStateCurrent.projectsAll, projectToOpen));
 		var projectsRecent = A2(_RobertWalter83$calliope$App$updateProjectList, appStateCurrent.projectsRecent, projectToOpen);
 		return _elm_lang$core$Native_Utils.update(
 			appStateCurrent,
 			{projectActive: projectToOpen, projectsRecent: projectsRecent, projectsAll: projectsAll, viewSelected: 1});
-	});
-var _RobertWalter83$calliope$App$editTitle = F2(
-	function (appStateCurrent, titleNew) {
-		var newProject = A2(_RobertWalter83$calliope$App$updateProjectTitle, appStateCurrent.projectActive, titleNew);
-		var projectsRecent = A2(
-			_elm_lang$core$List_ops['::'],
-			newProject,
-			A4(
-				_elm_lang$core$Debug$log,
-				'projectsRecent',
-				_RobertWalter83$calliope$App$filter,
-				appStateCurrent.projectsRecent,
-				A2(_elm_lang$core$Debug$log, 'projectActive', appStateCurrent.projectActive)));
-		var projectsAll = A2(
-			_elm_lang$core$List_ops['::'],
-			newProject,
-			A2(_RobertWalter83$calliope$App$filter, appStateCurrent.projectsAll, appStateCurrent.projectActive));
-		return _elm_lang$core$Native_Utils.update(
-			appStateCurrent,
-			{projectActive: newProject, projectsRecent: projectsRecent, projectsAll: projectsAll});
-	});
-var _RobertWalter83$calliope$App$titleEditable = F2(
-	function (appStateCurrent, isEditable) {
-		return _elm_lang$core$Native_Utils.update(
-			appStateCurrent,
-			{titleEditable: isEditable});
 	});
 var _RobertWalter83$calliope$App$raiseCard = F2(
 	function (appStateCurrent, cardIndex) {
@@ -15180,44 +15351,28 @@ var _RobertWalter83$calliope$App$addNewProject = function (project) {
 			[]),
 		projectsRecent: _elm_lang$core$Native_List.fromArray(
 			[]),
-		titleEditable: false,
 		refreshEditorContent: false,
 		raisedCard: -1
 	};
 };
 var _RobertWalter83$calliope$App$createNewProject = F2(
 	function (appStateCurrent, timeNow) {
-		var newProject = _RobertWalter83$calliope$Calliope$createProject(timeNow);
+		var newProject = _RobertWalter83$calliope$Project$createProject(timeNow);
 		var projectsRecent = A2(_elm_lang$core$List_ops['::'], newProject, appStateCurrent.projectsRecent);
-		var projectsAll = A2(
-			_elm_lang$core$List$sortBy,
-			function (_) {
-				return _.title;
-			},
+		var projectsAll = _RobertWalter83$calliope$App$sortByTitle(
 			A2(_elm_lang$core$List_ops['::'], newProject, appStateCurrent.projectsAll));
 		var appStateNew = _RobertWalter83$calliope$App$addNewProject(newProject);
 		return _elm_lang$core$Native_Utils.update(
 			appStateNew,
-			{projectsRecent: projectsRecent, projectsAll: projectsAll, titleEditable: true});
+			{projectsRecent: projectsRecent, projectsAll: projectsAll});
 	});
-var _RobertWalter83$calliope$App$addDefaultProject = _RobertWalter83$calliope$App$addNewProject(_RobertWalter83$calliope$Calliope$defaultProject);
+var _RobertWalter83$calliope$App$addDefaultProject = _RobertWalter83$calliope$App$addNewProject(_RobertWalter83$calliope$Project$defaultProject);
 var _RobertWalter83$calliope$App$wrapWithMdl = function (appState) {
 	return {mdl: _debois$elm_mdl$Material$model, appState: appState};
 };
-var _RobertWalter83$calliope$App$configureAce = _elm_lang$core$Native_Platform.outgoingPort(
-	'configureAce',
-	function (v) {
-		return v;
-	});
-var _RobertWalter83$calliope$App$save = _elm_lang$core$Native_Platform.outgoingPort(
-	'save',
-	function (v) {
-		return v;
-	});
-var _RobertWalter83$calliope$App$getEditorContent = _elm_lang$core$Native_Platform.incomingPort('getEditorContent', _elm_lang$core$Json_Decode$string);
-var _RobertWalter83$calliope$App$AppState = F7(
-	function (a, b, c, d, e, f, g) {
-		return {viewSelected: a, projectActive: b, projectsAll: c, projectsRecent: d, titleEditable: e, refreshEditorContent: f, raisedCard: g};
+var _RobertWalter83$calliope$App$AppState = F6(
+	function (a, b, c, d, e, f) {
+		return {viewSelected: a, projectActive: b, projectsAll: c, projectsRecent: d, refreshEditorContent: e, raisedCard: f};
 	});
 var _RobertWalter83$calliope$App$AppWithMdl = F2(
 	function (a, b) {
@@ -15231,70 +15386,8 @@ var _RobertWalter83$calliope$App$NoOp = {ctor: 'NoOp'};
 var _RobertWalter83$calliope$App$Raise = function (a) {
 	return {ctor: 'Raise', _0: a};
 };
-var _RobertWalter83$calliope$App$CreateNewProjectNow = function (a) {
-	return {ctor: 'CreateNewProjectNow', _0: a};
-};
-var _RobertWalter83$calliope$App$cmdTimeNow = A3(
-	_elm_lang$core$Task$perform,
-	function (_p0) {
-		return _RobertWalter83$calliope$App$NoOp;
-	},
-	_RobertWalter83$calliope$App$CreateNewProjectNow,
-	_elm_lang$core$Time$now);
-var _RobertWalter83$calliope$App$OpenProject = function (a) {
-	return {ctor: 'OpenProject', _0: a};
-};
-var _RobertWalter83$calliope$App$CreateNewProject = {ctor: 'CreateNewProject'};
-var _RobertWalter83$calliope$App$Save = {ctor: 'Save'};
-var _RobertWalter83$calliope$App$EditorReady = function (a) {
-	return {ctor: 'EditorReady', _0: a};
-};
-var _RobertWalter83$calliope$App$GetEditorContent = function (a) {
-	return {ctor: 'GetEditorContent', _0: a};
-};
-var _RobertWalter83$calliope$App$subscriptions = function (appState) {
-	return _elm_lang$core$Platform_Sub$batch(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_RobertWalter83$calliope$App$getEditorContent(_RobertWalter83$calliope$App$GetEditorContent)
-			]));
-};
-var _RobertWalter83$calliope$App$EditTitle = function (a) {
-	return {ctor: 'EditTitle', _0: a};
-};
-var _RobertWalter83$calliope$App$TitleEditable = function (a) {
-	return {ctor: 'TitleEditable', _0: a};
-};
-var _RobertWalter83$calliope$App$SelectView = function (a) {
-	return {ctor: 'SelectView', _0: a};
-};
-var _RobertWalter83$calliope$App$Mdl = function (a) {
-	return {ctor: 'Mdl', _0: a};
-};
-var _RobertWalter83$calliope$App$init = function (maybeAppState) {
-	var appStateInit = function () {
-		var _p1 = maybeAppState;
-		if (_p1.ctor === 'Nothing') {
-			return _RobertWalter83$calliope$App$wrapWithMdl(_RobertWalter83$calliope$App$addDefaultProject);
-		} else {
-			return _RobertWalter83$calliope$App$wrapWithMdl(
-				_elm_lang$core$Native_Utils.update(
-					_p1._0,
-					{refreshEditorContent: true}));
-		}
-	}();
-	return {
-		ctor: '_Tuple2',
-		_0: appStateInit,
-		_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
-	};
-};
-var _RobertWalter83$calliope$App$renderPolaroid = F3(
-	function (project, editableTitle, params) {
-		var onTextClick = editableTitle ? _debois$elm_mdl$Material_Options$attribute(
-			_elm_lang$html$Html_Events$onClick(params.onClick)) : _debois$elm_mdl$Material_Options$nop;
-		var onCardClick = editableTitle ? _debois$elm_mdl$Material_Options$nop : _debois$elm_mdl$Material_Options$attribute(
-			_elm_lang$html$Html_Events$onClick(params.onClick));
+var _RobertWalter83$calliope$App$renderPolaroid = F2(
+	function (project, params) {
 		return A2(
 			_debois$elm_mdl$Material_Card$view,
 			_elm_lang$core$Native_List.fromArray(
@@ -15308,7 +15401,8 @@ var _RobertWalter83$calliope$App$renderPolaroid = F3(
 					_debois$elm_mdl$Material_Options$attribute(
 					_elm_lang$html$Html_Events$onMouseLeave(
 						_RobertWalter83$calliope$App$Raise(-1))),
-					onCardClick,
+					_debois$elm_mdl$Material_Options$attribute(
+					_elm_lang$html$Html_Events$onClick(params.onClick)),
 					A2(_debois$elm_mdl$Material_Options$css, 'margin', '0'),
 					A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px')
 				]),
@@ -15339,43 +15433,8 @@ var _RobertWalter83$calliope$App$renderPolaroid = F3(
 									A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px'),
 									A2(_debois$elm_mdl$Material_Options$css, 'width', '208px')
 								]),
-							editableTitle ? (params.appWithMdl.appState.titleEditable ? _elm_lang$core$Native_List.fromArray(
-								[
-									A4(
-									_debois$elm_mdl$Material_Textfield$render,
-									_RobertWalter83$calliope$App$Mdl,
-									_elm_lang$core$Native_List.fromArray(
-										[13]),
-									params.appWithMdl.mdl,
-									_elm_lang$core$Native_List.fromArray(
-										[
-											_debois$elm_mdl$Material_Textfield$text$,
-											_debois$elm_mdl$Material_Textfield$onInput(_RobertWalter83$calliope$App$EditTitle),
-											_debois$elm_mdl$Material_Textfield$onBlur(
-											_RobertWalter83$calliope$App$TitleEditable(false)),
-											_debois$elm_mdl$Material_Textfield$value(project.title),
-											A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px')
-										]))
-								]) : _elm_lang$core$Native_List.fromArray(
-								[
-									A2(
-									_debois$elm_mdl$Material_Options$div,
-									_elm_lang$core$Native_List.fromArray(
-										[
-											_debois$elm_mdl$Material_Options$attribute(
-											_elm_lang$html$Html_Events$onClick(
-												_RobertWalter83$calliope$App$TitleEditable(true)))
-										]),
-									_elm_lang$core$Native_List.fromArray(
-										[
-											_elm_lang$html$Html$text(
-											_elm_lang$core$Basics$fst(params.messageTuple))
-										]))
-								])) : _elm_lang$core$Native_List.fromArray(
-								[
-									_elm_lang$html$Html$text(
-									_elm_lang$core$Basics$fst(params.messageTuple))
-								]))
+							_elm_lang$core$Native_List.fromArray(
+								[]))
 						])),
 					A2(
 					_debois$elm_mdl$Material_Card$text,
@@ -15386,8 +15445,7 @@ var _RobertWalter83$calliope$App$renderPolaroid = F3(
 							A2(_debois$elm_mdl$Material_Options$css, 'font-weight', '700'),
 							A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px'),
 							A2(_debois$elm_mdl$Material_Options$css, 'width', '100%'),
-							_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$black),
-							onTextClick
+							_debois$elm_mdl$Material_Color$text(_debois$elm_mdl$Material_Color$black)
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
@@ -15406,9 +15464,23 @@ var _RobertWalter83$calliope$App$renderProjectLink = F2(
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A3(_RobertWalter83$calliope$App$renderPolaroid, project, true, params)
+					A2(_RobertWalter83$calliope$App$renderPolaroid, project, params)
 				]));
 	});
+var _RobertWalter83$calliope$App$CreateNewProjectNow = function (a) {
+	return {ctor: 'CreateNewProjectNow', _0: a};
+};
+var _RobertWalter83$calliope$App$cmdTimeNow = A3(
+	_elm_lang$core$Task$perform,
+	function (_p0) {
+		return _RobertWalter83$calliope$App$NoOp;
+	},
+	_RobertWalter83$calliope$App$CreateNewProjectNow,
+	_elm_lang$core$Time$now);
+var _RobertWalter83$calliope$App$OpenProject = function (a) {
+	return {ctor: 'OpenProject', _0: a};
+};
+var _RobertWalter83$calliope$App$CreateNewProject = {ctor: 'CreateNewProject'};
 var _RobertWalter83$calliope$App$renderOverview = function (appWithMdl) {
 	var lengthRecentProjects = _elm_lang$core$List$length(appWithMdl.appState.projectsRecent);
 	return A2(
@@ -15449,10 +15521,9 @@ var _RobertWalter83$calliope$App$renderOverview = function (appWithMdl) {
 								]),
 							_elm_lang$core$Native_List.fromArray(
 								[
-									A3(
+									A2(
 									_RobertWalter83$calliope$App$renderPolaroid,
 									appWithMdl.appState.projectActive,
-									false,
 									A5(
 										_RobertWalter83$calliope$App$createParams,
 										0,
@@ -15481,31 +15552,18 @@ var _RobertWalter83$calliope$App$renderOverview = function (appWithMdl) {
 							A2(
 								_elm_lang$core$List$map,
 								function (p) {
-									return {ctor: '_Tuple2', _0: p.title, _1: 'Click here to open.'};
+									return {ctor: '_Tuple2', _0: p.projectData.title, _1: 'Click here to open.'};
 								},
 								appWithMdl.appState.projectsRecent)))))
 			]));
 };
-var _RobertWalter83$calliope$App$btnEditTitle = F2(
-	function (stIcon, mdl) {
-		return A5(
-			_debois$elm_mdl$Material_Button$render,
-			_RobertWalter83$calliope$App$Mdl,
-			_elm_lang$core$Native_List.fromArray(
-				[0]),
-			mdl,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_debois$elm_mdl$Material_Button$icon,
-					_debois$elm_mdl$Material_Button$ripple,
-					_debois$elm_mdl$Material_Button$onClick(
-					_RobertWalter83$calliope$App$TitleEditable(true))
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_debois$elm_mdl$Material_Icon$i(stIcon)
-				]));
-	});
+var _RobertWalter83$calliope$App$Save = {ctor: 'Save'};
+var _RobertWalter83$calliope$App$EditorReady = function (a) {
+	return {ctor: 'EditorReady', _0: a};
+};
+var _RobertWalter83$calliope$App$TitleEditable = function (a) {
+	return {ctor: 'TitleEditable', _0: a};
+};
 var _RobertWalter83$calliope$App$viewDefaultHeader = function (appWithMdl) {
 	return _elm_lang$core$Native_List.fromArray(
 		[
@@ -15515,37 +15573,38 @@ var _RobertWalter83$calliope$App$viewDefaultHeader = function (appWithMdl) {
 				[
 					A2(_debois$elm_mdl$Material_Options$css, 'transition', 'height 333ms ease-in-out 0s')
 				]),
-			appWithMdl.appState.titleEditable ? _elm_lang$core$Native_List.fromArray(
-				[
-					A4(
-					_debois$elm_mdl$Material_Textfield$render,
-					_RobertWalter83$calliope$App$Mdl,
-					_elm_lang$core$Native_List.fromArray(
-						[0]),
-					appWithMdl.mdl,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_debois$elm_mdl$Material_Textfield$text$,
-							_debois$elm_mdl$Material_Textfield$onInput(_RobertWalter83$calliope$App$EditTitle),
-							_debois$elm_mdl$Material_Textfield$value(appWithMdl.appState.projectActive.title),
-							A2(_debois$elm_mdl$Material_Options$css, 'margin-right', '20px')
-						])),
-					A2(_RobertWalter83$calliope$App$btnEditTitle, 'done', appWithMdl.mdl)
-				]) : _elm_lang$core$Native_List.fromArray(
+			_elm_lang$core$Native_List.fromArray(
 				[
 					A2(
-					_debois$elm_mdl$Material_Layout$title,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(_debois$elm_mdl$Material_Options$css, 'margin-right', '20px')
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_elm_lang$html$Html$text(appWithMdl.appState.projectActive.title)
-						])),
-					A2(_RobertWalter83$calliope$App$btnEditTitle, 'mode_edit', appWithMdl.mdl)
+					_elm_lang$html$Html_App$map,
+					_RobertWalter83$calliope$App$TitleEditable,
+					_RobertWalter83$calliope$Project$renderProjectTitle(appWithMdl.appState.projectActive))
 				]))
 		]);
+};
+var _RobertWalter83$calliope$App$SelectView = function (a) {
+	return {ctor: 'SelectView', _0: a};
+};
+var _RobertWalter83$calliope$App$UpdateContent = function (a) {
+	return {ctor: 'UpdateContent', _0: a};
+};
+var _RobertWalter83$calliope$App$subscriptions = function (appWithMdl) {
+	return _elm_lang$core$Platform_Sub$batch(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				A2(
+				_elm_lang$core$Platform_Sub$map,
+				_RobertWalter83$calliope$App$UpdateContent,
+				_RobertWalter83$calliope$Project$subscriptions(appWithMdl.appState.projectActive))
+			]));
+};
+var _RobertWalter83$calliope$App$Mdl = function (a) {
+	return {ctor: 'Mdl', _0: a};
+};
+var _RobertWalter83$calliope$App$init = {
+	ctor: '_Tuple2',
+	_0: _RobertWalter83$calliope$App$wrapWithMdl(_RobertWalter83$calliope$App$addDefaultProject),
+	_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
 };
 var _RobertWalter83$calliope$App$Dialog = {ctor: 'Dialog'};
 var _RobertWalter83$calliope$App$Structure = {ctor: 'Structure'};
@@ -15576,60 +15635,66 @@ var _RobertWalter83$calliope$App$selectView = F2(
 var _RobertWalter83$calliope$App$update = F2(
 	function (msg, appWithMdl) {
 		var appStateCurrent = appWithMdl.appState;
-		var _p2 = msg;
-		switch (_p2.ctor) {
+		var _p1 = msg;
+		switch (_p1.ctor) {
 			case 'Mdl':
-				return A2(_debois$elm_mdl$Material$update, _p2._0, appWithMdl);
+				return A2(_debois$elm_mdl$Material$update, _p1._0, appWithMdl);
+			case 'UpdateContent':
+				return {ctor: '_Tuple2', _0: appWithMdl, _1: _elm_lang$core$Platform_Cmd$none};
 			case 'Raise':
 				return A2(
 					_RobertWalter83$calliope$App$appMdlWithCmdNone,
 					appWithMdl,
-					A2(_RobertWalter83$calliope$App$raiseCard, appStateCurrent, _p2._0));
+					A2(_RobertWalter83$calliope$App$raiseCard, appStateCurrent, _p1._0));
 			case 'SelectView':
 				return A2(
 					_RobertWalter83$calliope$App$appMdlWithCmdNone,
 					appWithMdl,
-					A2(_RobertWalter83$calliope$App$selectView, appStateCurrent, _p2._0));
-			case 'TitleEditable':
-				return A2(
-					_RobertWalter83$calliope$App$appMdlWithCmdNone,
-					appWithMdl,
-					A2(_RobertWalter83$calliope$App$titleEditable, appStateCurrent, _p2._0));
-			case 'EditTitle':
-				return A2(
-					_RobertWalter83$calliope$App$appMdlWithCmdNone,
-					appWithMdl,
-					A2(_RobertWalter83$calliope$App$editTitle, appStateCurrent, _p2._0));
+					A2(_RobertWalter83$calliope$App$selectView, appStateCurrent, _p1._0));
 			case 'EditorReady':
 				return {
 					ctor: '_Tuple2',
 					_0: appWithMdl,
-					_1: _RobertWalter83$calliope$App$configureAce('ace/theme/textmate')
+					_1: _RobertWalter83$calliope$Ports$configureAce('ace/theme/textmate')
 				};
-			case 'GetEditorContent':
-				return A2(
-					_RobertWalter83$calliope$App$appMdlWithCmdNone,
-					appWithMdl,
-					A2(_RobertWalter83$calliope$App$setEditorContent, appStateCurrent, _p2._0));
+			case 'TitleEditable':
+				var _p2 = A6(
+					_debois$elm_mdl$Material_Helpers$lift,
+					function (_) {
+						return _.projectActive;
+					},
+					F2(
+						function (a, p) {
+							return _elm_lang$core$Native_Utils.update(
+								a,
+								{projectActive: p});
+						}),
+					_RobertWalter83$calliope$App$TitleEditable,
+					_RobertWalter83$calliope$Project$update,
+					_p1._0,
+					appStateCurrent);
+				var appStateNew = _p2._0;
+				var cmd = _p2._1;
+				return A2(_RobertWalter83$calliope$App$appMdlWithCmdNone, appWithMdl, appStateNew);
 			case 'Save':
 				return {
 					ctor: '_Tuple2',
 					_0: appWithMdl,
-					_1: _RobertWalter83$calliope$App$save(
+					_1: _RobertWalter83$calliope$Ports$save(
 						_RobertWalter83$calliope$App$encodeAppState(appWithMdl.appState))
 				};
 			case 'CreateNewProjectNow':
 				return A2(
 					_RobertWalter83$calliope$App$appMdlWithCmdNone,
 					appWithMdl,
-					A2(_RobertWalter83$calliope$App$createNewProject, appStateCurrent, _p2._0));
+					A2(_RobertWalter83$calliope$App$createNewProject, appStateCurrent, _p1._0));
 			case 'CreateNewProject':
 				return {ctor: '_Tuple2', _0: appWithMdl, _1: _RobertWalter83$calliope$App$cmdTimeNow};
 			case 'OpenProject':
 				return A2(
 					_RobertWalter83$calliope$App$appMdlWithCmdNone,
 					appWithMdl,
-					A2(_RobertWalter83$calliope$App$openProject, appStateCurrent, _p2._0));
+					A2(_RobertWalter83$calliope$App$openProject, appStateCurrent, _p1._0));
 			default:
 				return A2(_RobertWalter83$calliope$App$appMdlWithCmdNone, appWithMdl, appWithMdl.appState);
 		}
@@ -15657,9 +15722,9 @@ var _RobertWalter83$calliope$App$viewMain = function (appWithMdl) {
 				return A2(
 					_elm_lang$html$Html_App$map,
 					_RobertWalter83$calliope$App$EditorReady,
-					A2(_RobertWalter83$calliope$Calliope$renderDialog, appState.projectActive, appState.refreshEditorContent));
+					A2(_RobertWalter83$calliope$Project$renderDialog, appState.projectActive, appState.refreshEditorContent));
 			default:
-				return _RobertWalter83$calliope$Calliope$renderStructure(appState.projectActive);
+				return _RobertWalter83$calliope$Project$renderStructure(appState.projectActive);
 		}
 	}();
 	return A2(
@@ -15749,241 +15814,8 @@ var _RobertWalter83$calliope$App$view = function (appWithMdl) {
 		layoutContent(appWithMdl));
 };
 var _RobertWalter83$calliope$App$main = {
-	main: _elm_lang$html$Html_App$programWithFlags(
-		{init: _RobertWalter83$calliope$App$init, view: _RobertWalter83$calliope$App$view, update: _RobertWalter83$calliope$App$update, subscriptions: _RobertWalter83$calliope$App$subscriptions}),
-	flags: _elm_lang$core$Json_Decode$oneOf(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
-				A2(
-				_elm_lang$core$Json_Decode$map,
-				_elm_lang$core$Maybe$Just,
-				A2(
-					_elm_lang$core$Json_Decode$andThen,
-					A2(
-						_elm_lang$core$Json_Decode_ops[':='],
-						'projectActive',
-						A2(
-							_elm_lang$core$Json_Decode$andThen,
-							A2(_elm_lang$core$Json_Decode_ops[':='], 'dateCreated', _elm_lang$core$Json_Decode$string),
-							function (dateCreated) {
-								return A2(
-									_elm_lang$core$Json_Decode$andThen,
-									A2(
-										_elm_lang$core$Json_Decode_ops[':='],
-										'script',
-										A2(
-											_elm_lang$core$Json_Decode$andThen,
-											A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
-											function (content) {
-												return _elm_lang$core$Json_Decode$succeed(
-													{content: content});
-											})),
-									function (script) {
-										return A2(
-											_elm_lang$core$Json_Decode$andThen,
-											A2(
-												_elm_lang$core$Json_Decode_ops[':='],
-												'structure',
-												A2(
-													_elm_lang$core$Json_Decode$andThen,
-													A2(
-														_elm_lang$core$Json_Decode_ops[':='],
-														'tierList',
-														_elm_lang$core$Json_Decode$list(
-															A2(
-																_elm_lang$core$Json_Decode$andThen,
-																A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
-																function (id) {
-																	return A2(
-																		_elm_lang$core$Json_Decode$andThen,
-																		A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-																		function (name) {
-																			return _elm_lang$core$Json_Decode$succeed(
-																				{id: id, name: name});
-																		});
-																}))),
-													function (tierList) {
-														return _elm_lang$core$Json_Decode$succeed(
-															{tierList: tierList});
-													})),
-											function (structure) {
-												return A2(
-													_elm_lang$core$Json_Decode$andThen,
-													A2(_elm_lang$core$Json_Decode_ops[':='], 'timeCreated', _elm_lang$core$Json_Decode$string),
-													function (timeCreated) {
-														return A2(
-															_elm_lang$core$Json_Decode$andThen,
-															A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
-															function (title) {
-																return _elm_lang$core$Json_Decode$succeed(
-																	{dateCreated: dateCreated, script: script, structure: structure, timeCreated: timeCreated, title: title});
-															});
-													});
-											});
-									});
-							})),
-					function (projectActive) {
-						return A2(
-							_elm_lang$core$Json_Decode$andThen,
-							A2(
-								_elm_lang$core$Json_Decode_ops[':='],
-								'projectsAll',
-								_elm_lang$core$Json_Decode$list(
-									A2(
-										_elm_lang$core$Json_Decode$andThen,
-										A2(_elm_lang$core$Json_Decode_ops[':='], 'dateCreated', _elm_lang$core$Json_Decode$string),
-										function (dateCreated) {
-											return A2(
-												_elm_lang$core$Json_Decode$andThen,
-												A2(
-													_elm_lang$core$Json_Decode_ops[':='],
-													'script',
-													A2(
-														_elm_lang$core$Json_Decode$andThen,
-														A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
-														function (content) {
-															return _elm_lang$core$Json_Decode$succeed(
-																{content: content});
-														})),
-												function (script) {
-													return A2(
-														_elm_lang$core$Json_Decode$andThen,
-														A2(
-															_elm_lang$core$Json_Decode_ops[':='],
-															'structure',
-															A2(
-																_elm_lang$core$Json_Decode$andThen,
-																A2(
-																	_elm_lang$core$Json_Decode_ops[':='],
-																	'tierList',
-																	_elm_lang$core$Json_Decode$list(
-																		A2(
-																			_elm_lang$core$Json_Decode$andThen,
-																			A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
-																			function (id) {
-																				return A2(
-																					_elm_lang$core$Json_Decode$andThen,
-																					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-																					function (name) {
-																						return _elm_lang$core$Json_Decode$succeed(
-																							{id: id, name: name});
-																					});
-																			}))),
-																function (tierList) {
-																	return _elm_lang$core$Json_Decode$succeed(
-																		{tierList: tierList});
-																})),
-														function (structure) {
-															return A2(
-																_elm_lang$core$Json_Decode$andThen,
-																A2(_elm_lang$core$Json_Decode_ops[':='], 'timeCreated', _elm_lang$core$Json_Decode$string),
-																function (timeCreated) {
-																	return A2(
-																		_elm_lang$core$Json_Decode$andThen,
-																		A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
-																		function (title) {
-																			return _elm_lang$core$Json_Decode$succeed(
-																				{dateCreated: dateCreated, script: script, structure: structure, timeCreated: timeCreated, title: title});
-																		});
-																});
-														});
-												});
-										}))),
-							function (projectsAll) {
-								return A2(
-									_elm_lang$core$Json_Decode$andThen,
-									A2(
-										_elm_lang$core$Json_Decode_ops[':='],
-										'projectsRecent',
-										_elm_lang$core$Json_Decode$list(
-											A2(
-												_elm_lang$core$Json_Decode$andThen,
-												A2(_elm_lang$core$Json_Decode_ops[':='], 'dateCreated', _elm_lang$core$Json_Decode$string),
-												function (dateCreated) {
-													return A2(
-														_elm_lang$core$Json_Decode$andThen,
-														A2(
-															_elm_lang$core$Json_Decode_ops[':='],
-															'script',
-															A2(
-																_elm_lang$core$Json_Decode$andThen,
-																A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
-																function (content) {
-																	return _elm_lang$core$Json_Decode$succeed(
-																		{content: content});
-																})),
-														function (script) {
-															return A2(
-																_elm_lang$core$Json_Decode$andThen,
-																A2(
-																	_elm_lang$core$Json_Decode_ops[':='],
-																	'structure',
-																	A2(
-																		_elm_lang$core$Json_Decode$andThen,
-																		A2(
-																			_elm_lang$core$Json_Decode_ops[':='],
-																			'tierList',
-																			_elm_lang$core$Json_Decode$list(
-																				A2(
-																					_elm_lang$core$Json_Decode$andThen,
-																					A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
-																					function (id) {
-																						return A2(
-																							_elm_lang$core$Json_Decode$andThen,
-																							A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
-																							function (name) {
-																								return _elm_lang$core$Json_Decode$succeed(
-																									{id: id, name: name});
-																							});
-																					}))),
-																		function (tierList) {
-																			return _elm_lang$core$Json_Decode$succeed(
-																				{tierList: tierList});
-																		})),
-																function (structure) {
-																	return A2(
-																		_elm_lang$core$Json_Decode$andThen,
-																		A2(_elm_lang$core$Json_Decode_ops[':='], 'timeCreated', _elm_lang$core$Json_Decode$string),
-																		function (timeCreated) {
-																			return A2(
-																				_elm_lang$core$Json_Decode$andThen,
-																				A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
-																				function (title) {
-																					return _elm_lang$core$Json_Decode$succeed(
-																						{dateCreated: dateCreated, script: script, structure: structure, timeCreated: timeCreated, title: title});
-																				});
-																		});
-																});
-														});
-												}))),
-									function (projectsRecent) {
-										return A2(
-											_elm_lang$core$Json_Decode$andThen,
-											A2(_elm_lang$core$Json_Decode_ops[':='], 'raisedCard', _elm_lang$core$Json_Decode$int),
-											function (raisedCard) {
-												return A2(
-													_elm_lang$core$Json_Decode$andThen,
-													A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditorContent', _elm_lang$core$Json_Decode$bool),
-													function (refreshEditorContent) {
-														return A2(
-															_elm_lang$core$Json_Decode$andThen,
-															A2(_elm_lang$core$Json_Decode_ops[':='], 'titleEditable', _elm_lang$core$Json_Decode$bool),
-															function (titleEditable) {
-																return A2(
-																	_elm_lang$core$Json_Decode$andThen,
-																	A2(_elm_lang$core$Json_Decode_ops[':='], 'viewSelected', _elm_lang$core$Json_Decode$int),
-																	function (viewSelected) {
-																		return _elm_lang$core$Json_Decode$succeed(
-																			{projectActive: projectActive, projectsAll: projectsAll, projectsRecent: projectsRecent, raisedCard: raisedCard, refreshEditorContent: refreshEditorContent, titleEditable: titleEditable, viewSelected: viewSelected});
-																	});
-															});
-													});
-											});
-									});
-							});
-					}))
-			]))
+	main: _elm_lang$html$Html_App$program(
+		{init: _RobertWalter83$calliope$App$init, view: _RobertWalter83$calliope$App$view, update: _RobertWalter83$calliope$App$update, subscriptions: _RobertWalter83$calliope$App$subscriptions})
 };
 
 var Elm = {};

@@ -1,4 +1,4 @@
-module Calliope
+module Project
     exposing
         ( Project
         , defaultProject
@@ -6,34 +6,45 @@ module Calliope
         , defaultStructure
         , renderDialog
         , renderStructure
-        , updateProject
         , encodeProject
+        , renderProjectTitle
+        , update
+        , subscriptions 
         , Msg
         )
 
+import Ports exposing(..)
 import Date exposing (..)
 import Time exposing (..)
 import Date.Extra.Config.Config_en_us exposing (config)
 import Date.Extra.Format as Format exposing (format)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html.Events as Html exposing (..)
 import Json.Encode exposing (..)
 import Json.Decode exposing (..)
+import Material
 import Material.Grid as Grid exposing (..)
 import Material.Color as Color
 import Material.Elevation as Elevation
+import Material.Textfield as Textfield
 import Material.Options as Options exposing (css, when)
 import Util exposing (..)
 
 
 -- MODEL
+type alias Project = 
+    { mdl : Material.Model
+    , projectData : ProjectData
+    }
 
 
-type alias Project =
+type alias ProjectData =
     { title : String
+    , refreshEditor : Bool
+    , titleEditable : Bool
     , dateCreated : String
-    , timeCreated : String
+    , timeCreated : String 
     , script : Script
     , structure : Structure
     }
@@ -61,8 +72,16 @@ type alias Tier =
     }
 
 
+type alias Mdl =
+    Material.Model
+
+
 type Msg
-    = EditorReady
+    = Mdl (Material.Msg Msg)
+    | UpdateEditorContent String
+    | EditorReady
+    | TitleEditable Bool
+    | EditTitle String
 
 
 
@@ -71,31 +90,38 @@ type Msg
 
 defaultProject : Project
 defaultProject =
-    { title = "New Project"
-    , dateCreated = "1/1/1990"
-    , timeCreated = "12:00:00"
-    , script =
-        { content = "" }
-    , structure = defaultStructure
-    }
+    createProjectAt "1/1/1990" "12:00:00"
+
 
 createProject : Time -> Project
 createProject timeNow =
-    { title = "New Project"
-    , dateCreated = Date.fromTime timeNow |> format config config.format.date 
-    , timeCreated = Date.fromTime timeNow |> format config config.format.time 
-    , script =
-        { content = "" }
-    , structure = defaultStructure
+    createProjectAt (Date.fromTime timeNow |> format config config.format.date) (Date.fromTime timeNow |> format config config.format.time)
+
+
+createProjectAt : String -> String -> Project
+createProjectAt date time =
+    { mdl = Material.model 
+    , projectData = 
+      { title = "New Project"
+      , refreshEditor = False
+      , titleEditable = False
+      , dateCreated = date
+      , timeCreated = time
+      , script =
+          { content = "" }
+      , structure = defaultStructure
+      }
     }
+
 
 toStringDate : Date -> String
 toStringDate date =
-  ((toString <| Date.day date) ++ "/" ++ (toString <| Date.month date) ++ "/" ++ (toString <| Date.year date))
+    ((toString <| Date.day date) ++ "/" ++ (toString <| Date.month date) ++ "/" ++ (toString <| Date.year date))
+
 
 toStringTime : Date -> String
 toStringTime date =
-  ((toString <| Date.hour date) ++ ":" ++ (toString <| Date.minute date) ++ ":" ++ (toString <| Date.second date))
+    ((toString <| Date.hour date) ++ ":" ++ (toString <| Date.minute date) ++ ":" ++ (toString <| Date.second date))
 
 
 defaultStructure : Structure
@@ -107,9 +133,23 @@ defaultStructure =
 -- UPDATE
 
 
-updateProject : Project -> String -> Project
-updateProject project contentNew =
-    { project | script = updateScript project.script contentNew }
+update : Msg -> Project -> ( Project, Cmd Msg )
+update msg project =
+    case msg of
+        Mdl msg' ->
+            Material.update msg' project 
+
+        UpdateEditorContent contentNew -> let data = project.projectData in
+            ({ project | projectData = { data | script = updateScript data.script (Debug.log "contentNew" contentNew), refreshEditor = False }}, Cmd.none)
+
+        EditorReady ->
+            ( project, Cmd.none )
+
+        TitleEditable isEditable -> let data = project.projectData in
+            ( { project | projectData = { data | titleEditable = isEditable } }, Cmd.none )
+
+        EditTitle titleNew -> let data = project.projectData in
+            ( { project | projectData = { data | title = titleNew } }, Cmd.none )
 
 
 updateScript : Script -> String -> Script
@@ -126,7 +166,7 @@ renderStructure : Project -> Html a
 renderStructure project =
     let
         gridWidth =
-            widthFromTierList project.structure.tierList
+            widthFromTierList project.projectData.structure.tierList
     in
         Options.div
             boxedDefault
@@ -134,7 +174,7 @@ renderStructure project =
                 ((boxed ( 12, 0 )) ++ [ noSpacing ])
               <|
                 List.append
-                    (cellHeaders gridWidth project)
+                    (cellHeaders gridWidth project.projectData)
                     [ cellHeader gridWidth "Statistics" ]
             , grid
                 ((boxed ( 12, 12 ))
@@ -143,11 +183,11 @@ renderStructure project =
                        , Color.background Color.white
                        ]
                 )
-                (cells gridWidth project)
+                (cells gridWidth project.projectData)
             ]
 
 
-cellHeaders : Int -> Project -> List (Cell a)
+cellHeaders : Int -> ProjectData -> List (Cell a)
 cellHeaders gridWidth project =
     List.map (cellHeaderFromTier gridWidth) project.structure.tierList
 
@@ -179,7 +219,7 @@ widthFromTierList tierList =
             width
 
 
-cells : Int -> Project -> List (Cell a)
+cells : Int -> ProjectData -> List (Cell a)
 cells gridWidth project =
     List.map (cellFromTier gridWidth) project.structure.tierList
 
@@ -199,6 +239,8 @@ cellFromTier gridWidth tier =
 
 renderDialog : Project -> Bool -> Html Msg
 renderDialog project refresh =
+    let doRefresh = Debug.log "refresh:" (refresh && project.projectData.refreshEditor) 
+    in
     Options.div
         (boxedDefault |> withMaxWidth 812)
         [ Options.div
@@ -207,7 +249,7 @@ renderDialog project refresh =
             , css "position" "relative"
             , Color.background Color.white
             ]
-            [ renderScript project.script refresh ]
+            [ renderScript project.projectData.script doRefresh ]
         ]
 
 
@@ -219,7 +261,7 @@ renderScript script refresh =
             [ text script.content ]
          else
             []
-        ) 
+        )
 
 
 title : String -> Html a
@@ -230,17 +272,37 @@ title t =
 
 
 
+-- RENDER PROJECT TITLE
+--renderProjectTitle : Project -> (Parts.Msg Material.Model App.Msg -> App.Msg) -> Material.Model -> Html App.Msg
+
+
+renderProjectTitle project =
+    let data = project.projectData in
+    if data.titleEditable then
+        Textfield.render Mdl
+            [ 13 ]
+            Material.model
+            [ Textfield.text'
+            , Textfield.onInput EditTitle
+            , Textfield.onBlur <| TitleEditable False
+            , Textfield.value data.title
+            , css "font-size" "24px"
+            ]
+    else
+        Options.div [ Options.attribute <| Html.onClick (TitleEditable True) ] [ text data.title ]
+
+
 -- ENCODE
 
 
 encodeProject : Project -> Json.Encode.Value
-encodeProject project =
+encodeProject project = let data = project.projectData in
     Json.Encode.object
-        [ ( "title", Json.Encode.string project.title )
-        , ( "script", encodeScript project.script )
-        , ( "structure", encodeStructure project.structure )
-        , ( "dateCreated", Json.Encode.string project.dateCreated )
-        , ( "timeCreated", Json.Encode.string project.timeCreated )
+        [ ( "title", Json.Encode.string data.title )
+        , ( "script", encodeScript data.script )
+        , ( "structure", encodeStructure data.structure )
+        , ( "dateCreated", Json.Encode.string data.dateCreated )
+        , ( "timeCreated", Json.Encode.string data.timeCreated )
         ]
 
 
@@ -262,3 +324,10 @@ encodeTier tier =
         [ ( "id", Json.Encode.string tier.id )
         , ( "name", Json.Encode.string tier.name )
         ]
+
+
+-- SUBSCRIPTIONS
+
+subscriptions : Project -> Sub Msg
+subscriptions project =
+    updateEditorContent UpdateEditorContent

@@ -12,7 +12,7 @@ function setupPorts(app) {
         editor.$blockScrolling = Infinity;
 
         editor.on('change', function() {
-          app.ports.getEditorContent.send(editor.getValue());
+          app.ports.updateEditorContent.send(editor.getValue());
         });
       }  
   });
