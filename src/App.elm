@@ -337,8 +337,11 @@ updateProjectContent model contentNew =
     let
         projectCurrent =
             model.projectActive
+
+        projectActive =
+            { projectCurrent | script = updateScript projectCurrent.script contentNew }
     in
-        { model | projectActive = { projectCurrent | script = updateScript projectCurrent.script (Debug.log "contentNew" contentNew) } }
+        { model | projectActive = projectActive, refreshEditorContent = False }
 
 
 updateScript : Script -> String -> Script
@@ -382,7 +385,7 @@ layoutOverview modelMdl =
     { header = viewOverviewHeader
     , drawer = []
     , tabs = ( [], [] )
-    , main = [ stylesheet, viewMain modelMdl ]
+    , main = [ stylesheetOverviewHeader, viewMain modelMdl ]
     }
 
 
@@ -397,7 +400,7 @@ layoutDefault modelMdl =
 
 tabTitles : List (Html Msg)
 tabTitles =
-    Array.map (\v -> toString v |> text) rgView |> Array.toList        
+    Array.map (\v -> toString v |> text) rgView |> Array.toList
 
 
 viewMain : ModelMdl -> Html Msg
@@ -698,45 +701,16 @@ renderProjectTitle project =
 
 
 
--- ENCODE
-
-
-encodeProject : Project -> Json.Encode.Value
-encodeProject project =
-    Json.Encode.object
-        [ ( "title", Json.Encode.string project.title )
-        , ( "script", encodeScript project.script )
-        , ( "tierList", Json.Encode.list (List.map encodeTier project.tierList) )
-        , ( "dateCreated", Json.Encode.string project.dateCreated )
-        , ( "timeCreated", Json.Encode.string project.timeCreated )
-        ]
-
-
-encodeScript : Script -> Json.Encode.Value
-encodeScript script =
-    Json.Encode.object
-        [ ( "content", Json.Encode.string script.content ) ]
-
-
-encodeTier : Tier -> Json.Encode.Value
-encodeTier tier =
-    Json.Encode.object
-        [ ( "id", Json.Encode.string tier.id )
-        , ( "name", Json.Encode.string tier.name )
-        ]
-
-
-
 -- STYLING
 
 
-stylesheet : Html a
-stylesheet =
-    Options.stylesheet """\x0D
-  .mdl-layout__header--transparent {\x0D
-    background: url('assets/march.jpg') 0 45% no-repeat;\x0D
-    background-size: 100% auto\x0D
-  }\x0D
+stylesheetOverviewHeader : Html a
+stylesheetOverviewHeader =
+    Options.stylesheet """
+  .mdl-layout__header--transparent {
+    background: url('assets/march.jpg') 0 45% no-repeat;
+    background-size: 100% auto
+  }
 """
 
 
@@ -763,4 +737,29 @@ encodeAppState model =
         , ( "projectsAll", Json.Encode.list (List.map encodeProject model.projectsAll) )
         , ( "refreshEditorContent", Json.Encode.bool model.refreshEditorContent )
         , ( "raisedCard", Json.Encode.int model.raisedCard )
+        ]
+
+
+encodeProject : Project -> Json.Encode.Value
+encodeProject project =
+    Json.Encode.object
+        [ ( "title", Json.Encode.string project.title )
+        , ( "script", encodeScript project.script )
+        , ( "tierList", Json.Encode.list (List.map encodeTier project.tierList) )
+        , ( "dateCreated", Json.Encode.string project.dateCreated )
+        , ( "timeCreated", Json.Encode.string project.timeCreated )
+        ]
+
+
+encodeScript : Script -> Json.Encode.Value
+encodeScript script =
+    Json.Encode.object
+        [ ( "content", Json.Encode.string script.content ) ]
+
+
+encodeTier : Tier -> Json.Encode.Value
+encodeTier tier =
+    Json.Encode.object
+        [ ( "id", Json.Encode.string tier.id )
+        , ( "name", Json.Encode.string tier.name )
         ]
