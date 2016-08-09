@@ -447,7 +447,6 @@ renderOverview modelMdl =
             [ Options.div
                 [ css "display" "flex"
                 , css "flex-flow" "row wrap"
-                  -- , css "justify-content" "space-between"
                 , css "align-items" "flex-start"
                 , css "width" "100%"
                 ]
@@ -459,20 +458,10 @@ renderOverview modelMdl =
                     , css "border-right" "2px dashed grey"
                     , css "margin-right" "44px"
                     ]
-                    [ renderPolaroid modelMdl.model.projectActive <|
-                        createParams 0 modelMdl CreateNewProject "assets/new.jpg" ( "New Project", "Create a brand new project" )
-                    ]
+                    [ renderPolaroid modelMdl "assets/new.jpg" "Create a brand new project" Nothing 0 ]
                  ]
-                    ++ (List.map2 renderProjectLink
-                            modelMdl.model.projectsRecent
-                        <|
-                            List.map5 createParams
-                                [1..lengthRecentProjects]
-                                (List.repeat lengthRecentProjects modelMdl)
-                                (List.map (\p -> OpenProject p) modelMdl.model.projectsRecent)
-                                (List.repeat lengthRecentProjects "assets/existing.jpg")
-                                (List.map (\p -> ( p.title, "Click here to open." )) modelMdl.model.projectsRecent)
-                       )
+                    ++ (List.map2 (renderProjectLink modelMdl "assets/existing.jpg" "Click here to open.")
+                            modelMdl.model.projectsRecent [1..lengthRecentProjects])
                 )
             ]
 
@@ -487,30 +476,37 @@ createParams index modelMdl msg pathBackground messageTuple =
     }
 
 
-renderProjectLink : Project -> PolaroidParams -> Html Msg
-renderProjectLink project params =
+renderProjectLink : ModelMdl -> String -> String -> Project -> Int -> Html Msg
+renderProjectLink modelMdl pathBackground userMessage project cardIndex  =
     Options.div
         [ css "padding" "12px" ]
-        [ renderPolaroid project params ]
+        [ renderPolaroid modelMdl pathBackground userMessage (List.head [ project ]) cardIndex ]
 
+renderPolaroid : ModelMdl -> String -> String -> Maybe Project -> Int -> Html Msg
+renderPolaroid modelMdl pathBackground userMessage maybeProject cardIndex = 
+    let 
+      (onClick, title) = 
+          case maybeProject of 
+              Nothing -> (CreateNewProject, "New Project") 
 
-renderPolaroid : Project -> PolaroidParams -> Html Msg
-renderPolaroid project params =
+              Just project -> (OpenProject project, project.title)
+    in
+
     Card.view
-        [ if params.modelMdl.model.raisedCard == params.index then
+        [ if modelMdl.model.raisedCard == cardIndex then
             Elevation.e8
           else
             Elevation.e2
         , Elevation.transition 250
         , css "width" "256px"
-        , Options.attribute <| Html.onMouseEnter (Raise params.index)
+        , Options.attribute <| Html.onMouseEnter (Raise cardIndex)
         , Options.attribute <| Html.onMouseLeave (Raise -1)
-        , Options.attribute <| Html.onClick params.onClick
+        , Options.attribute <| Html.onClick onClick
         , css "margin" "0"
         , css "padding" "12px"
         ]
         [ Card.title
-            [ css "background" <| "url('" ++ params.pathBackground ++ "') center / cover"
+            [ css "background" <| "url('" ++ pathBackground ++ "') center / cover"
             , css "height" "256px"
             , css "padding" "0"
             ]
@@ -530,7 +526,7 @@ renderPolaroid project params =
             , css "width" "100%"
             , Color.text Color.black
             ]
-            [ text <| snd params.messageTuple ]
+            [ text userMessage ]
         ]
 
 
