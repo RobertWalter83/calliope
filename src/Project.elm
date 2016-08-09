@@ -33,100 +33,11 @@ import Util exposing (..)
 
 
 -- MODEL
-type alias Project = 
-    { mdl : Material.Model
-    , projectData : ProjectData
-    }
-
-
-type alias ProjectData =
-    { title : String
-    , refreshEditor : Bool
-    , titleEditable : Bool
-    , dateCreated : String
-    , timeCreated : String 
-    , script : Script
-    , structure : Structure
-    }
-
-
-type alias Script =
-    { content : String
-    }
-
-
-type alias Scene =
-    { name : String
-    , location : String
-    }
-
-
-type alias Structure =
-    { tierList : List Tier
-    }
-
-
-type alias Tier =
-    { id : String
-    , name : String
-    }
-
-
-type alias Mdl =
-    Material.Model
-
-
-type Msg
-    = Mdl (Material.Msg Msg)
-    | UpdateEditorContent String
-    | EditorReady
-    | TitleEditable Bool
-    | EditTitle String
 
 
 
 -- DEFAULTS
 
-
-defaultProject : Project
-defaultProject =
-    createProjectAt "1/1/1990" "12:00:00"
-
-
-createProject : Time -> Project
-createProject timeNow =
-    createProjectAt (Date.fromTime timeNow |> format config config.format.date) (Date.fromTime timeNow |> format config config.format.time)
-
-
-createProjectAt : String -> String -> Project
-createProjectAt date time =
-    { mdl = Material.model 
-    , projectData = 
-      { title = "New Project"
-      , refreshEditor = False
-      , titleEditable = False
-      , dateCreated = date
-      , timeCreated = time
-      , script =
-          { content = "" }
-      , structure = defaultStructure
-      }
-    }
-
-
-toStringDate : Date -> String
-toStringDate date =
-    ((toString <| Date.day date) ++ "/" ++ (toString <| Date.month date) ++ "/" ++ (toString <| Date.year date))
-
-
-toStringTime : Date -> String
-toStringTime date =
-    ((toString <| Date.hour date) ++ ":" ++ (toString <| Date.minute date) ++ ":" ++ (toString <| Date.second date))
-
-
-defaultStructure : Structure
-defaultStructure =
-    { tierList = [ { id = "Scenes", name = "Scenes" }, { id = "Scripts", name = "Scripts" } ] }
 
 
 
@@ -152,9 +63,7 @@ update msg project =
             ( { project | projectData = { data | title = titleNew } }, Cmd.none )
 
 
-updateScript : Script -> String -> Script
-updateScript script contentNew =
-    { script | content = contentNew }
+
 
 
 

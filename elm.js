@@ -4403,39 +4403,6 @@ var _RobertWalter83$calliope$Ports$save = _elm_lang$core$Native_Platform.outgoin
 	});
 var _RobertWalter83$calliope$Ports$updateEditorContent = _elm_lang$core$Native_Platform.incomingPort('updateEditorContent', _elm_lang$core$Json_Decode$string);
 
-//import Result //
-
-var _elm_lang$core$Native_Date = function() {
-
-function fromString(str)
-{
-	var date = new Date(str);
-	return isNaN(date.getTime())
-		? _elm_lang$core$Result$Err('Unable to parse \'' + str + '\' as a date. Dates must be in the ISO 8601 format.')
-		: _elm_lang$core$Result$Ok(date);
-}
-
-var dayTable = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-var monthTable =
-	['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-	 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-
-return {
-	fromString: fromString,
-	year: function(d) { return d.getFullYear(); },
-	month: function(d) { return { ctor: monthTable[d.getMonth()] }; },
-	day: function(d) { return d.getDate(); },
-	hour: function(d) { return d.getHours(); },
-	minute: function(d) { return d.getMinutes(); },
-	second: function(d) { return d.getSeconds(); },
-	millisecond: function(d) { return d.getMilliseconds(); },
-	toTime: function(d) { return d.getTime(); },
-	fromTime: function(t) { return new Date(t); },
-	dayOfWeek: function(d) { return { ctor: dayTable[d.getDay()] }; }
-};
-
-}();
 var _elm_lang$core$Task$onError = _elm_lang$core$Native_Scheduler.onError;
 var _elm_lang$core$Task$andThen = _elm_lang$core$Native_Scheduler.andThen;
 var _elm_lang$core$Task$spawnCmd = F2(
@@ -4669,6 +4636,39 @@ var _elm_lang$core$Task$cmdMap = F2(
 	});
 _elm_lang$core$Native_Platform.effectManagers['Task'] = {pkg: 'elm-lang/core', init: _elm_lang$core$Task$init, onEffects: _elm_lang$core$Task$onEffects, onSelfMsg: _elm_lang$core$Task$onSelfMsg, tag: 'cmd', cmdMap: _elm_lang$core$Task$cmdMap};
 
+//import Result //
+
+var _elm_lang$core$Native_Date = function() {
+
+function fromString(str)
+{
+	var date = new Date(str);
+	return isNaN(date.getTime())
+		? _elm_lang$core$Result$Err('Unable to parse \'' + str + '\' as a date. Dates must be in the ISO 8601 format.')
+		: _elm_lang$core$Result$Ok(date);
+}
+
+var dayTable = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var monthTable =
+	['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+	 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+
+return {
+	fromString: fromString,
+	year: function(d) { return d.getFullYear(); },
+	month: function(d) { return { ctor: monthTable[d.getMonth()] }; },
+	day: function(d) { return d.getDate(); },
+	hour: function(d) { return d.getHours(); },
+	minute: function(d) { return d.getMinutes(); },
+	second: function(d) { return d.getSeconds(); },
+	millisecond: function(d) { return d.getMilliseconds(); },
+	toTime: function(d) { return d.getTime(); },
+	fromTime: function(t) { return new Date(t); },
+	dayOfWeek: function(d) { return { ctor: dayTable[d.getDay()] }; }
+};
+
+}();
 //import Maybe, Native.List, Native.Utils, Result //
 
 var _elm_lang$core$Native_String = function() {
@@ -9379,6 +9379,44 @@ var _elm_lang$html$Html_Events$Options = F2(
 		return {stopPropagation: a, preventDefault: b};
 	});
 
+var _elm_lang$html$Html_App$programWithFlags = _elm_lang$virtual_dom$VirtualDom$programWithFlags;
+var _elm_lang$html$Html_App$program = function (app) {
+	return _elm_lang$html$Html_App$programWithFlags(
+		_elm_lang$core$Native_Utils.update(
+			app,
+			{
+				init: function (_p0) {
+					return app.init;
+				}
+			}));
+};
+var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
+	var _p2 = _p1;
+	return _elm_lang$html$Html_App$programWithFlags(
+		{
+			init: function (_p3) {
+				return A2(
+					_elm_lang$core$Platform_Cmd_ops['!'],
+					_p2.model,
+					_elm_lang$core$Native_List.fromArray(
+						[]));
+			},
+			update: F2(
+				function (msg, model) {
+					return A2(
+						_elm_lang$core$Platform_Cmd_ops['!'],
+						A2(_p2.update, msg, model),
+						_elm_lang$core$Native_List.fromArray(
+							[]));
+				}),
+			view: _p2.view,
+			subscriptions: function (_p4) {
+				return _elm_lang$core$Platform_Sub$none;
+			}
+		});
+};
+var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
+
 var _debois$elm_parts$Parts$map2nd = F2(
 	function (f, _p0) {
 		var _p1 = _p0;
@@ -9665,44 +9703,6 @@ var _debois$elm_mdl$Material_Helpers$filter = F3(
 				},
 				html));
 	});
-
-var _elm_lang$html$Html_App$programWithFlags = _elm_lang$virtual_dom$VirtualDom$programWithFlags;
-var _elm_lang$html$Html_App$program = function (app) {
-	return _elm_lang$html$Html_App$programWithFlags(
-		_elm_lang$core$Native_Utils.update(
-			app,
-			{
-				init: function (_p0) {
-					return app.init;
-				}
-			}));
-};
-var _elm_lang$html$Html_App$beginnerProgram = function (_p1) {
-	var _p2 = _p1;
-	return _elm_lang$html$Html_App$programWithFlags(
-		{
-			init: function (_p3) {
-				return A2(
-					_elm_lang$core$Platform_Cmd_ops['!'],
-					_p2.model,
-					_elm_lang$core$Native_List.fromArray(
-						[]));
-			},
-			update: F2(
-				function (msg, model) {
-					return A2(
-						_elm_lang$core$Platform_Cmd_ops['!'],
-						A2(_p2.update, msg, model),
-						_elm_lang$core$Native_List.fromArray(
-							[]));
-				}),
-			view: _p2.view,
-			subscriptions: function (_p4) {
-				return _elm_lang$core$Platform_Sub$none;
-			}
-		});
-};
-var _elm_lang$html$Html_App$map = _elm_lang$virtual_dom$VirtualDom$map;
 
 var _debois$elm_mdl$Material_Options_Internal$None = {ctor: 'None'};
 var _debois$elm_mdl$Material_Options_Internal$Set = function (a) {
@@ -14230,159 +14230,133 @@ var _debois$elm_mdl$Material$Model = F8(
 		return {button: a, textfield: b, menu: c, snackbar: d, layout: e, toggles: f, tooltip: g, tabs: h};
 	});
 
-var _debois$elm_mdl$Material_Grid$clip = F3(
-	function (lower, upper, k) {
-		return A2(
-			_elm_lang$core$Basics$max,
-			lower,
-			A2(_elm_lang$core$Basics$min, k, upper));
-	});
-var _debois$elm_mdl$Material_Grid$stretch = _debois$elm_mdl$Material_Options$cs('mdl-cell--stretch');
-var _debois$elm_mdl$Material_Grid$align = function (a) {
-	var _p0 = a;
+var _debois$elm_mdl$Material_Card$stopClick = _debois$elm_mdl$Material_Options_Internal$attribute(
+	A2(_elm_lang$html$Html_Attributes$attribute, 'onclick', 'var event = arguments[0] || window.event; event.stopPropagation();'));
+var _debois$elm_mdl$Material_Card$block = function (block) {
+	var _p0 = block;
 	switch (_p0.ctor) {
-		case 'Top':
-			return _debois$elm_mdl$Material_Options$cs('mdl-cell--top');
-		case 'Middle':
-			return _debois$elm_mdl$Material_Options$cs('mdl-cell--middle');
-		default:
-			return _debois$elm_mdl$Material_Options$cs('mdl-cell--bottom');
-	}
-};
-var _debois$elm_mdl$Material_Grid$suffix = function (device) {
-	var _p1 = device;
-	switch (_p1.ctor) {
-		case 'All':
-			return '';
-		case 'Desktop':
-			return '-desktop';
-		case 'Tablet':
-			return '-tablet';
-		default:
-			return '-phone';
-	}
-};
-var _debois$elm_mdl$Material_Grid$size = F2(
-	function (device, k) {
-		var c = function () {
-			var _p2 = device;
-			switch (_p2.ctor) {
-				case 'All':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
-				case 'Desktop':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
-				case 'Tablet':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 8, k);
-				default:
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 4, k);
-			}
-		}();
-		return _debois$elm_mdl$Material_Options$cs(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'mdl-cell--',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(c),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'-col',
-						_debois$elm_mdl$Material_Grid$suffix(device)))));
-	});
-var _debois$elm_mdl$Material_Grid$offset = F2(
-	function (device, k) {
-		var c = function () {
-			var _p3 = device;
-			switch (_p3.ctor) {
-				case 'All':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 11, k);
-				case 'Desktop':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 11, k);
-				case 'Tablet':
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 7, k);
-				default:
-					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 3, k);
-			}
-		}();
-		return _debois$elm_mdl$Material_Options$cs(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'mdl-cell--',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(c),
-					A2(
-						_elm_lang$core$Basics_ops['++'],
-						'-offset',
-						_debois$elm_mdl$Material_Grid$suffix(device)))));
-	});
-var _debois$elm_mdl$Material_Grid$hide = function (device) {
-	return _debois$elm_mdl$Material_Options$cs(
-		function () {
-			var _p4 = device;
-			if (_p4.ctor === 'All') {
-				return '';
-			} else {
-				return A2(
-					_elm_lang$core$Basics_ops['++'],
-					'mdl-cell--hide-',
-					_debois$elm_mdl$Material_Grid$suffix(device));
-			}
-		}());
-};
-var _debois$elm_mdl$Material_Grid$order = F2(
-	function (device, n) {
-		return _debois$elm_mdl$Material_Options$cs(
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				'mdl-cell--order-',
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					_elm_lang$core$Basics$toString(
-						A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, n)),
-					_debois$elm_mdl$Material_Grid$suffix(device))));
-	});
-var _debois$elm_mdl$Material_Grid$grid = F2(
-	function (styling, cells) {
-		return A2(
-			_debois$elm_mdl$Material_Options$div,
-			A2(
-				_elm_lang$core$List_ops['::'],
-				_debois$elm_mdl$Material_Options$cs('mdl-grid'),
-				styling),
-			A2(
-				_elm_lang$core$List$map,
-				function (_p5) {
-					var _p6 = _p5;
-					return _p6._0;
-				},
-				cells));
-	});
-var _debois$elm_mdl$Material_Grid$maxWidth = function (w) {
-	return A2(_debois$elm_mdl$Material_Options$css, 'max-width', w);
-};
-var _debois$elm_mdl$Material_Grid$noSpacing = _debois$elm_mdl$Material_Options$cs('mdl-grid--no-spacing');
-var _debois$elm_mdl$Material_Grid$Phone = {ctor: 'Phone'};
-var _debois$elm_mdl$Material_Grid$Tablet = {ctor: 'Tablet'};
-var _debois$elm_mdl$Material_Grid$Desktop = {ctor: 'Desktop'};
-var _debois$elm_mdl$Material_Grid$All = {ctor: 'All'};
-var _debois$elm_mdl$Material_Grid$Cell = function (a) {
-	return {ctor: 'Cell', _0: a};
-};
-var _debois$elm_mdl$Material_Grid$cell = F2(
-	function (styling, elms) {
-		return _debois$elm_mdl$Material_Grid$Cell(
-			A2(
+		case 'Title':
+			return A2(
 				_debois$elm_mdl$Material_Options$div,
 				A2(
 					_elm_lang$core$List_ops['::'],
-					_debois$elm_mdl$Material_Options$cs('mdl-cell'),
-					styling),
-				elms));
+					_debois$elm_mdl$Material_Options$cs('mdl-card__title'),
+					_p0._0),
+				_p0._1);
+		case 'Media':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__media'),
+					_p0._0),
+				_p0._1);
+		case 'SupportingText':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__supporting-text'),
+					_p0._0),
+				_p0._1);
+		case 'Actions':
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__actions'),
+					A2(_elm_lang$core$List_ops['::'], _debois$elm_mdl$Material_Card$stopClick, _p0._0)),
+				_p0._1);
+		default:
+			return A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-card__menu'),
+					A2(_elm_lang$core$List_ops['::'], _debois$elm_mdl$Material_Card$stopClick, _p0._0)),
+				_p0._1);
+	}
+};
+var _debois$elm_mdl$Material_Card$view = F2(
+	function (styling, views) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			A2(
+				_elm_lang$core$List$append,
+				styling,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						_debois$elm_mdl$Material_Options$cs('mdl-card'),
+						A2(_debois$elm_mdl$Material_Options$css, 'min-height', '0px')
+					])),
+			A2(_elm_lang$core$List$map, _debois$elm_mdl$Material_Card$block, views));
 	});
-var _debois$elm_mdl$Material_Grid$Bottom = {ctor: 'Bottom'};
-var _debois$elm_mdl$Material_Grid$Middle = {ctor: 'Middle'};
-var _debois$elm_mdl$Material_Grid$Top = {ctor: 'Top'};
+var _debois$elm_mdl$Material_Card$subhead = function (styling) {
+	return _debois$elm_mdl$Material_Options$span(
+		A2(
+			_elm_lang$core$List_ops['::'],
+			_debois$elm_mdl$Material_Options$cs('mdl-card__subtitle-text'),
+			A2(
+				_elm_lang$core$List_ops['::'],
+				A2(_debois$elm_mdl$Material_Options$css, 'padding-top', '8px'),
+				styling)));
+};
+var _debois$elm_mdl$Material_Card$head = function (styling) {
+	return A2(
+		_debois$elm_mdl$Material_Options$styled,
+		_elm_lang$html$Html$h1,
+		A2(
+			_elm_lang$core$List_ops['::'],
+			_debois$elm_mdl$Material_Options$cs('mdl-card__title-text'),
+			A2(
+				_elm_lang$core$List_ops['::'],
+				A2(_debois$elm_mdl$Material_Options$css, 'align-self', 'flex-start'),
+				styling)));
+};
+var _debois$elm_mdl$Material_Card$expand = _debois$elm_mdl$Material_Options$cs('mdl-card--expand');
+var _debois$elm_mdl$Material_Card$border = _debois$elm_mdl$Material_Options$cs('mdl-card--border');
+var _debois$elm_mdl$Material_Card$Actions = F2(
+	function (a, b) {
+		return {ctor: 'Actions', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$actions = _debois$elm_mdl$Material_Card$Actions;
+var _debois$elm_mdl$Material_Card$SupportingText = F2(
+	function (a, b) {
+		return {ctor: 'SupportingText', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$text = _debois$elm_mdl$Material_Card$SupportingText;
+var _debois$elm_mdl$Material_Card$Media = F2(
+	function (a, b) {
+		return {ctor: 'Media', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$media = _debois$elm_mdl$Material_Card$Media;
+var _debois$elm_mdl$Material_Card$Menu = F2(
+	function (a, b) {
+		return {ctor: 'Menu', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$menu = F2(
+	function (styling, block) {
+		return A2(_debois$elm_mdl$Material_Card$Menu, styling, block);
+	});
+var _debois$elm_mdl$Material_Card$Title = F2(
+	function (a, b) {
+		return {ctor: 'Title', _0: a, _1: b};
+	});
+var _debois$elm_mdl$Material_Card$title = F2(
+	function (styling, block) {
+		return A2(
+			_debois$elm_mdl$Material_Card$Title,
+			A2(
+				_elm_lang$core$List$append,
+				styling,
+				_elm_lang$core$Native_List.fromArray(
+					[
+						A2(_debois$elm_mdl$Material_Options$css, 'justify-content', 'flex-end'),
+						A2(_debois$elm_mdl$Material_Options$css, 'flex-direction', 'column'),
+						A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'flex-start')
+					])),
+			block);
+	});
 
 var _debois$elm_mdl$Material_Color$text = function (_p0) {
 	var _p1 = _p0;
@@ -14571,6 +14545,160 @@ var _debois$elm_mdl$Material_Color$primaryContrast = _debois$elm_mdl$Material_Co
 var _debois$elm_mdl$Material_Color$accent = _debois$elm_mdl$Material_Color$C('accent');
 var _debois$elm_mdl$Material_Color$accentContrast = _debois$elm_mdl$Material_Color$C('accent-contrast');
 
+var _debois$elm_mdl$Material_Grid$clip = F3(
+	function (lower, upper, k) {
+		return A2(
+			_elm_lang$core$Basics$max,
+			lower,
+			A2(_elm_lang$core$Basics$min, k, upper));
+	});
+var _debois$elm_mdl$Material_Grid$stretch = _debois$elm_mdl$Material_Options$cs('mdl-cell--stretch');
+var _debois$elm_mdl$Material_Grid$align = function (a) {
+	var _p0 = a;
+	switch (_p0.ctor) {
+		case 'Top':
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--top');
+		case 'Middle':
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--middle');
+		default:
+			return _debois$elm_mdl$Material_Options$cs('mdl-cell--bottom');
+	}
+};
+var _debois$elm_mdl$Material_Grid$suffix = function (device) {
+	var _p1 = device;
+	switch (_p1.ctor) {
+		case 'All':
+			return '';
+		case 'Desktop':
+			return '-desktop';
+		case 'Tablet':
+			return '-tablet';
+		default:
+			return '-phone';
+	}
+};
+var _debois$elm_mdl$Material_Grid$size = F2(
+	function (device, k) {
+		var c = function () {
+			var _p2 = device;
+			switch (_p2.ctor) {
+				case 'All':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
+				case 'Desktop':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, k);
+				case 'Tablet':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 8, k);
+				default:
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 4, k);
+			}
+		}();
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(c),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'-col',
+						_debois$elm_mdl$Material_Grid$suffix(device)))));
+	});
+var _debois$elm_mdl$Material_Grid$offset = F2(
+	function (device, k) {
+		var c = function () {
+			var _p3 = device;
+			switch (_p3.ctor) {
+				case 'All':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 11, k);
+				case 'Desktop':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 11, k);
+				case 'Tablet':
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 7, k);
+				default:
+					return A3(_debois$elm_mdl$Material_Grid$clip, 1, 3, k);
+			}
+		}();
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(c),
+					A2(
+						_elm_lang$core$Basics_ops['++'],
+						'-offset',
+						_debois$elm_mdl$Material_Grid$suffix(device)))));
+	});
+var _debois$elm_mdl$Material_Grid$hide = function (device) {
+	return _debois$elm_mdl$Material_Options$cs(
+		function () {
+			var _p4 = device;
+			if (_p4.ctor === 'All') {
+				return '';
+			} else {
+				return A2(
+					_elm_lang$core$Basics_ops['++'],
+					'mdl-cell--hide-',
+					_debois$elm_mdl$Material_Grid$suffix(device));
+			}
+		}());
+};
+var _debois$elm_mdl$Material_Grid$order = F2(
+	function (device, n) {
+		return _debois$elm_mdl$Material_Options$cs(
+			A2(
+				_elm_lang$core$Basics_ops['++'],
+				'mdl-cell--order-',
+				A2(
+					_elm_lang$core$Basics_ops['++'],
+					_elm_lang$core$Basics$toString(
+						A3(_debois$elm_mdl$Material_Grid$clip, 1, 12, n)),
+					_debois$elm_mdl$Material_Grid$suffix(device))));
+	});
+var _debois$elm_mdl$Material_Grid$grid = F2(
+	function (styling, cells) {
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			A2(
+				_elm_lang$core$List_ops['::'],
+				_debois$elm_mdl$Material_Options$cs('mdl-grid'),
+				styling),
+			A2(
+				_elm_lang$core$List$map,
+				function (_p5) {
+					var _p6 = _p5;
+					return _p6._0;
+				},
+				cells));
+	});
+var _debois$elm_mdl$Material_Grid$maxWidth = function (w) {
+	return A2(_debois$elm_mdl$Material_Options$css, 'max-width', w);
+};
+var _debois$elm_mdl$Material_Grid$noSpacing = _debois$elm_mdl$Material_Options$cs('mdl-grid--no-spacing');
+var _debois$elm_mdl$Material_Grid$Phone = {ctor: 'Phone'};
+var _debois$elm_mdl$Material_Grid$Tablet = {ctor: 'Tablet'};
+var _debois$elm_mdl$Material_Grid$Desktop = {ctor: 'Desktop'};
+var _debois$elm_mdl$Material_Grid$All = {ctor: 'All'};
+var _debois$elm_mdl$Material_Grid$Cell = function (a) {
+	return {ctor: 'Cell', _0: a};
+};
+var _debois$elm_mdl$Material_Grid$cell = F2(
+	function (styling, elms) {
+		return _debois$elm_mdl$Material_Grid$Cell(
+			A2(
+				_debois$elm_mdl$Material_Options$div,
+				A2(
+					_elm_lang$core$List_ops['::'],
+					_debois$elm_mdl$Material_Options$cs('mdl-cell'),
+					styling),
+				elms));
+	});
+var _debois$elm_mdl$Material_Grid$Bottom = {ctor: 'Bottom'};
+var _debois$elm_mdl$Material_Grid$Middle = {ctor: 'Middle'};
+var _debois$elm_mdl$Material_Grid$Top = {ctor: 'Top'};
+
 var _debois$elm_mdl$Material_Elevation$transition = function (duration) {
 	return A2(
 		_debois$elm_mdl$Material_Options$css,
@@ -14652,7 +14780,8 @@ var _RobertWalter83$calliope$Util$boxed = function (_p0) {
 var _RobertWalter83$calliope$Util$boxedDefault = _RobertWalter83$calliope$Util$boxed(
 	{ctor: '_Tuple2', _0: 80, _1: 20});
 
-var _RobertWalter83$calliope$Project$encodeTier = function (tier) {
+var _RobertWalter83$calliope$App$stylesheet = _debois$elm_mdl$Material_Options$stylesheet('\r\n  .mdl-layout__header--transparent {\r\n    background: url(\'assets/march.jpg\') 0 45% no-repeat;\r\n    background-size: 100% auto\r\n  }\r\n');
+var _RobertWalter83$calliope$App$encodeTier = function (tier) {
 	return _elm_lang$core$Json_Encode$object(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -14668,19 +14797,7 @@ var _RobertWalter83$calliope$Project$encodeTier = function (tier) {
 			}
 			]));
 };
-var _RobertWalter83$calliope$Project$encodeStructure = function (structure) {
-	return _elm_lang$core$Json_Encode$object(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				{
-				ctor: '_Tuple2',
-				_0: 'tierList',
-				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Project$encodeTier, structure.tierList))
-			}
-			]));
-};
-var _RobertWalter83$calliope$Project$encodeScript = function (script) {
+var _RobertWalter83$calliope$App$encodeScript = function (script) {
 	return _elm_lang$core$Json_Encode$object(
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -14691,39 +14808,77 @@ var _RobertWalter83$calliope$Project$encodeScript = function (script) {
 			}
 			]));
 };
-var _RobertWalter83$calliope$Project$encodeProject = function (project) {
-	var data = project.projectData;
+var _RobertWalter83$calliope$App$encodeProject = function (project) {
 	return _elm_lang$core$Json_Encode$object(
 		_elm_lang$core$Native_List.fromArray(
 			[
 				{
 				ctor: '_Tuple2',
 				_0: 'title',
-				_1: _elm_lang$core$Json_Encode$string(data.title)
+				_1: _elm_lang$core$Json_Encode$string(project.title)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'script',
-				_1: _RobertWalter83$calliope$Project$encodeScript(data.script)
+				_1: _RobertWalter83$calliope$App$encodeScript(project.script)
 			},
 				{
 				ctor: '_Tuple2',
-				_0: 'structure',
-				_1: _RobertWalter83$calliope$Project$encodeStructure(data.structure)
+				_0: 'tierList',
+				_1: _elm_lang$core$Json_Encode$list(
+					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$encodeTier, project.tierList))
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'dateCreated',
-				_1: _elm_lang$core$Json_Encode$string(data.dateCreated)
+				_1: _elm_lang$core$Json_Encode$string(project.dateCreated)
 			},
 				{
 				ctor: '_Tuple2',
 				_0: 'timeCreated',
-				_1: _elm_lang$core$Json_Encode$string(data.timeCreated)
+				_1: _elm_lang$core$Json_Encode$string(project.timeCreated)
 			}
 			]));
 };
-var _RobertWalter83$calliope$Project$title = function (t) {
+var _RobertWalter83$calliope$App$encodeAppState = function (model) {
+	return _elm_lang$core$Json_Encode$object(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				{
+				ctor: '_Tuple2',
+				_0: 'viewSelected',
+				_1: _elm_lang$core$Json_Encode$int(model.viewSelected)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'projectActive',
+				_1: _RobertWalter83$calliope$App$encodeProject(model.projectActive)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'projectsRecent',
+				_1: _elm_lang$core$Json_Encode$list(
+					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$encodeProject, model.projectsRecent))
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'projectsAll',
+				_1: _elm_lang$core$Json_Encode$list(
+					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$App$encodeProject, model.projectsAll))
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'refreshEditorContent',
+				_1: _elm_lang$core$Json_Encode$bool(model.refreshEditorContent)
+			},
+				{
+				ctor: '_Tuple2',
+				_0: 'raisedCard',
+				_1: _elm_lang$core$Json_Encode$int(model.raisedCard)
+			}
+			]));
+};
+var _RobertWalter83$calliope$App$title = function (t) {
 	return A3(
 		_debois$elm_mdl$Material_Options$styled,
 		_elm_lang$html$Html$h1,
@@ -14736,7 +14891,7 @@ var _RobertWalter83$calliope$Project$title = function (t) {
 				_elm_lang$html$Html$text(t)
 			]));
 };
-var _RobertWalter83$calliope$Project$cellFromTier = F2(
+var _RobertWalter83$calliope$App$cellFromTier = F2(
 	function (gridWidth, tier) {
 		return A2(
 			_debois$elm_mdl$Material_Grid$cell,
@@ -14754,14 +14909,14 @@ var _RobertWalter83$calliope$Project$cellFromTier = F2(
 						A2(_elm_lang$core$Basics_ops['++'], tier.name, ' goes here!.')))
 				]));
 	});
-var _RobertWalter83$calliope$Project$cells = F2(
+var _RobertWalter83$calliope$App$cells = F2(
 	function (gridWidth, project) {
 		return A2(
 			_elm_lang$core$List$map,
-			_RobertWalter83$calliope$Project$cellFromTier(gridWidth),
-			project.structure.tierList);
+			_RobertWalter83$calliope$App$cellFromTier(gridWidth),
+			project.tierList);
 	});
-var _RobertWalter83$calliope$Project$widthFromTierList = function (tierList) {
+var _RobertWalter83$calliope$App$widthFromTierList = function (tierList) {
 	var width = A2(
 		F2(
 			function (x, y) {
@@ -14777,7 +14932,7 @@ var _RobertWalter83$calliope$Project$widthFromTierList = function (tierList) {
 			_elm_lang$core$List$length(tierList)));
 	return (_elm_lang$core$Native_Utils.cmp(width, 3) < 0) ? 3 : width;
 };
-var _RobertWalter83$calliope$Project$cellHeader = F2(
+var _RobertWalter83$calliope$App$cellHeader = F2(
 	function (gridWidth, stHeader) {
 		return A2(
 			_debois$elm_mdl$Material_Grid$cell,
@@ -14800,19 +14955,19 @@ var _RobertWalter83$calliope$Project$cellHeader = F2(
 						]))
 				]));
 	});
-var _RobertWalter83$calliope$Project$cellHeaderFromTier = F2(
+var _RobertWalter83$calliope$App$cellHeaderFromTier = F2(
 	function (gridWidth, tier) {
-		return A2(_RobertWalter83$calliope$Project$cellHeader, gridWidth, tier.name);
+		return A2(_RobertWalter83$calliope$App$cellHeader, gridWidth, tier.name);
 	});
-var _RobertWalter83$calliope$Project$cellHeaders = F2(
+var _RobertWalter83$calliope$App$cellHeaders = F2(
 	function (gridWidth, project) {
 		return A2(
 			_elm_lang$core$List$map,
-			_RobertWalter83$calliope$Project$cellHeaderFromTier(gridWidth),
-			project.structure.tierList);
+			_RobertWalter83$calliope$App$cellHeaderFromTier(gridWidth),
+			project.tierList);
 	});
-var _RobertWalter83$calliope$Project$renderStructure = function (project) {
-	var gridWidth = _RobertWalter83$calliope$Project$widthFromTierList(project.projectData.structure.tierList);
+var _RobertWalter83$calliope$App$renderStructure = function (project) {
+	var gridWidth = _RobertWalter83$calliope$App$widthFromTierList(project.tierList);
 	return A2(
 		_debois$elm_mdl$Material_Options$div,
 		_RobertWalter83$calliope$Util$boxedDefault,
@@ -14828,10 +14983,10 @@ var _RobertWalter83$calliope$Project$renderStructure = function (project) {
 						[_debois$elm_mdl$Material_Grid$noSpacing])),
 				A2(
 					_elm_lang$core$List$append,
-					A2(_RobertWalter83$calliope$Project$cellHeaders, gridWidth, project.projectData),
+					A2(_RobertWalter83$calliope$App$cellHeaders, gridWidth, project),
 					_elm_lang$core$Native_List.fromArray(
 						[
-							A2(_RobertWalter83$calliope$Project$cellHeader, gridWidth, 'Statistics')
+							A2(_RobertWalter83$calliope$App$cellHeader, gridWidth, 'Statistics')
 						]))),
 				A2(
 				_debois$elm_mdl$Material_Grid$grid,
@@ -14845,420 +15000,9 @@ var _RobertWalter83$calliope$Project$renderStructure = function (project) {
 							_debois$elm_mdl$Material_Elevation$e6,
 							_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
 						])),
-				A2(_RobertWalter83$calliope$Project$cells, gridWidth, project.projectData))
+				A2(_RobertWalter83$calliope$App$cells, gridWidth, project))
 			]));
 };
-var _RobertWalter83$calliope$Project$updateScript = F2(
-	function (script, contentNew) {
-		return _elm_lang$core$Native_Utils.update(
-			script,
-			{content: contentNew});
-	});
-var _RobertWalter83$calliope$Project$update = F2(
-	function (msg, project) {
-		var _p0 = msg;
-		switch (_p0.ctor) {
-			case 'Mdl':
-				return A2(_debois$elm_mdl$Material$update, _p0._0, project);
-			case 'UpdateEditorContent':
-				var data = project.projectData;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						project,
-						{
-							projectData: _elm_lang$core$Native_Utils.update(
-								data,
-								{
-									script: A2(
-										_RobertWalter83$calliope$Project$updateScript,
-										data.script,
-										A2(_elm_lang$core$Debug$log, 'contentNew', _p0._0)),
-									refreshEditor: false
-								})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			case 'EditorReady':
-				return {ctor: '_Tuple2', _0: project, _1: _elm_lang$core$Platform_Cmd$none};
-			case 'TitleEditable':
-				var data = project.projectData;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						project,
-						{
-							projectData: _elm_lang$core$Native_Utils.update(
-								data,
-								{titleEditable: _p0._0})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-			default:
-				var data = project.projectData;
-				return {
-					ctor: '_Tuple2',
-					_0: _elm_lang$core$Native_Utils.update(
-						project,
-						{
-							projectData: _elm_lang$core$Native_Utils.update(
-								data,
-								{title: _p0._0})
-						}),
-					_1: _elm_lang$core$Platform_Cmd$none
-				};
-		}
-	});
-var _RobertWalter83$calliope$Project$defaultStructure = {
-	tierList: _elm_lang$core$Native_List.fromArray(
-		[
-			{id: 'Scenes', name: 'Scenes'},
-			{id: 'Scripts', name: 'Scripts'}
-		])
-};
-var _RobertWalter83$calliope$Project$toStringTime = function (date) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Basics$toString(
-			_elm_lang$core$Date$hour(date)),
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			':',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(
-					_elm_lang$core$Date$minute(date)),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					':',
-					_elm_lang$core$Basics$toString(
-						_elm_lang$core$Date$second(date))))));
-};
-var _RobertWalter83$calliope$Project$toStringDate = function (date) {
-	return A2(
-		_elm_lang$core$Basics_ops['++'],
-		_elm_lang$core$Basics$toString(
-			_elm_lang$core$Date$day(date)),
-		A2(
-			_elm_lang$core$Basics_ops['++'],
-			'/',
-			A2(
-				_elm_lang$core$Basics_ops['++'],
-				_elm_lang$core$Basics$toString(
-					_elm_lang$core$Date$month(date)),
-				A2(
-					_elm_lang$core$Basics_ops['++'],
-					'/',
-					_elm_lang$core$Basics$toString(
-						_elm_lang$core$Date$year(date))))));
-};
-var _RobertWalter83$calliope$Project$createProjectAt = F2(
-	function (date, time) {
-		return {
-			mdl: _debois$elm_mdl$Material$model,
-			projectData: {
-				title: 'New Project',
-				refreshEditor: false,
-				titleEditable: false,
-				dateCreated: date,
-				timeCreated: time,
-				script: {content: ''},
-				structure: _RobertWalter83$calliope$Project$defaultStructure
-			}
-		};
-	});
-var _RobertWalter83$calliope$Project$createProject = function (timeNow) {
-	return A2(
-		_RobertWalter83$calliope$Project$createProjectAt,
-		A3(
-			_rluiten$elm_date_extra$Date_Extra_Format$format,
-			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
-			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.date,
-			_elm_lang$core$Date$fromTime(timeNow)),
-		A3(
-			_rluiten$elm_date_extra$Date_Extra_Format$format,
-			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
-			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.time,
-			_elm_lang$core$Date$fromTime(timeNow)));
-};
-var _RobertWalter83$calliope$Project$defaultProject = A2(_RobertWalter83$calliope$Project$createProjectAt, '1/1/1990', '12:00:00');
-var _RobertWalter83$calliope$Project$Project = F2(
-	function (a, b) {
-		return {mdl: a, projectData: b};
-	});
-var _RobertWalter83$calliope$Project$ProjectData = F7(
-	function (a, b, c, d, e, f, g) {
-		return {title: a, refreshEditor: b, titleEditable: c, dateCreated: d, timeCreated: e, script: f, structure: g};
-	});
-var _RobertWalter83$calliope$Project$Script = function (a) {
-	return {content: a};
-};
-var _RobertWalter83$calliope$Project$Scene = F2(
-	function (a, b) {
-		return {name: a, location: b};
-	});
-var _RobertWalter83$calliope$Project$Structure = function (a) {
-	return {tierList: a};
-};
-var _RobertWalter83$calliope$Project$Tier = F2(
-	function (a, b) {
-		return {id: a, name: b};
-	});
-var _RobertWalter83$calliope$Project$EditTitle = function (a) {
-	return {ctor: 'EditTitle', _0: a};
-};
-var _RobertWalter83$calliope$Project$TitleEditable = function (a) {
-	return {ctor: 'TitleEditable', _0: a};
-};
-var _RobertWalter83$calliope$Project$EditorReady = {ctor: 'EditorReady'};
-var _RobertWalter83$calliope$Project$renderScript = F2(
-	function (script, refresh) {
-		return A3(
-			_elm_lang$html$Html$node,
-			'juicy-ace-editor',
-			_elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html_Attributes$id('editor-container'),
-					A2(
-					_elm_lang$html$Html_Events$on,
-					'editor-ready',
-					_elm_lang$core$Json_Decode$succeed(_RobertWalter83$calliope$Project$EditorReady))
-				]),
-			refresh ? _elm_lang$core$Native_List.fromArray(
-				[
-					_elm_lang$html$Html$text(script.content)
-				]) : _elm_lang$core$Native_List.fromArray(
-				[]));
-	});
-var _RobertWalter83$calliope$Project$renderDialog = F2(
-	function (project, refresh) {
-		var doRefresh = A2(_elm_lang$core$Debug$log, 'refresh:', refresh && project.projectData.refreshEditor);
-		return A2(
-			_debois$elm_mdl$Material_Options$div,
-			A2(_RobertWalter83$calliope$Util$withMaxWidth, 812, _RobertWalter83$calliope$Util$boxedDefault),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(
-					_debois$elm_mdl$Material_Options$div,
-					_elm_lang$core$Native_List.fromArray(
-						[
-							_debois$elm_mdl$Material_Elevation$e6,
-							A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px'),
-							A2(_debois$elm_mdl$Material_Options$css, 'position', 'relative'),
-							_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
-						]),
-					_elm_lang$core$Native_List.fromArray(
-						[
-							A2(_RobertWalter83$calliope$Project$renderScript, project.projectData.script, doRefresh)
-						]))
-				]));
-	});
-var _RobertWalter83$calliope$Project$UpdateEditorContent = function (a) {
-	return {ctor: 'UpdateEditorContent', _0: a};
-};
-var _RobertWalter83$calliope$Project$subscriptions = function (project) {
-	return _RobertWalter83$calliope$Ports$updateEditorContent(_RobertWalter83$calliope$Project$UpdateEditorContent);
-};
-var _RobertWalter83$calliope$Project$Mdl = function (a) {
-	return {ctor: 'Mdl', _0: a};
-};
-var _RobertWalter83$calliope$Project$renderProjectTitle = function (project) {
-	var data = project.projectData;
-	return data.titleEditable ? A4(
-		_debois$elm_mdl$Material_Textfield$render,
-		_RobertWalter83$calliope$Project$Mdl,
-		_elm_lang$core$Native_List.fromArray(
-			[13]),
-		_debois$elm_mdl$Material$model,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_debois$elm_mdl$Material_Textfield$text$,
-				_debois$elm_mdl$Material_Textfield$onInput(_RobertWalter83$calliope$Project$EditTitle),
-				_debois$elm_mdl$Material_Textfield$onBlur(
-				_RobertWalter83$calliope$Project$TitleEditable(false)),
-				_debois$elm_mdl$Material_Textfield$value(data.title),
-				A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px')
-			])) : A2(
-		_debois$elm_mdl$Material_Options$div,
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_debois$elm_mdl$Material_Options$attribute(
-				_elm_lang$html$Html_Events$onClick(
-					_RobertWalter83$calliope$Project$TitleEditable(true)))
-			]),
-		_elm_lang$core$Native_List.fromArray(
-			[
-				_elm_lang$html$Html$text(data.title)
-			]));
-};
-
-var _debois$elm_mdl$Material_Card$stopClick = _debois$elm_mdl$Material_Options_Internal$attribute(
-	A2(_elm_lang$html$Html_Attributes$attribute, 'onclick', 'var event = arguments[0] || window.event; event.stopPropagation();'));
-var _debois$elm_mdl$Material_Card$block = function (block) {
-	var _p0 = block;
-	switch (_p0.ctor) {
-		case 'Title':
-			return A2(
-				_debois$elm_mdl$Material_Options$div,
-				A2(
-					_elm_lang$core$List_ops['::'],
-					_debois$elm_mdl$Material_Options$cs('mdl-card__title'),
-					_p0._0),
-				_p0._1);
-		case 'Media':
-			return A2(
-				_debois$elm_mdl$Material_Options$div,
-				A2(
-					_elm_lang$core$List_ops['::'],
-					_debois$elm_mdl$Material_Options$cs('mdl-card__media'),
-					_p0._0),
-				_p0._1);
-		case 'SupportingText':
-			return A2(
-				_debois$elm_mdl$Material_Options$div,
-				A2(
-					_elm_lang$core$List_ops['::'],
-					_debois$elm_mdl$Material_Options$cs('mdl-card__supporting-text'),
-					_p0._0),
-				_p0._1);
-		case 'Actions':
-			return A2(
-				_debois$elm_mdl$Material_Options$div,
-				A2(
-					_elm_lang$core$List_ops['::'],
-					_debois$elm_mdl$Material_Options$cs('mdl-card__actions'),
-					A2(_elm_lang$core$List_ops['::'], _debois$elm_mdl$Material_Card$stopClick, _p0._0)),
-				_p0._1);
-		default:
-			return A2(
-				_debois$elm_mdl$Material_Options$div,
-				A2(
-					_elm_lang$core$List_ops['::'],
-					_debois$elm_mdl$Material_Options$cs('mdl-card__menu'),
-					A2(_elm_lang$core$List_ops['::'], _debois$elm_mdl$Material_Card$stopClick, _p0._0)),
-				_p0._1);
-	}
-};
-var _debois$elm_mdl$Material_Card$view = F2(
-	function (styling, views) {
-		return A2(
-			_debois$elm_mdl$Material_Options$div,
-			A2(
-				_elm_lang$core$List$append,
-				styling,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_debois$elm_mdl$Material_Options$cs('mdl-card'),
-						A2(_debois$elm_mdl$Material_Options$css, 'min-height', '0px')
-					])),
-			A2(_elm_lang$core$List$map, _debois$elm_mdl$Material_Card$block, views));
-	});
-var _debois$elm_mdl$Material_Card$subhead = function (styling) {
-	return _debois$elm_mdl$Material_Options$span(
-		A2(
-			_elm_lang$core$List_ops['::'],
-			_debois$elm_mdl$Material_Options$cs('mdl-card__subtitle-text'),
-			A2(
-				_elm_lang$core$List_ops['::'],
-				A2(_debois$elm_mdl$Material_Options$css, 'padding-top', '8px'),
-				styling)));
-};
-var _debois$elm_mdl$Material_Card$head = function (styling) {
-	return A2(
-		_debois$elm_mdl$Material_Options$styled,
-		_elm_lang$html$Html$h1,
-		A2(
-			_elm_lang$core$List_ops['::'],
-			_debois$elm_mdl$Material_Options$cs('mdl-card__title-text'),
-			A2(
-				_elm_lang$core$List_ops['::'],
-				A2(_debois$elm_mdl$Material_Options$css, 'align-self', 'flex-start'),
-				styling)));
-};
-var _debois$elm_mdl$Material_Card$expand = _debois$elm_mdl$Material_Options$cs('mdl-card--expand');
-var _debois$elm_mdl$Material_Card$border = _debois$elm_mdl$Material_Options$cs('mdl-card--border');
-var _debois$elm_mdl$Material_Card$Actions = F2(
-	function (a, b) {
-		return {ctor: 'Actions', _0: a, _1: b};
-	});
-var _debois$elm_mdl$Material_Card$actions = _debois$elm_mdl$Material_Card$Actions;
-var _debois$elm_mdl$Material_Card$SupportingText = F2(
-	function (a, b) {
-		return {ctor: 'SupportingText', _0: a, _1: b};
-	});
-var _debois$elm_mdl$Material_Card$text = _debois$elm_mdl$Material_Card$SupportingText;
-var _debois$elm_mdl$Material_Card$Media = F2(
-	function (a, b) {
-		return {ctor: 'Media', _0: a, _1: b};
-	});
-var _debois$elm_mdl$Material_Card$media = _debois$elm_mdl$Material_Card$Media;
-var _debois$elm_mdl$Material_Card$Menu = F2(
-	function (a, b) {
-		return {ctor: 'Menu', _0: a, _1: b};
-	});
-var _debois$elm_mdl$Material_Card$menu = F2(
-	function (styling, block) {
-		return A2(_debois$elm_mdl$Material_Card$Menu, styling, block);
-	});
-var _debois$elm_mdl$Material_Card$Title = F2(
-	function (a, b) {
-		return {ctor: 'Title', _0: a, _1: b};
-	});
-var _debois$elm_mdl$Material_Card$title = F2(
-	function (styling, block) {
-		return A2(
-			_debois$elm_mdl$Material_Card$Title,
-			A2(
-				_elm_lang$core$List$append,
-				styling,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						A2(_debois$elm_mdl$Material_Options$css, 'justify-content', 'flex-end'),
-						A2(_debois$elm_mdl$Material_Options$css, 'flex-direction', 'column'),
-						A2(_debois$elm_mdl$Material_Options$css, 'align-items', 'flex-start')
-					])),
-			block);
-	});
-
-var _RobertWalter83$calliope$App$encodeAppState = function (appState) {
-	return _elm_lang$core$Json_Encode$object(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				{
-				ctor: '_Tuple2',
-				_0: 'viewSelected',
-				_1: _elm_lang$core$Json_Encode$int(appState.viewSelected)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'projectActive',
-				_1: _RobertWalter83$calliope$Project$encodeProject(appState.projectActive)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'projectsRecent',
-				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Project$encodeProject, appState.projectsRecent))
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'projectsAll',
-				_1: _elm_lang$core$Json_Encode$list(
-					A2(_elm_lang$core$List$map, _RobertWalter83$calliope$Project$encodeProject, appState.projectsAll))
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'refreshEditorContent',
-				_1: _elm_lang$core$Json_Encode$bool(appState.refreshEditorContent)
-			},
-				{
-				ctor: '_Tuple2',
-				_0: 'raisedCard',
-				_1: _elm_lang$core$Json_Encode$int(appState.raisedCard)
-			}
-			]));
-};
-var _RobertWalter83$calliope$App$stylesheet = _debois$elm_mdl$Material_Options$stylesheet('\n  .mdl-layout__header--transparent {\n    background: url(\'assets/march.jpg\') 0 45% no-repeat;\n    background-size: 100% auto\n  }\n');
 var _RobertWalter83$calliope$App$viewOverviewHeader = _elm_lang$core$Native_List.fromArray(
 	[
 		A2(
@@ -15293,16 +15037,38 @@ var _RobertWalter83$calliope$App$viewOverviewHeader = _elm_lang$core$Native_List
 			]))
 	]);
 var _RobertWalter83$calliope$App$createParams = F5(
-	function (index, appWithMdl, msg, pathBackground, messageTuple) {
-		return {index: index, appWithMdl: appWithMdl, onClick: msg, pathBackground: pathBackground, messageTuple: messageTuple};
+	function (index, modelMdl, msg, pathBackground, messageTuple) {
+		return {index: index, modelMdl: modelMdl, onClick: msg, pathBackground: pathBackground, messageTuple: messageTuple};
 	});
-var _RobertWalter83$calliope$App$appMdlWithCmdNone = F2(
-	function (appWithMdl, appStateNew) {
+var _RobertWalter83$calliope$App$updateScript = F2(
+	function (script, contentNew) {
+		return _elm_lang$core$Native_Utils.update(
+			script,
+			{content: contentNew});
+	});
+var _RobertWalter83$calliope$App$updateProjectContent = F2(
+	function (model, contentNew) {
+		var projectCurrent = model.projectActive;
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{
+				projectActive: _elm_lang$core$Native_Utils.update(
+					projectCurrent,
+					{
+						script: A2(
+							_RobertWalter83$calliope$App$updateScript,
+							projectCurrent.script,
+							A2(_elm_lang$core$Debug$log, 'contentNew', contentNew))
+					})
+			});
+	});
+var _RobertWalter83$calliope$App$withMdl = F2(
+	function (modelMdl, modelNew) {
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
-				appWithMdl,
-				{appState: appStateNew}),
+				modelMdl,
+				{model: modelNew}),
 			_1: _elm_lang$core$Platform_Cmd$none
 		};
 	});
@@ -15310,10 +15076,16 @@ var _RobertWalter83$calliope$App$sortByTitle = function (input) {
 	return A2(
 		_elm_lang$core$List$sortBy,
 		function (p) {
-			return p.projectData.title;
+			return p.title;
 		},
 		input);
 };
+var _RobertWalter83$calliope$App$updateProjectTitle = F2(
+	function (projectOld, titleNew) {
+		return _elm_lang$core$Native_Utils.update(
+			projectOld,
+			{title: titleNew});
+	});
 var _RobertWalter83$calliope$App$filter = F2(
 	function (list, item) {
 		return A2(
@@ -15329,18 +15101,38 @@ var _RobertWalter83$calliope$App$updateProjectList = F2(
 		return A2(_elm_lang$core$List_ops['::'], projectNew, filtered);
 	});
 var _RobertWalter83$calliope$App$openProject = F2(
-	function (appStateCurrent, projectToOpen) {
+	function (modelCurrent, projectToOpen) {
 		var projectsAll = _RobertWalter83$calliope$App$sortByTitle(
-			A2(_RobertWalter83$calliope$App$updateProjectList, appStateCurrent.projectsAll, projectToOpen));
-		var projectsRecent = A2(_RobertWalter83$calliope$App$updateProjectList, appStateCurrent.projectsRecent, projectToOpen);
+			A2(_RobertWalter83$calliope$App$updateProjectList, modelCurrent.projectsAll, projectToOpen));
+		var projectsRecent = A2(_RobertWalter83$calliope$App$updateProjectList, modelCurrent.projectsRecent, projectToOpen);
 		return _elm_lang$core$Native_Utils.update(
-			appStateCurrent,
+			modelCurrent,
 			{projectActive: projectToOpen, projectsRecent: projectsRecent, projectsAll: projectsAll, viewSelected: 1});
 	});
-var _RobertWalter83$calliope$App$raiseCard = F2(
-	function (appStateCurrent, cardIndex) {
+var _RobertWalter83$calliope$App$editTitle = F2(
+	function (modelCurrent, titleNew) {
+		var newProject = A2(_RobertWalter83$calliope$App$updateProjectTitle, modelCurrent.projectActive, titleNew);
+		var projectsRecent = A2(
+			_elm_lang$core$List_ops['::'],
+			newProject,
+			A4(
+				_elm_lang$core$Debug$log,
+				'projectsRecent',
+				_RobertWalter83$calliope$App$filter,
+				modelCurrent.projectsRecent,
+				A2(_elm_lang$core$Debug$log, 'projectActive', modelCurrent.projectActive)));
+		var projectsAll = A2(
+			_elm_lang$core$List_ops['::'],
+			newProject,
+			A2(_RobertWalter83$calliope$App$filter, modelCurrent.projectsAll, modelCurrent.projectActive));
 		return _elm_lang$core$Native_Utils.update(
-			appStateCurrent,
+			modelCurrent,
+			{projectActive: newProject, projectsRecent: projectsRecent, projectsAll: projectsAll});
+	});
+var _RobertWalter83$calliope$App$raiseCard = F2(
+	function (modelCurrent, cardIndex) {
+		return _elm_lang$core$Native_Utils.update(
+			modelCurrent,
 			{raisedCard: cardIndex});
 	});
 var _RobertWalter83$calliope$App$addNewProject = function (project) {
@@ -15355,33 +15147,135 @@ var _RobertWalter83$calliope$App$addNewProject = function (project) {
 		raisedCard: -1
 	};
 };
+var _RobertWalter83$calliope$App$defaultTierList = _elm_lang$core$Native_List.fromArray(
+	[
+		{id: 'Scenes', name: 'Scenes'},
+		{id: 'Scripts', name: 'Scripts'}
+	]);
+var _RobertWalter83$calliope$App$createProjectAt = F2(
+	function (date, time) {
+		return {
+			title: 'New Project',
+			refreshEditor: false,
+			titleEditable: false,
+			dateCreated: date,
+			timeCreated: time,
+			script: {content: ''},
+			tierList: _RobertWalter83$calliope$App$defaultTierList
+		};
+	});
+var _RobertWalter83$calliope$App$createProject = function (timeNow) {
+	return A2(
+		_RobertWalter83$calliope$App$createProjectAt,
+		A3(
+			_rluiten$elm_date_extra$Date_Extra_Format$format,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.date,
+			_elm_lang$core$Date$fromTime(timeNow)),
+		A3(
+			_rluiten$elm_date_extra$Date_Extra_Format$format,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.time,
+			_elm_lang$core$Date$fromTime(timeNow)));
+};
 var _RobertWalter83$calliope$App$createNewProject = F2(
-	function (appStateCurrent, timeNow) {
-		var newProject = _RobertWalter83$calliope$Project$createProject(timeNow);
-		var projectsRecent = A2(_elm_lang$core$List_ops['::'], newProject, appStateCurrent.projectsRecent);
+	function (modelCurrent, timeNow) {
+		var newProject = _RobertWalter83$calliope$App$createProject(timeNow);
+		var projectsRecent = A2(_elm_lang$core$List_ops['::'], newProject, modelCurrent.projectsRecent);
 		var projectsAll = _RobertWalter83$calliope$App$sortByTitle(
-			A2(_elm_lang$core$List_ops['::'], newProject, appStateCurrent.projectsAll));
-		var appStateNew = _RobertWalter83$calliope$App$addNewProject(newProject);
+			A2(_elm_lang$core$List_ops['::'], newProject, modelCurrent.projectsAll));
+		var modelNew = _RobertWalter83$calliope$App$addNewProject(newProject);
 		return _elm_lang$core$Native_Utils.update(
-			appStateNew,
+			modelNew,
 			{projectsRecent: projectsRecent, projectsAll: projectsAll});
 	});
-var _RobertWalter83$calliope$App$addDefaultProject = _RobertWalter83$calliope$App$addNewProject(_RobertWalter83$calliope$Project$defaultProject);
-var _RobertWalter83$calliope$App$wrapWithMdl = function (appState) {
-	return {mdl: _debois$elm_mdl$Material$model, appState: appState};
-};
-var _RobertWalter83$calliope$App$AppState = F6(
+var _RobertWalter83$calliope$App$defaultProject = A2(_RobertWalter83$calliope$App$createProjectAt, '01/Jan/1990', '12:00');
+var _RobertWalter83$calliope$App$ModelMdl = F2(
+	function (a, b) {
+		return {mdl: a, model: b};
+	});
+var _RobertWalter83$calliope$App$Model = F6(
 	function (a, b, c, d, e, f) {
 		return {viewSelected: a, projectActive: b, projectsAll: c, projectsRecent: d, refreshEditorContent: e, raisedCard: f};
 	});
-var _RobertWalter83$calliope$App$AppWithMdl = F2(
+var _RobertWalter83$calliope$App$Project = F7(
+	function (a, b, c, d, e, f, g) {
+		return {title: a, refreshEditor: b, titleEditable: c, dateCreated: d, timeCreated: e, script: f, tierList: g};
+	});
+var _RobertWalter83$calliope$App$Script = function (a) {
+	return {content: a};
+};
+var _RobertWalter83$calliope$App$Scene = F2(
 	function (a, b) {
-		return {mdl: a, appState: b};
+		return {name: a, location: b};
+	});
+var _RobertWalter83$calliope$App$Tier = F2(
+	function (a, b) {
+		return {id: a, name: b};
 	});
 var _RobertWalter83$calliope$App$PolaroidParams = F5(
 	function (a, b, c, d, e) {
-		return {index: a, appWithMdl: b, onClick: c, pathBackground: d, messageTuple: e};
+		return {index: a, modelMdl: b, onClick: c, pathBackground: d, messageTuple: e};
 	});
+var _RobertWalter83$calliope$App$EditTitle = function (a) {
+	return {ctor: 'EditTitle', _0: a};
+};
+var _RobertWalter83$calliope$App$TitleEditable = function (a) {
+	return {ctor: 'TitleEditable', _0: a};
+};
+var _RobertWalter83$calliope$App$EditorReady = {ctor: 'EditorReady'};
+var _RobertWalter83$calliope$App$renderScript = F2(
+	function (script, refresh) {
+		return A3(
+			_elm_lang$html$Html$node,
+			'juicy-ace-editor',
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html_Attributes$id('editor-container'),
+					A2(
+					_elm_lang$html$Html_Events$on,
+					'editor-ready',
+					_elm_lang$core$Json_Decode$succeed(_RobertWalter83$calliope$App$EditorReady))
+				]),
+			refresh ? _elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(script.content)
+				]) : _elm_lang$core$Native_List.fromArray(
+				[]));
+	});
+var _RobertWalter83$calliope$App$renderDialog = F2(
+	function (project, refresh) {
+		var doRefresh = A2(_elm_lang$core$Debug$log, 'refresh:', refresh && project.refreshEditor);
+		return A2(
+			_debois$elm_mdl$Material_Options$div,
+			A2(_RobertWalter83$calliope$Util$withMaxWidth, 812, _RobertWalter83$calliope$Util$boxedDefault),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					A2(
+					_debois$elm_mdl$Material_Options$div,
+					_elm_lang$core$Native_List.fromArray(
+						[
+							_debois$elm_mdl$Material_Elevation$e6,
+							A2(_debois$elm_mdl$Material_Options$css, 'height', '1024px'),
+							A2(_debois$elm_mdl$Material_Options$css, 'position', 'relative'),
+							_debois$elm_mdl$Material_Color$background(_debois$elm_mdl$Material_Color$white)
+						]),
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(_RobertWalter83$calliope$App$renderScript, project.script, doRefresh)
+						]))
+				]));
+	});
+var _RobertWalter83$calliope$App$UpdateEditorContent = function (a) {
+	return {ctor: 'UpdateEditorContent', _0: a};
+};
+var _RobertWalter83$calliope$App$subscriptions = function (modelMdl) {
+	return _elm_lang$core$Platform_Sub$batch(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_RobertWalter83$calliope$Ports$updateEditorContent(_RobertWalter83$calliope$App$UpdateEditorContent)
+			]));
+};
 var _RobertWalter83$calliope$App$NoOp = {ctor: 'NoOp'};
 var _RobertWalter83$calliope$App$Raise = function (a) {
 	return {ctor: 'Raise', _0: a};
@@ -15392,7 +15286,7 @@ var _RobertWalter83$calliope$App$renderPolaroid = F2(
 			_debois$elm_mdl$Material_Card$view,
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_elm_lang$core$Native_Utils.eq(params.appWithMdl.appState.raisedCard, params.index) ? _debois$elm_mdl$Material_Elevation$e8 : _debois$elm_mdl$Material_Elevation$e2,
+					_elm_lang$core$Native_Utils.eq(params.modelMdl.model.raisedCard, params.index) ? _debois$elm_mdl$Material_Elevation$e8 : _debois$elm_mdl$Material_Elevation$e2,
 					_debois$elm_mdl$Material_Elevation$transition(250),
 					A2(_debois$elm_mdl$Material_Options$css, 'width', '256px'),
 					_debois$elm_mdl$Material_Options$attribute(
@@ -15481,8 +15375,8 @@ var _RobertWalter83$calliope$App$OpenProject = function (a) {
 	return {ctor: 'OpenProject', _0: a};
 };
 var _RobertWalter83$calliope$App$CreateNewProject = {ctor: 'CreateNewProject'};
-var _RobertWalter83$calliope$App$renderOverview = function (appWithMdl) {
-	var lengthRecentProjects = _elm_lang$core$List$length(appWithMdl.appState.projectsRecent);
+var _RobertWalter83$calliope$App$renderOverview = function (modelMdl) {
+	var lengthRecentProjects = _elm_lang$core$List$length(modelMdl.model.projectsRecent);
 	return A2(
 		_debois$elm_mdl$Material_Options$div,
 		A2(
@@ -15523,11 +15417,11 @@ var _RobertWalter83$calliope$App$renderOverview = function (appWithMdl) {
 								[
 									A2(
 									_RobertWalter83$calliope$App$renderPolaroid,
-									appWithMdl.appState.projectActive,
+									modelMdl.model.projectActive,
 									A5(
 										_RobertWalter83$calliope$App$createParams,
 										0,
-										appWithMdl,
+										modelMdl,
 										_RobertWalter83$calliope$App$CreateNewProject,
 										'assets/new.jpg',
 										{ctor: '_Tuple2', _0: 'New Project', _1: 'Create a brand new project'}))
@@ -15536,35 +15430,80 @@ var _RobertWalter83$calliope$App$renderOverview = function (appWithMdl) {
 					A3(
 						_elm_lang$core$List$map2,
 						_RobertWalter83$calliope$App$renderProjectLink,
-						appWithMdl.appState.projectsRecent,
+						modelMdl.model.projectsRecent,
 						A6(
 							_elm_lang$core$List$map5,
 							_RobertWalter83$calliope$App$createParams,
 							_elm_lang$core$Native_List.range(1, lengthRecentProjects),
-							A2(_elm_lang$core$List$repeat, lengthRecentProjects, appWithMdl),
+							A2(_elm_lang$core$List$repeat, lengthRecentProjects, modelMdl),
 							A2(
 								_elm_lang$core$List$map,
 								function (p) {
 									return _RobertWalter83$calliope$App$OpenProject(p);
 								},
-								appWithMdl.appState.projectsRecent),
+								modelMdl.model.projectsRecent),
 							A2(_elm_lang$core$List$repeat, lengthRecentProjects, 'assets/existing.jpg'),
 							A2(
 								_elm_lang$core$List$map,
 								function (p) {
-									return {ctor: '_Tuple2', _0: p.projectData.title, _1: 'Click here to open.'};
+									return {ctor: '_Tuple2', _0: p.title, _1: 'Click here to open.'};
 								},
-								appWithMdl.appState.projectsRecent)))))
+								modelMdl.model.projectsRecent)))))
 			]));
 };
 var _RobertWalter83$calliope$App$Save = {ctor: 'Save'};
-var _RobertWalter83$calliope$App$EditorReady = function (a) {
-	return {ctor: 'EditorReady', _0: a};
+var _RobertWalter83$calliope$App$SelectView = function (a) {
+	return {ctor: 'SelectView', _0: a};
 };
-var _RobertWalter83$calliope$App$TitleEditable = function (a) {
-	return {ctor: 'TitleEditable', _0: a};
+var _RobertWalter83$calliope$App$Mdl = function (a) {
+	return {ctor: 'Mdl', _0: a};
 };
-var _RobertWalter83$calliope$App$viewDefaultHeader = function (appWithMdl) {
+var _RobertWalter83$calliope$App$init = function (maybeModel) {
+	var modelInit = function () {
+		var _p1 = maybeModel;
+		if (_p1.ctor === 'Nothing') {
+			return _RobertWalter83$calliope$App$addNewProject(_RobertWalter83$calliope$App$defaultProject);
+		} else {
+			return _elm_lang$core$Native_Utils.update(
+				_p1._0,
+				{refreshEditorContent: true});
+		}
+	}();
+	return {
+		ctor: '_Tuple2',
+		_0: {mdl: _debois$elm_mdl$Material$model, model: modelInit},
+		_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
+	};
+};
+var _RobertWalter83$calliope$App$renderProjectTitle = function (project) {
+	return project.titleEditable ? A4(
+		_debois$elm_mdl$Material_Textfield$render,
+		_RobertWalter83$calliope$App$Mdl,
+		_elm_lang$core$Native_List.fromArray(
+			[13]),
+		_debois$elm_mdl$Material$model,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_debois$elm_mdl$Material_Textfield$text$,
+				_debois$elm_mdl$Material_Textfield$onInput(_RobertWalter83$calliope$App$EditTitle),
+				_debois$elm_mdl$Material_Textfield$onBlur(
+				_RobertWalter83$calliope$App$TitleEditable(false)),
+				_debois$elm_mdl$Material_Textfield$value(project.title),
+				A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px')
+			])) : A2(
+		_debois$elm_mdl$Material_Options$div,
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_debois$elm_mdl$Material_Options$attribute(
+				_elm_lang$html$Html_Events$onClick(
+					_RobertWalter83$calliope$App$TitleEditable(true)))
+			]),
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$html$Html$text(project.title)
+			]));
+};
+var _RobertWalter83$calliope$App$viewDefaultHeader = function (modelMdl) {
 	return _elm_lang$core$Native_List.fromArray(
 		[
 			A2(
@@ -15575,36 +15514,9 @@ var _RobertWalter83$calliope$App$viewDefaultHeader = function (appWithMdl) {
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					A2(
-					_elm_lang$html$Html_App$map,
-					_RobertWalter83$calliope$App$TitleEditable,
-					_RobertWalter83$calliope$Project$renderProjectTitle(appWithMdl.appState.projectActive))
+					_RobertWalter83$calliope$App$renderProjectTitle(modelMdl.model.projectActive)
 				]))
 		]);
-};
-var _RobertWalter83$calliope$App$SelectView = function (a) {
-	return {ctor: 'SelectView', _0: a};
-};
-var _RobertWalter83$calliope$App$UpdateContent = function (a) {
-	return {ctor: 'UpdateContent', _0: a};
-};
-var _RobertWalter83$calliope$App$subscriptions = function (appWithMdl) {
-	return _elm_lang$core$Platform_Sub$batch(
-		_elm_lang$core$Native_List.fromArray(
-			[
-				A2(
-				_elm_lang$core$Platform_Sub$map,
-				_RobertWalter83$calliope$App$UpdateContent,
-				_RobertWalter83$calliope$Project$subscriptions(appWithMdl.appState.projectActive))
-			]));
-};
-var _RobertWalter83$calliope$App$Mdl = function (a) {
-	return {ctor: 'Mdl', _0: a};
-};
-var _RobertWalter83$calliope$App$init = {
-	ctor: '_Tuple2',
-	_0: _RobertWalter83$calliope$App$wrapWithMdl(_RobertWalter83$calliope$App$addDefaultProject),
-	_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
 };
 var _RobertWalter83$calliope$App$Dialog = {ctor: 'Dialog'};
 var _RobertWalter83$calliope$App$Structure = {ctor: 'Structure'};
@@ -15612,6 +15524,14 @@ var _RobertWalter83$calliope$App$Overview = {ctor: 'Overview'};
 var _RobertWalter83$calliope$App$rgView = _elm_lang$core$Array$fromList(
 	_elm_lang$core$Native_List.fromArray(
 		[_RobertWalter83$calliope$App$Overview, _RobertWalter83$calliope$App$Structure, _RobertWalter83$calliope$App$Dialog]));
+var _RobertWalter83$calliope$App$tabTitles = _elm_lang$core$Array$toList(
+	A2(
+		_elm_lang$core$Array$map,
+		function (v) {
+			return _elm_lang$html$Html$text(
+				_elm_lang$core$Basics$toString(v));
+		},
+		_RobertWalter83$calliope$App$rgView));
 var _RobertWalter83$calliope$App$indexToView = function (i) {
 	return A2(
 		_elm_lang$core$Maybe$withDefault,
@@ -15624,107 +15544,84 @@ var _RobertWalter83$calliope$App$refreshEditorContent = function (index) {
 		_RobertWalter83$calliope$App$Dialog) ? true : false;
 };
 var _RobertWalter83$calliope$App$selectView = F2(
-	function (appStateCurrent, index) {
+	function (modelCurrent, index) {
 		return _elm_lang$core$Native_Utils.update(
-			appStateCurrent,
+			modelCurrent,
 			{
 				viewSelected: index,
 				refreshEditorContent: _RobertWalter83$calliope$App$refreshEditorContent(index)
 			});
 	});
 var _RobertWalter83$calliope$App$update = F2(
-	function (msg, appWithMdl) {
-		var appStateCurrent = appWithMdl.appState;
-		var _p1 = msg;
-		switch (_p1.ctor) {
+	function (msg, modelMdl) {
+		var modelCurrent = modelMdl.model;
+		var _p2 = msg;
+		switch (_p2.ctor) {
 			case 'Mdl':
-				return A2(_debois$elm_mdl$Material$update, _p1._0, appWithMdl);
-			case 'UpdateContent':
-				return {ctor: '_Tuple2', _0: appWithMdl, _1: _elm_lang$core$Platform_Cmd$none};
+				return A2(_debois$elm_mdl$Material$update, _p2._0, modelMdl);
 			case 'Raise':
 				return A2(
-					_RobertWalter83$calliope$App$appMdlWithCmdNone,
-					appWithMdl,
-					A2(_RobertWalter83$calliope$App$raiseCard, appStateCurrent, _p1._0));
+					_RobertWalter83$calliope$App$withMdl,
+					modelMdl,
+					A2(_RobertWalter83$calliope$App$raiseCard, modelCurrent, _p2._0));
 			case 'SelectView':
 				return A2(
-					_RobertWalter83$calliope$App$appMdlWithCmdNone,
-					appWithMdl,
-					A2(_RobertWalter83$calliope$App$selectView, appStateCurrent, _p1._0));
+					_RobertWalter83$calliope$App$withMdl,
+					modelMdl,
+					A2(_RobertWalter83$calliope$App$selectView, modelCurrent, _p2._0));
+			case 'UpdateEditorContent':
+				return A2(
+					_RobertWalter83$calliope$App$withMdl,
+					modelMdl,
+					A2(_RobertWalter83$calliope$App$updateProjectContent, modelCurrent, _p2._0));
 			case 'EditorReady':
 				return {
 					ctor: '_Tuple2',
-					_0: appWithMdl,
+					_0: modelMdl,
 					_1: _RobertWalter83$calliope$Ports$configureAce('ace/theme/textmate')
 				};
 			case 'TitleEditable':
-				var _p2 = A6(
-					_debois$elm_mdl$Material_Helpers$lift,
-					function (_) {
-						return _.projectActive;
-					},
-					F2(
-						function (a, p) {
-							return _elm_lang$core$Native_Utils.update(
-								a,
-								{projectActive: p});
-						}),
-					_RobertWalter83$calliope$App$TitleEditable,
-					_RobertWalter83$calliope$Project$update,
-					_p1._0,
-					appStateCurrent);
-				var appStateNew = _p2._0;
-				var cmd = _p2._1;
-				return A2(_RobertWalter83$calliope$App$appMdlWithCmdNone, appWithMdl, appStateNew);
+				return A2(_RobertWalter83$calliope$App$withMdl, modelMdl, modelMdl.model);
+			case 'EditTitle':
+				return A2(
+					_RobertWalter83$calliope$App$withMdl,
+					modelMdl,
+					A2(_RobertWalter83$calliope$App$editTitle, modelCurrent, _p2._0));
+			case 'CreateNewProject':
+				return {ctor: '_Tuple2', _0: modelMdl, _1: _RobertWalter83$calliope$App$cmdTimeNow};
+			case 'CreateNewProjectNow':
+				return A2(
+					_RobertWalter83$calliope$App$withMdl,
+					modelMdl,
+					A2(_RobertWalter83$calliope$App$createNewProject, modelCurrent, _p2._0));
+			case 'OpenProject':
+				return A2(
+					_RobertWalter83$calliope$App$withMdl,
+					modelMdl,
+					A2(_RobertWalter83$calliope$App$openProject, modelCurrent, _p2._0));
 			case 'Save':
 				return {
 					ctor: '_Tuple2',
-					_0: appWithMdl,
+					_0: modelMdl,
 					_1: _RobertWalter83$calliope$Ports$save(
-						_RobertWalter83$calliope$App$encodeAppState(appWithMdl.appState))
+						_RobertWalter83$calliope$App$encodeAppState(modelMdl.model))
 				};
-			case 'CreateNewProjectNow':
-				return A2(
-					_RobertWalter83$calliope$App$appMdlWithCmdNone,
-					appWithMdl,
-					A2(_RobertWalter83$calliope$App$createNewProject, appStateCurrent, _p1._0));
-			case 'CreateNewProject':
-				return {ctor: '_Tuple2', _0: appWithMdl, _1: _RobertWalter83$calliope$App$cmdTimeNow};
-			case 'OpenProject':
-				return A2(
-					_RobertWalter83$calliope$App$appMdlWithCmdNone,
-					appWithMdl,
-					A2(_RobertWalter83$calliope$App$openProject, appStateCurrent, _p1._0));
 			default:
-				return A2(_RobertWalter83$calliope$App$appMdlWithCmdNone, appWithMdl, appWithMdl.appState);
+				return A2(_RobertWalter83$calliope$App$withMdl, modelMdl, modelMdl.model);
 		}
 	});
-var _RobertWalter83$calliope$App$layoutProperties = function (viewSelected) {
-	return _elm_lang$core$Native_List.fromArray(
-		[
-			_debois$elm_mdl$Material_Layout$fixedHeader,
-			_debois$elm_mdl$Material_Layout$selectedTab(viewSelected),
-			_debois$elm_mdl$Material_Layout$onSelectTab(_RobertWalter83$calliope$App$SelectView),
-			_elm_lang$core$Native_Utils.eq(
-			_RobertWalter83$calliope$App$indexToView(viewSelected),
-			_RobertWalter83$calliope$App$Overview) ? _debois$elm_mdl$Material_Layout$transparentHeader : _debois$elm_mdl$Material_Options$nop
-		]);
-};
-var _RobertWalter83$calliope$App$viewMain = function (appWithMdl) {
-	var appState = appWithMdl.appState;
-	var viewSelected = _RobertWalter83$calliope$App$indexToView(appState.viewSelected);
+var _RobertWalter83$calliope$App$viewMain = function (modelMdl) {
+	var model = modelMdl.model;
+	var viewSelected = _RobertWalter83$calliope$App$indexToView(model.viewSelected);
 	var renderedContent = function () {
 		var _p3 = viewSelected;
 		switch (_p3.ctor) {
 			case 'Overview':
-				return _RobertWalter83$calliope$App$renderOverview(appWithMdl);
+				return _RobertWalter83$calliope$App$renderOverview(modelMdl);
 			case 'Dialog':
-				return A2(
-					_elm_lang$html$Html_App$map,
-					_RobertWalter83$calliope$App$EditorReady,
-					A2(_RobertWalter83$calliope$Project$renderDialog, appState.projectActive, appState.refreshEditorContent));
+				return A2(_RobertWalter83$calliope$App$renderDialog, model.projectActive, model.refreshEditorContent);
 			default:
-				return _RobertWalter83$calliope$Project$renderStructure(appState.projectActive);
+				return _RobertWalter83$calliope$App$renderStructure(model.projectActive);
 		}
 	}();
 	return A2(
@@ -15741,7 +15638,7 @@ var _RobertWalter83$calliope$App$viewMain = function (appWithMdl) {
 				_RobertWalter83$calliope$App$Mdl,
 				_elm_lang$core$Native_List.fromArray(
 					[1]),
-				appWithMdl.mdl,
+				modelMdl.mdl,
 				_elm_lang$core$Native_List.fromArray(
 					[
 						_debois$elm_mdl$Material_Button$raised,
@@ -15755,7 +15652,7 @@ var _RobertWalter83$calliope$App$viewMain = function (appWithMdl) {
 					]))
 			]));
 };
-var _RobertWalter83$calliope$App$layoutOverview = function (appWithMdl) {
+var _RobertWalter83$calliope$App$layoutOverview = function (modelMdl) {
 	return {
 		header: _RobertWalter83$calliope$App$viewOverviewHeader,
 		drawer: _elm_lang$core$Native_List.fromArray(
@@ -15770,21 +15667,13 @@ var _RobertWalter83$calliope$App$layoutOverview = function (appWithMdl) {
 		main: _elm_lang$core$Native_List.fromArray(
 			[
 				_RobertWalter83$calliope$App$stylesheet,
-				_RobertWalter83$calliope$App$viewMain(appWithMdl)
+				_RobertWalter83$calliope$App$viewMain(modelMdl)
 			])
 	};
 };
-var _RobertWalter83$calliope$App$tabTitles = _elm_lang$core$Array$toList(
-	A2(
-		_elm_lang$core$Array$map,
-		function (v) {
-			return _elm_lang$html$Html$text(
-				_elm_lang$core$Basics$toString(v));
-		},
-		_RobertWalter83$calliope$App$rgView));
-var _RobertWalter83$calliope$App$layoutDefault = function (appWithMdl) {
+var _RobertWalter83$calliope$App$layoutDefault = function (modelMdl) {
 	return {
-		header: _RobertWalter83$calliope$App$viewDefaultHeader(appWithMdl),
+		header: _RobertWalter83$calliope$App$viewDefaultHeader(modelMdl),
 		drawer: _elm_lang$core$Native_List.fromArray(
 			[]),
 		tabs: {
@@ -15798,24 +15687,266 @@ var _RobertWalter83$calliope$App$layoutDefault = function (appWithMdl) {
 		},
 		main: _elm_lang$core$Native_List.fromArray(
 			[
-				_RobertWalter83$calliope$App$viewMain(appWithMdl)
+				_RobertWalter83$calliope$App$viewMain(modelMdl)
 			])
 	};
 };
-var _RobertWalter83$calliope$App$view = function (appWithMdl) {
+var _RobertWalter83$calliope$App$layoutProperties = function (viewSelected) {
+	return _elm_lang$core$Native_List.fromArray(
+		[
+			_debois$elm_mdl$Material_Layout$fixedHeader,
+			_debois$elm_mdl$Material_Layout$selectedTab(viewSelected),
+			_debois$elm_mdl$Material_Layout$onSelectTab(_RobertWalter83$calliope$App$SelectView),
+			_elm_lang$core$Native_Utils.eq(
+			_RobertWalter83$calliope$App$indexToView(viewSelected),
+			_RobertWalter83$calliope$App$Overview) ? _debois$elm_mdl$Material_Layout$transparentHeader : _debois$elm_mdl$Material_Options$nop
+		]);
+};
+var _RobertWalter83$calliope$App$view = function (modelMdl) {
 	var layoutContent = _elm_lang$core$Native_Utils.eq(
-		_RobertWalter83$calliope$App$indexToView(appWithMdl.appState.viewSelected),
+		_RobertWalter83$calliope$App$indexToView(modelMdl.model.viewSelected),
 		_RobertWalter83$calliope$App$Overview) ? _RobertWalter83$calliope$App$layoutOverview : _RobertWalter83$calliope$App$layoutDefault;
 	return A4(
 		_debois$elm_mdl$Material_Layout$render,
 		_RobertWalter83$calliope$App$Mdl,
-		appWithMdl.mdl,
-		_RobertWalter83$calliope$App$layoutProperties(appWithMdl.appState.viewSelected),
-		layoutContent(appWithMdl));
+		modelMdl.mdl,
+		_RobertWalter83$calliope$App$layoutProperties(modelMdl.model.viewSelected),
+		layoutContent(modelMdl));
 };
 var _RobertWalter83$calliope$App$main = {
-	main: _elm_lang$html$Html_App$program(
-		{init: _RobertWalter83$calliope$App$init, view: _RobertWalter83$calliope$App$view, update: _RobertWalter83$calliope$App$update, subscriptions: _RobertWalter83$calliope$App$subscriptions})
+	main: _elm_lang$html$Html_App$programWithFlags(
+		{init: _RobertWalter83$calliope$App$init, view: _RobertWalter83$calliope$App$view, update: _RobertWalter83$calliope$App$update, subscriptions: _RobertWalter83$calliope$App$subscriptions}),
+	flags: _elm_lang$core$Json_Decode$oneOf(
+		_elm_lang$core$Native_List.fromArray(
+			[
+				_elm_lang$core$Json_Decode$null(_elm_lang$core$Maybe$Nothing),
+				A2(
+				_elm_lang$core$Json_Decode$map,
+				_elm_lang$core$Maybe$Just,
+				A2(
+					_elm_lang$core$Json_Decode$andThen,
+					A2(
+						_elm_lang$core$Json_Decode_ops[':='],
+						'projectActive',
+						A2(
+							_elm_lang$core$Json_Decode$andThen,
+							A2(_elm_lang$core$Json_Decode_ops[':='], 'dateCreated', _elm_lang$core$Json_Decode$string),
+							function (dateCreated) {
+								return A2(
+									_elm_lang$core$Json_Decode$andThen,
+									A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditor', _elm_lang$core$Json_Decode$bool),
+									function (refreshEditor) {
+										return A2(
+											_elm_lang$core$Json_Decode$andThen,
+											A2(
+												_elm_lang$core$Json_Decode_ops[':='],
+												'script',
+												A2(
+													_elm_lang$core$Json_Decode$andThen,
+													A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
+													function (content) {
+														return _elm_lang$core$Json_Decode$succeed(
+															{content: content});
+													})),
+											function (script) {
+												return A2(
+													_elm_lang$core$Json_Decode$andThen,
+													A2(
+														_elm_lang$core$Json_Decode_ops[':='],
+														'tierList',
+														_elm_lang$core$Json_Decode$list(
+															A2(
+																_elm_lang$core$Json_Decode$andThen,
+																A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
+																function (id) {
+																	return A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+																		function (name) {
+																			return _elm_lang$core$Json_Decode$succeed(
+																				{id: id, name: name});
+																		});
+																}))),
+													function (tierList) {
+														return A2(
+															_elm_lang$core$Json_Decode$andThen,
+															A2(_elm_lang$core$Json_Decode_ops[':='], 'timeCreated', _elm_lang$core$Json_Decode$string),
+															function (timeCreated) {
+																return A2(
+																	_elm_lang$core$Json_Decode$andThen,
+																	A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
+																	function (title) {
+																		return A2(
+																			_elm_lang$core$Json_Decode$andThen,
+																			A2(_elm_lang$core$Json_Decode_ops[':='], 'titleEditable', _elm_lang$core$Json_Decode$bool),
+																			function (titleEditable) {
+																				return _elm_lang$core$Json_Decode$succeed(
+																					{dateCreated: dateCreated, refreshEditor: refreshEditor, script: script, tierList: tierList, timeCreated: timeCreated, title: title, titleEditable: titleEditable});
+																			});
+																	});
+															});
+													});
+											});
+									});
+							})),
+					function (projectActive) {
+						return A2(
+							_elm_lang$core$Json_Decode$andThen,
+							A2(
+								_elm_lang$core$Json_Decode_ops[':='],
+								'projectsAll',
+								_elm_lang$core$Json_Decode$list(
+									A2(
+										_elm_lang$core$Json_Decode$andThen,
+										A2(_elm_lang$core$Json_Decode_ops[':='], 'dateCreated', _elm_lang$core$Json_Decode$string),
+										function (dateCreated) {
+											return A2(
+												_elm_lang$core$Json_Decode$andThen,
+												A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditor', _elm_lang$core$Json_Decode$bool),
+												function (refreshEditor) {
+													return A2(
+														_elm_lang$core$Json_Decode$andThen,
+														A2(
+															_elm_lang$core$Json_Decode_ops[':='],
+															'script',
+															A2(
+																_elm_lang$core$Json_Decode$andThen,
+																A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
+																function (content) {
+																	return _elm_lang$core$Json_Decode$succeed(
+																		{content: content});
+																})),
+														function (script) {
+															return A2(
+																_elm_lang$core$Json_Decode$andThen,
+																A2(
+																	_elm_lang$core$Json_Decode_ops[':='],
+																	'tierList',
+																	_elm_lang$core$Json_Decode$list(
+																		A2(
+																			_elm_lang$core$Json_Decode$andThen,
+																			A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
+																			function (id) {
+																				return A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+																					function (name) {
+																						return _elm_lang$core$Json_Decode$succeed(
+																							{id: id, name: name});
+																					});
+																			}))),
+																function (tierList) {
+																	return A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		A2(_elm_lang$core$Json_Decode_ops[':='], 'timeCreated', _elm_lang$core$Json_Decode$string),
+																		function (timeCreated) {
+																			return A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
+																				function (title) {
+																					return A2(
+																						_elm_lang$core$Json_Decode$andThen,
+																						A2(_elm_lang$core$Json_Decode_ops[':='], 'titleEditable', _elm_lang$core$Json_Decode$bool),
+																						function (titleEditable) {
+																							return _elm_lang$core$Json_Decode$succeed(
+																								{dateCreated: dateCreated, refreshEditor: refreshEditor, script: script, tierList: tierList, timeCreated: timeCreated, title: title, titleEditable: titleEditable});
+																						});
+																				});
+																		});
+																});
+														});
+												});
+										}))),
+							function (projectsAll) {
+								return A2(
+									_elm_lang$core$Json_Decode$andThen,
+									A2(
+										_elm_lang$core$Json_Decode_ops[':='],
+										'projectsRecent',
+										_elm_lang$core$Json_Decode$list(
+											A2(
+												_elm_lang$core$Json_Decode$andThen,
+												A2(_elm_lang$core$Json_Decode_ops[':='], 'dateCreated', _elm_lang$core$Json_Decode$string),
+												function (dateCreated) {
+													return A2(
+														_elm_lang$core$Json_Decode$andThen,
+														A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditor', _elm_lang$core$Json_Decode$bool),
+														function (refreshEditor) {
+															return A2(
+																_elm_lang$core$Json_Decode$andThen,
+																A2(
+																	_elm_lang$core$Json_Decode_ops[':='],
+																	'script',
+																	A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		A2(_elm_lang$core$Json_Decode_ops[':='], 'content', _elm_lang$core$Json_Decode$string),
+																		function (content) {
+																			return _elm_lang$core$Json_Decode$succeed(
+																				{content: content});
+																		})),
+																function (script) {
+																	return A2(
+																		_elm_lang$core$Json_Decode$andThen,
+																		A2(
+																			_elm_lang$core$Json_Decode_ops[':='],
+																			'tierList',
+																			_elm_lang$core$Json_Decode$list(
+																				A2(
+																					_elm_lang$core$Json_Decode$andThen,
+																					A2(_elm_lang$core$Json_Decode_ops[':='], 'id', _elm_lang$core$Json_Decode$string),
+																					function (id) {
+																						return A2(
+																							_elm_lang$core$Json_Decode$andThen,
+																							A2(_elm_lang$core$Json_Decode_ops[':='], 'name', _elm_lang$core$Json_Decode$string),
+																							function (name) {
+																								return _elm_lang$core$Json_Decode$succeed(
+																									{id: id, name: name});
+																							});
+																					}))),
+																		function (tierList) {
+																			return A2(
+																				_elm_lang$core$Json_Decode$andThen,
+																				A2(_elm_lang$core$Json_Decode_ops[':='], 'timeCreated', _elm_lang$core$Json_Decode$string),
+																				function (timeCreated) {
+																					return A2(
+																						_elm_lang$core$Json_Decode$andThen,
+																						A2(_elm_lang$core$Json_Decode_ops[':='], 'title', _elm_lang$core$Json_Decode$string),
+																						function (title) {
+																							return A2(
+																								_elm_lang$core$Json_Decode$andThen,
+																								A2(_elm_lang$core$Json_Decode_ops[':='], 'titleEditable', _elm_lang$core$Json_Decode$bool),
+																								function (titleEditable) {
+																									return _elm_lang$core$Json_Decode$succeed(
+																										{dateCreated: dateCreated, refreshEditor: refreshEditor, script: script, tierList: tierList, timeCreated: timeCreated, title: title, titleEditable: titleEditable});
+																								});
+																						});
+																				});
+																		});
+																});
+														});
+												}))),
+									function (projectsRecent) {
+										return A2(
+											_elm_lang$core$Json_Decode$andThen,
+											A2(_elm_lang$core$Json_Decode_ops[':='], 'raisedCard', _elm_lang$core$Json_Decode$int),
+											function (raisedCard) {
+												return A2(
+													_elm_lang$core$Json_Decode$andThen,
+													A2(_elm_lang$core$Json_Decode_ops[':='], 'refreshEditorContent', _elm_lang$core$Json_Decode$bool),
+													function (refreshEditorContent) {
+														return A2(
+															_elm_lang$core$Json_Decode$andThen,
+															A2(_elm_lang$core$Json_Decode_ops[':='], 'viewSelected', _elm_lang$core$Json_Decode$int),
+															function (viewSelected) {
+																return _elm_lang$core$Json_Decode$succeed(
+																	{projectActive: projectActive, projectsAll: projectsAll, projectsRecent: projectsRecent, raisedCard: raisedCard, refreshEditorContent: refreshEditorContent, viewSelected: viewSelected});
+															});
+													});
+											});
+									});
+							});
+					}))
+			]))
 };
 
 var Elm = {};

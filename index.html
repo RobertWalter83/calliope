@@ -34,20 +34,8 @@
     var calliopeAppState = localStorage.getItem('calliopeAppState');
     var startingState = calliopeAppState ? JSON.parse(calliopeAppState) : null;
 
-    console.log("Starting State: " + startingState);
-
-    //var app = Elm.App.fullscreen(startingState);
-    var app = Elm.App.fullscreen();
+    var app = Elm.App.fullscreen(startingState);
     setupPorts(app);
-
-    document.onclick = function (e) {
-      e = e ||  window.event;
-      var element = e.target || e.srcElement;
-
-      if (element.tagName == 'A') {
-        return false; // prevent default action and stop event propagation
-      }
-    };
   </script>
 
 </html>

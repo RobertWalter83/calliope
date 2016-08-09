@@ -1,63 +1,99 @@
 module App exposing (..)
 
-
 import Ports exposing (..)
-import Project exposing (..)
 import Task exposing (..)
+import Date exposing (..)
 import Time exposing (..)
+import Date.Extra.Config.Config_en_us exposing (config)
+import Date.Extra.Format as Format exposing (format)
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events as Html exposing (..)
-import Html.App as App 
+import Json.Encode exposing (..)
+import Json.Decode exposing (..)
+import Html.App as App
 import Json.Encode exposing (..)
 import Array exposing (..)
 import Material
-import Material.Helpers exposing(..)
 import Material.Card as Card
 import Material.Color as Color
+import Material.Grid as Grid exposing (..)
 import Material.Layout as Layout
 import Material.Options as Options exposing (css, when)
-import Material.Button as Button exposing (..)
+import Material.Button as Button
 import Material.Elevation as Elevation
+import Material.Textfield as Textfield
 import Util exposing (..)
 
 
 -- MODEL
 
 
-type alias AppState =
+type alias ModelMdl =
+    { mdl : Material.Model
+    , model : Model
+    }
+
+
+type alias Model =
     { viewSelected : Int
     , projectActive : Project
     , projectsAll : List Project
-    , projectsRecent : List Project 
+    , projectsRecent : List Project
     , refreshEditorContent : Bool
     , raisedCard : Int
     }
 
 
-type alias AppWithMdl =
-    { mdl : Material.Model
-    , appState : AppState
+type alias Project =
+    { title : String
+    , refreshEditor : Bool
+    , titleEditable : Bool
+    , dateCreated : String
+    , timeCreated : String
+    , script : Script
+    , tierList : List Tier
+    }
+
+
+type alias Script =
+    { content : String
+    }
+
+
+type alias Scene =
+    { name : String
+    , location : String
+    }
+
+
+type alias Tier =
+    { id : String
+    , name : String
     }
 
 
 type alias PolaroidParams =
-    { index : Int, appWithMdl : AppWithMdl, onClick : Msg, pathBackground : String, messageTuple : ( String, String ) }
+    { index : Int, modelMdl : ModelMdl, onClick : Msg, pathBackground : String, messageTuple : ( String, String ) }
 
-type alias Mdl = 
-  Material.Model 
+
+type alias Mdl =
+    Material.Model
+
 
 type Msg
     = Mdl (Material.Msg Msg)
-    | UpdateContent Project.Msg
     | SelectView Int
-    | TitleEditable Project.Msg
-    | EditorReady Project.Msg
     | Save
     | CreateNewProject
     | OpenProject Project
     | CreateNewProjectNow Time
     | Raise Int
     | NoOp
+    | UpdateEditorContent String
+    | EditorReady
+    | TitleEditable Bool
+    | EditTitle String
 
 
 type View
@@ -68,11 +104,11 @@ type View
 
 
 -- MAIN
- 
 
-main : Program Never
-main = 
-    App.program
+
+main : Program (Maybe Model)
+main =
+    App.programWithFlags
         { init = init
         , view = view
         , update = update
@@ -80,24 +116,113 @@ main =
         }
 
 
-init : ( AppWithMdl, Cmd Msg )
-init =
-   ( wrapWithMdl addDefaultProject, Layout.sub0 Mdl )
+
+-- INIT
 
 
-wrapWithMdl : AppState -> AppWithMdl
-wrapWithMdl appState =
-    { mdl = Material.model  
-    , appState = appState
+init : Maybe Model -> ( ModelMdl, Cmd Msg )
+init maybeModel =
+    let
+        modelInit =
+            case maybeModel of
+                Nothing ->
+                    addNewProject defaultProject
+
+                Maybe.Just model ->
+                    { model | refreshEditorContent = True }
+    in
+        ( { mdl = Material.model, model = modelInit }, Layout.sub0 Mdl )
+
+
+defaultProject : Project
+defaultProject =
+    createProjectAt "01/Jan/1990" "12:00"
+
+
+createProject : Time -> Project
+createProject timeNow =
+    createProjectAt
+        (Date.fromTime timeNow |> format config config.format.date)
+        (Date.fromTime timeNow |> format config config.format.time)
+
+
+createProjectAt : String -> String -> Project
+createProjectAt date time =
+    { title = "New Project"
+    , refreshEditor = False
+    , titleEditable = False
+    , dateCreated = date
+    , timeCreated = time
+    , script =
+        { content = "" }
+    , tierList = defaultTierList
     }
 
 
-addDefaultProject : AppState
-addDefaultProject =
-    addNewProject Project.defaultProject
+defaultTierList : List Tier
+defaultTierList =
+    [ { id = "Scenes", name = "Scenes" }, { id = "Scripts", name = "Scripts" } ]
 
 
-addNewProject : Project -> AppState
+rgView : Array View
+rgView =
+    Array.fromList [ Overview, Structure, Dialog ]
+
+
+
+-- UPDATE
+
+
+update : Msg -> ModelMdl -> ( ModelMdl, Cmd Msg )
+update msg modelMdl =
+    let
+        modelCurrent =
+            modelMdl.model
+    in
+        case msg of
+            Mdl msg' ->
+                Material.update msg' modelMdl
+
+            Raise cardIndex ->
+                raiseCard modelCurrent cardIndex |> withMdl modelMdl
+
+            SelectView index ->
+                selectView modelCurrent index |> withMdl modelMdl
+
+            UpdateEditorContent contentNew ->
+                updateProjectContent modelCurrent contentNew |> withMdl modelMdl
+
+            EditorReady ->
+                ( modelMdl, configureAce "ace/theme/textmate" )
+
+            TitleEditable projectMsg ->
+                withMdl modelMdl modelMdl.model
+
+            EditTitle titleNew ->
+                editTitle modelCurrent titleNew |> withMdl modelMdl
+
+            CreateNewProject ->
+                ( modelMdl, cmdTimeNow )
+
+            CreateNewProjectNow timeNow ->
+                createNewProject modelCurrent timeNow |> withMdl modelMdl
+
+            OpenProject project ->
+                openProject modelCurrent project |> withMdl modelMdl
+
+            Save ->
+                ( modelMdl, encodeAppState modelMdl.model |> save )
+
+            NoOp ->
+                withMdl modelMdl modelMdl.model
+
+
+cmdTimeNow : Cmd Msg
+cmdTimeNow =
+    Task.perform (\_ -> NoOp) CreateNewProjectNow Time.now
+
+
+addNewProject : Project -> Model
 addNewProject project =
     { viewSelected = 0
     , projectActive = project
@@ -108,125 +233,76 @@ addNewProject project =
     }
 
 
-cmdTimeNow : Cmd Msg
-cmdTimeNow =
-    Task.perform (\_ -> NoOp) CreateNewProjectNow Time.now
+raiseCard : Model -> Int -> Model
+raiseCard modelCurrent cardIndex =
+    { modelCurrent | raisedCard = cardIndex }
 
 
-
--- UPDATE
-
-
-update : Msg -> AppWithMdl -> ( AppWithMdl, Cmd Msg )
-update msg appWithMdl =
-    let
-        appStateCurrent =
-            appWithMdl.appState
-    in
-        case msg of
-            Mdl msg' ->
-                Material.update msg' appWithMdl
-
-            UpdateContent subMsg ->
-                ( appWithMdl, Cmd.none )
-
-            Raise cardIndex ->
-                raiseCard appStateCurrent cardIndex |> appMdlWithCmdNone appWithMdl
-
-            SelectView index ->
-                selectView appStateCurrent index |> appMdlWithCmdNone appWithMdl
-
-            EditorReady projectMsg ->
-                ( appWithMdl, configureAce "ace/theme/textmate" )
- 
-            TitleEditable projectMsg -> 
-                let (appStateNew, cmd) = lift .projectActive (\a p->{a|projectActive   =p}) TitleEditable Project.update projectMsg appStateCurrent
-                in appMdlWithCmdNone appWithMdl appStateNew
-
-            Save ->
-                ( appWithMdl
-                , encodeAppState appWithMdl.appState
-                    |> save
-                )
-
-            CreateNewProjectNow timeNow ->
-                createNewProject appStateCurrent timeNow |> appMdlWithCmdNone appWithMdl
-
-            CreateNewProject ->
-                ( appWithMdl, cmdTimeNow )
-
-            OpenProject project ->
-                openProject appStateCurrent project |> appMdlWithCmdNone appWithMdl
-
-            NoOp ->
-                appMdlWithCmdNone appWithMdl appWithMdl.appState
+selectView : Model -> Int -> Model
+selectView modelCurrent index =
+    { modelCurrent | viewSelected = index, refreshEditorContent = refreshEditorContent index }
 
 
-raiseCard : AppState -> Int -> AppState
-raiseCard appStateCurrent cardIndex =
-    { appStateCurrent | raisedCard = cardIndex }
-
-
-selectView : AppState -> Int -> AppState
-selectView appStateCurrent index =
-    { appStateCurrent | viewSelected = index, refreshEditorContent = refreshEditorContent index }
-
-{-
-editTitle : AppState -> String -> AppState
-editTitle appStateCurrent titleNew =
+editTitle : Model -> String -> Model
+editTitle modelCurrent titleNew =
     let
         newProject =
-            updateProjectTitle appStateCurrent.projectActive titleNew
+            updateProjectTitle modelCurrent.projectActive titleNew
 
         projectsRecent =
             newProject
-                :: (Debug.log "projectsRecent" filter appStateCurrent.projectsRecent (Debug.log "projectActive" appStateCurrent.projectActive))
+                :: (Debug.log "projectsRecent" filter modelCurrent.projectsRecent (Debug.log "projectActive" modelCurrent.projectActive))
 
         projectsAll =
             newProject
-                :: filter appStateCurrent.projectsAll appStateCurrent.projectActive
+                :: filter modelCurrent.projectsAll modelCurrent.projectActive
     in
-        { appStateCurrent | projectActive = newProject, projectsRecent = projectsRecent, projectsAll = projectsAll }
--}
+        { modelCurrent | projectActive = newProject, projectsRecent = projectsRecent, projectsAll = projectsAll }
+
 
 filter : List a -> a -> List a
 filter list item =
     List.filter (\i -> i /= item) list
 
 
-createNewProject : AppState -> Time -> AppState
-createNewProject appStateCurrent timeNow =
+createNewProject : Model -> Time -> Model
+createNewProject modelCurrent timeNow =
     let
         newProject =
-            Project.createProject timeNow
+            createProject timeNow
 
         projectsRecent =
-            newProject :: appStateCurrent.projectsRecent
- 
-        projectsAll = 
-            sortByTitle <| newProject :: appStateCurrent.projectsAll
+            newProject :: modelCurrent.projectsRecent
 
-        appStateNew =
+        projectsAll =
+            sortByTitle <| newProject :: modelCurrent.projectsAll
+
+        modelNew =
             addNewProject newProject
     in
-        { appStateNew | projectsRecent = projectsRecent, projectsAll = projectsAll }
+        { modelNew | projectsRecent = projectsRecent, projectsAll = projectsAll }
 
 
-openProject : AppState -> Project -> AppState
-openProject appStateCurrent projectToOpen =
+openProject : Model -> Project -> Model
+openProject modelCurrent projectToOpen =
     let
-        projectsRecent = 
-            updateProjectList appStateCurrent.projectsRecent projectToOpen
+        projectsRecent =
+            updateProjectList modelCurrent.projectsRecent projectToOpen
 
-        projectsAll = 
-            sortByTitle <| updateProjectList appStateCurrent.projectsAll projectToOpen
+        projectsAll =
+            sortByTitle <| updateProjectList modelCurrent.projectsAll projectToOpen
     in
-        { appStateCurrent | projectActive = projectToOpen, projectsRecent = projectsRecent, projectsAll = projectsAll, viewSelected = 1 }
+        { modelCurrent | projectActive = projectToOpen, projectsRecent = projectsRecent, projectsAll = projectsAll, viewSelected = 1 }
+
+
+updateProjectTitle : Project -> String -> Project
+updateProjectTitle projectOld titleNew =
+    { projectOld | title = titleNew }
 
 
 sortByTitle : List Project -> List Project
 sortByTitle input =
-  List.sortBy (\p -> p.projectData.title) input
+    List.sortBy (\p -> p.title) input
 
 
 updateProjectList : List Project -> Project -> List Project
@@ -246,9 +322,9 @@ refreshEditorContent index =
         False
 
 
-appMdlWithCmdNone : AppWithMdl -> AppState -> ( AppWithMdl, Cmd Msg )
-appMdlWithCmdNone appWithMdl appStateNew =
-    ( { appWithMdl | appState = appStateNew }, Cmd.none )
+withMdl : ModelMdl -> Model -> ( ModelMdl, Cmd Msg )
+withMdl modelMdl modelNew =
+    ( { modelMdl | model = modelNew }, Cmd.none )
 
 
 indexToView : Int -> View
@@ -256,24 +332,37 @@ indexToView i =
     Array.get i rgView |> Maybe.withDefault Overview
 
 
+updateProjectContent : Model -> String -> Model
+updateProjectContent model contentNew =
+    let
+        projectCurrent =
+            model.projectActive
+    in
+        { model | projectActive = { projectCurrent | script = updateScript projectCurrent.script (Debug.log "contentNew" contentNew) } }
+
+
+updateScript : Script -> String -> Script
+updateScript script contentNew =
+    { script | content = contentNew }
+
 
 
 -- VIEW
 
 
-view : AppWithMdl -> Html Msg
-view appWithMdl =
+view : ModelMdl -> Html Msg
+view modelMdl =
     let
         layoutContent =
-            if ((indexToView appWithMdl.appState.viewSelected) == Overview) then
+            if ((indexToView modelMdl.model.viewSelected) == Overview) then
                 layoutOverview
             else
                 layoutDefault
     in
         Layout.render Mdl
-            appWithMdl.mdl
-            (layoutProperties appWithMdl.appState.viewSelected)
-            (layoutContent appWithMdl)
+            modelMdl.mdl
+            (layoutProperties modelMdl.model.viewSelected)
+            (layoutContent modelMdl)
 
 
 layoutProperties : Int -> List (Layout.Property Msg)
@@ -288,55 +377,54 @@ layoutProperties viewSelected =
     ]
 
 
-layoutOverview : AppWithMdl -> Layout.Contents Msg
-layoutOverview appWithMdl =
+layoutOverview : ModelMdl -> Layout.Contents Msg
+layoutOverview modelMdl =
     { header = viewOverviewHeader
     , drawer = []
     , tabs = ( [], [] )
-    , main = [ stylesheet, viewMain appWithMdl ]
+    , main = [ stylesheet, viewMain modelMdl ]
     }
 
 
-layoutDefault : AppWithMdl -> Layout.Contents Msg
-layoutDefault appWithMdl =
-    { header = viewDefaultHeader appWithMdl
+layoutDefault : ModelMdl -> Layout.Contents Msg
+layoutDefault modelMdl =
+    { header = viewDefaultHeader modelMdl
     , drawer = []
     , tabs = ( tabTitles, [ Color.background (Color.color Color.Teal Color.S600) ] )
-    , main = [ viewMain appWithMdl ]
+    , main = [ viewMain modelMdl ]
     }
 
 
 tabTitles : List (Html Msg)
 tabTitles =
-    Array.toList <|
-        Array.map (\v -> text <| toString v) rgView
+    Array.map (\v -> toString v |> text) rgView |> Array.toList        
 
 
-viewMain : AppWithMdl -> Html Msg
-viewMain appWithMdl =
+viewMain : ModelMdl -> Html Msg
+viewMain modelMdl =
     let
-        appState =
-            appWithMdl.appState
+        model =
+            modelMdl.model
 
         viewSelected =
-            indexToView appState.viewSelected
+            indexToView model.viewSelected
 
         renderedContent =
             case viewSelected of
-                Overview -> 
-                    renderOverview appWithMdl
+                Overview ->
+                    renderOverview modelMdl
 
-                Dialog -> 
-                    App.map EditorReady (Project.renderDialog appState.projectActive appState.refreshEditorContent)
+                Dialog ->
+                    renderDialog model.projectActive model.refreshEditorContent
 
                 Structure ->
-                    Project.renderStructure appState.projectActive
+                    renderStructure model.projectActive
     in
         Options.div [ css "background" "url('assets/bg.png')" ]
             [ renderedContent
             , Button.render Mdl
                 [ 1 ]
-                appWithMdl.mdl
+                modelMdl.mdl
                 [ Button.raised
                 , Button.ripple
                 , Button.colored
@@ -346,11 +434,11 @@ viewMain appWithMdl =
             ]
 
 
-renderOverview : AppWithMdl -> Html Msg
-renderOverview appWithMdl =
+renderOverview : ModelMdl -> Html Msg
+renderOverview modelMdl =
     let
         lengthRecentProjects =
-            List.length appWithMdl.appState.projectsRecent
+            List.length modelMdl.model.projectsRecent
     in
         Options.div ((boxed ( 100, 20 )) ++ [ css "height" "1024px" ])
             [ Options.div
@@ -368,28 +456,28 @@ renderOverview appWithMdl =
                     , css "border-right" "2px dashed grey"
                     , css "margin-right" "44px"
                     ]
-                    [ renderPolaroid appWithMdl.appState.projectActive <|
-                        createParams 0 appWithMdl CreateNewProject "assets/new.jpg" ( "New Project", "Create a brand new project" )
+                    [ renderPolaroid modelMdl.model.projectActive <|
+                        createParams 0 modelMdl CreateNewProject "assets/new.jpg" ( "New Project", "Create a brand new project" )
                     ]
                  ]
                     ++ (List.map2 renderProjectLink
-                            appWithMdl.appState.projectsRecent
+                            modelMdl.model.projectsRecent
                         <|
                             List.map5 createParams
                                 [1..lengthRecentProjects]
-                                (List.repeat lengthRecentProjects appWithMdl)
-                                (List.map (\p -> OpenProject p) appWithMdl.appState.projectsRecent)
+                                (List.repeat lengthRecentProjects modelMdl)
+                                (List.map (\p -> OpenProject p) modelMdl.model.projectsRecent)
                                 (List.repeat lengthRecentProjects "assets/existing.jpg")
-                                (List.map (\p -> ( p.projectData.title, "Click here to open." )) appWithMdl.appState.projectsRecent)
+                                (List.map (\p -> ( p.title, "Click here to open." )) modelMdl.model.projectsRecent)
                        )
                 )
             ]
 
 
-createParams : Int -> AppWithMdl -> Msg -> String -> ( String, String ) -> PolaroidParams
-createParams index appWithMdl msg pathBackground messageTuple =
+createParams : Int -> ModelMdl -> Msg -> String -> ( String, String ) -> PolaroidParams
+createParams index modelMdl msg pathBackground messageTuple =
     { index = index
-    , appWithMdl = appWithMdl
+    , modelMdl = modelMdl
     , onClick = msg
     , pathBackground = pathBackground
     , messageTuple = messageTuple
@@ -405,47 +493,42 @@ renderProjectLink project params =
 
 renderPolaroid : Project -> PolaroidParams -> Html Msg
 renderPolaroid project params =
-        Card.view
-            [ if params.appWithMdl.appState.raisedCard == params.index then
-                Elevation.e8
-              else
-                Elevation.e2
-            , Elevation.transition 250
-            , css "width" "256px"
-            , Options.attribute <| Html.onMouseEnter (Raise params.index)
-            , Options.attribute <| Html.onMouseLeave (Raise -1)
-            , Options.attribute <| Html.onClick params.onClick
-            , css "margin" "0"
-            , css "padding" "12px"
+    Card.view
+        [ if params.modelMdl.model.raisedCard == params.index then
+            Elevation.e8
+          else
+            Elevation.e2
+        , Elevation.transition 250
+        , css "width" "256px"
+        , Options.attribute <| Html.onMouseEnter (Raise params.index)
+        , Options.attribute <| Html.onMouseLeave (Raise -1)
+        , Options.attribute <| Html.onClick params.onClick
+        , css "margin" "0"
+        , css "padding" "12px"
+        ]
+        [ Card.title
+            [ css "background" <| "url('" ++ params.pathBackground ++ "') center / cover"
+            , css "height" "256px"
+            , css "padding" "0"
             ]
-            [ Card.title
-                [ css "background" <| "url('" ++ params.pathBackground ++ "') center / cover"
-                , css "height" "256px"
-                , css "padding" "0"
+            [ Card.head
+                [ Color.text Color.white
+                , Options.scrim 0.6
+                , css "padding" "12px"
+                , css "width" "208px"
                 ]
-                [ Card.head
-                    [ Color.text Color.white
-                    , Options.scrim 0.6
-                    , css "padding" "12px"
-                    , css "width" "208px"
-                    ]
-                    [  ]
-                ]
-            , Card.text
-                [ css "padding" "16px 0px 12px 0px"
-                , css "font-family" "caveat"
-                , css "font-weight" "700"
-                , css "font-size" "24px"
-                , css "width" "100%"
-                , Color.text Color.black
-                ]
-                [ text <| snd params.messageTuple ]
+                []
             ]
-
-
-rgView : Array View
-rgView =
-    Array.fromList [ Overview, Structure, Dialog ]
+        , Card.text
+            [ css "padding" "16px 0px 12px 0px"
+            , css "font-family" "caveat"
+            , css "font-weight" "700"
+            , css "font-size" "24px"
+            , css "width" "100%"
+            , Color.text Color.black
+            ]
+            [ text <| snd params.messageTuple ]
+        ]
 
 
 viewOverviewHeader : List (Html Msg)
@@ -465,55 +548,219 @@ viewOverviewHeader =
             , css "width" "100%"
             , Color.text Color.black
             , css "font-size" "24px"
-            , css "padding-bottom" "200px" 
+            , css "padding-bottom" "200px"
             ]
             [ text "Welcome back to Calliope!" ]
         ]
-    ] 
-
-
-viewDefaultHeader : AppWithMdl -> List (Html Msg)
-viewDefaultHeader appWithMdl =  
-    [ Layout.row [ css "transition" "height 333ms ease-in-out 0s" ]
-        [ App.map TitleEditable (Project.renderProjectTitle appWithMdl.appState.projectActive ) ]
     ]
- 
 
 
--- STYLING 
+viewDefaultHeader : ModelMdl -> List (Html Msg)
+viewDefaultHeader modelMdl =
+    [ Layout.row [ css "transition" "height 333ms ease-in-out 0s" ]
+        [ renderProjectTitle modelMdl.model.projectActive ]
+    ]
 
 
-stylesheet : Html a 
-stylesheet =
-    Options.stylesheet """
-  .mdl-layout__header--transparent {
-    background: url('assets/march.jpg') 0 45% no-repeat;
-    background-size: 100% auto
-  }
-"""
 
- 
-
--- SUBS
+-- RENDER STRUCTURE
 
 
-subscriptions : AppWithMdl -> Sub Msg
-subscriptions appWithMdl =
-    Sub.batch 
-      [ Sub.map UpdateContent <| Project.subscriptions appWithMdl.appState.projectActive ]
+renderStructure : Project -> Html a
+renderStructure project =
+    let
+        gridWidth =
+            widthFromTierList project.tierList
+    in
+        Options.div
+            boxedDefault
+            [ grid
+                ((boxed ( 12, 0 )) ++ [ Grid.noSpacing ])
+              <|
+                List.append
+                    (cellHeaders gridWidth project)
+                    [ cellHeader gridWidth "Statistics" ]
+            , grid
+                ((boxed ( 12, 12 ))
+                    ++ [ Grid.noSpacing
+                       , Elevation.e6
+                       , Color.background Color.white
+                       ]
+                )
+                (cells gridWidth project)
+            ]
 
- 
+
+cellHeaders : Int -> Project -> List (Grid.Cell a)
+cellHeaders gridWidth project =
+    List.map (cellHeaderFromTier gridWidth) project.tierList
+
+
+cellHeaderFromTier : Int -> Tier -> Grid.Cell a
+cellHeaderFromTier gridWidth tier =
+    cellHeader gridWidth tier.name
+
+
+cellHeader : Int -> String -> Grid.Cell a
+cellHeader gridWidth stHeader =
+    cell
+        [ Grid.size All gridWidth ]
+        [ Options.styled Html.h5
+            [ Color.text Color.accent ]
+            [ text stHeader ]
+        ]
+
+
+widthFromTierList : List (Tier) -> Int
+widthFromTierList tierList =
+    let
+        width =
+            (//) 12 <| (+) 1 (List.length tierList)
+    in
+        if (width < 3) then
+            3
+        else
+            width
+
+
+cells : Int -> Project -> List (Grid.Cell a)
+cells gridWidth project =
+    List.map (cellFromTier gridWidth) project.tierList
+
+
+cellFromTier : Int -> Tier -> Grid.Cell a
+cellFromTier gridWidth tier =
+    cell
+        [ Grid.size All gridWidth
+        , css "height" "200px"
+        ]
+        [ text <| "Description of " ++ tier.name ++ " goes here!." ]
+
+
+
+-- RENDER DIALOG
+
+
+renderDialog : Project -> Bool -> Html Msg
+renderDialog project refresh =
+    let
+        doRefresh =
+            Debug.log "refresh:" (refresh && project.refreshEditor)
+    in
+        Options.div
+            (boxedDefault |> withMaxWidth 812)
+            [ Options.div
+                [ Elevation.e6
+                , css "height" "1024px"
+                , css "position" "relative"
+                , Color.background Color.white
+                ]
+                [ renderScript project.script doRefresh ]
+            ]
+
+
+renderScript : Script -> Bool -> Html Msg
+renderScript script refresh =
+    node "juicy-ace-editor"
+        [ id "editor-container", on "editor-ready" (Json.Decode.succeed EditorReady) ]
+        (if (refresh) then
+            [ text script.content ]
+         else
+            []
+        )
+
+
+title : String -> Html a
+title t =
+    Options.styled Html.h1
+        [ Color.text Color.primary ]
+        [ text t ]
+
+
+
+-- RENDER PROJECT TITLE
+--renderProjectTitle : Project -> (Parts.Msg Material.Model App.Msg -> App.Msg) -> Material.Model -> Html App.Msg
+
+
+renderProjectTitle project =
+    if project.titleEditable then
+        Textfield.render Mdl
+            [ 13 ]
+            Material.model
+            [ Textfield.text'
+            , Textfield.onInput EditTitle
+            , Textfield.onBlur <| TitleEditable False
+            , Textfield.value project.title
+            , css "font-size" "24px"
+            ]
+    else
+        Options.div [ Options.attribute <| Html.onClick (TitleEditable True) ] [ text project.title ]
+
+
 
 -- ENCODE
 
 
-encodeAppState : AppState -> Json.Encode.Value
-encodeAppState appState =
+encodeProject : Project -> Json.Encode.Value
+encodeProject project =
     Json.Encode.object
-        [ ( "viewSelected", Json.Encode.int appState.viewSelected )
-        , ( "projectActive", Project.encodeProject appState.projectActive )
-        , ( "projectsRecent", Json.Encode.list (List.map Project.encodeProject appState.projectsRecent) )
-        , ( "projectsAll", Json.Encode.list (List.map Project.encodeProject appState.projectsAll) )
-        , ( "refreshEditorContent", Json.Encode.bool appState.refreshEditorContent )
-        , ( "raisedCard", Json.Encode.int appState.raisedCard )
+        [ ( "title", Json.Encode.string project.title )
+        , ( "script", encodeScript project.script )
+        , ( "tierList", Json.Encode.list (List.map encodeTier project.tierList) )
+        , ( "dateCreated", Json.Encode.string project.dateCreated )
+        , ( "timeCreated", Json.Encode.string project.timeCreated )
+        ]
+
+
+encodeScript : Script -> Json.Encode.Value
+encodeScript script =
+    Json.Encode.object
+        [ ( "content", Json.Encode.string script.content ) ]
+
+
+encodeTier : Tier -> Json.Encode.Value
+encodeTier tier =
+    Json.Encode.object
+        [ ( "id", Json.Encode.string tier.id )
+        , ( "name", Json.Encode.string tier.name )
+        ]
+
+
+
+-- STYLING
+
+
+stylesheet : Html a
+stylesheet =
+    Options.stylesheet """\x0D
+  .mdl-layout__header--transparent {\x0D
+    background: url('assets/march.jpg') 0 45% no-repeat;\x0D
+    background-size: 100% auto\x0D
+  }\x0D
+"""
+
+
+
+-- SUBS
+
+
+subscriptions : ModelMdl -> Sub Msg
+subscriptions modelMdl =
+    Sub.batch
+        [ updateEditorContent UpdateEditorContent ]
+
+
+
+-- ENCODE
+
+
+encodeAppState : Model -> Json.Encode.Value
+encodeAppState model =
+    Json.Encode.object
+        [ ( "viewSelected", Json.Encode.int model.viewSelected )
+        , ( "projectActive", encodeProject model.projectActive )
+        , ( "projectsRecent", Json.Encode.list (List.map encodeProject model.projectsRecent) )
+        , ( "projectsAll", Json.Encode.list (List.map encodeProject model.projectsAll) )
+        , ( "refreshEditorContent", Json.Encode.bool model.refreshEditorContent )
+        , ( "raisedCard", Json.Encode.int model.raisedCard )
         ]
