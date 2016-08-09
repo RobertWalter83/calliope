@@ -646,20 +646,16 @@ cellFromTier gridWidth tier =
 
 renderDialog : Project -> Bool -> Html Msg
 renderDialog project refresh =
-    let
-        doRefresh =
-            Debug.log "refresh:" (refresh && project.refreshEditor)
-    in
-        Options.div
-            (boxedDefault |> withMaxWidth 812)
-            [ Options.div
-                [ Elevation.e6
-                , css "height" "1024px"
-                , css "position" "relative"
-                , Color.background Color.white
-                ]
-                [ renderScript project.script doRefresh ]
+    Options.div
+        (boxedDefault |> withMaxWidth 812)
+        [ Options.div
+            [ Elevation.e6
+            , css "height" "1024px"
+            , css "position" "relative"
+            , Color.background Color.white
             ]
+            [ renderScript project.script refresh ]
+        ]
 
 
 renderScript : Script -> Bool -> Html Msg

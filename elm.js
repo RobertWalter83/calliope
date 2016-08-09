@@ -15241,7 +15241,6 @@ var _RobertWalter83$calliope$App$renderScript = F2(
 	});
 var _RobertWalter83$calliope$App$renderDialog = F2(
 	function (project, refresh) {
-		var doRefresh = A2(_elm_lang$core$Debug$log, 'refresh:', refresh && project.refreshEditor);
 		return A2(
 			_debois$elm_mdl$Material_Options$div,
 			A2(_RobertWalter83$calliope$Util$withMaxWidth, 812, _RobertWalter83$calliope$Util$boxedDefault),
@@ -15258,7 +15257,7 @@ var _RobertWalter83$calliope$App$renderDialog = F2(
 						]),
 					_elm_lang$core$Native_List.fromArray(
 						[
-							A2(_RobertWalter83$calliope$App$renderScript, project.script, doRefresh)
+							A2(_RobertWalter83$calliope$App$renderScript, project.script, refresh)
 						]))
 				]));
 	});
