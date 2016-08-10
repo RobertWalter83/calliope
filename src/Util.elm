@@ -30,3 +30,15 @@ boxedDefault =
 and : Options.Property a b -> List (Options.Property a b) -> List (Options.Property a b)
 and property listOld =
     property :: listOld
+
+
+transformMaybe : Maybe input -> output -> (input -> output) -> output 
+transformMaybe maybe outputNothing outputJust =
+    case maybe of
+        Nothing -> outputNothing
+
+        Just j -> outputJust j
+
+filter : List a -> a -> List a
+filter list item =
+    List.filter (\i -> i /= item) list
