@@ -1,6 +1,6 @@
-module Util exposing (boxed, boxedDefault, withMaxWidth)
+module Util exposing (..)
 
-import Material.Options as Options exposing (css, when)
+import Material.Options as Options exposing (css)
 
 
 boxed : (Int, Int) -> List (Options.Property a b)
@@ -26,3 +26,7 @@ withMaxWidth maxWidth cssProps =
 boxedDefault : List (Options.Property a b)
 boxedDefault =
     boxed (80, 20) 
+
+and : Options.Property a b -> List (Options.Property a b) -> List (Options.Property a b)
+and property listOld =
+    property :: listOld

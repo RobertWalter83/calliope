@@ -1,28 +1,27 @@
-module App exposing (..)
+module App exposing (main)
 
-import Ports exposing (..)
-import Task exposing (..)
+import Array exposing (..)
 import Date exposing (..)
-import Time exposing (..)
 import Date.Extra.Config.Config_en_us exposing (config)
 import Date.Extra.Format as Format exposing (format)
+import Json.Decode exposing (..)
+import Json.Encode exposing (..)
 import Html exposing (..)
+import Html.App as App
 import Html.Attributes exposing (..)
 import Html.Events as Html exposing (..)
-import Json.Encode exposing (..)
-import Json.Decode exposing (..)
-import Html.App as App
-import Json.Encode exposing (..)
-import Array exposing (..)
 import Material
+import Material.Button as Button
 import Material.Card as Card
 import Material.Color as Color
-import Material.Grid as Grid exposing (..)
-import Material.Layout as Layout
-import Material.Options as Options exposing (css, when)
-import Material.Button as Button
 import Material.Elevation as Elevation
+import Material.Grid as Grid
+import Material.Layout as Layout
+import Material.Options as Options
 import Material.Textfield as Textfield
+import Ports exposing (..)
+import Task exposing (..)
+import Time exposing (..)
 import Util exposing (..)
 
 
@@ -71,10 +70,6 @@ type alias Tier =
     { id : String
     , name : String
     }
-
-
-type alias PolaroidParams =
-    { index : Int, modelMdl : ModelMdl, onClick : Msg, pathBackground : String, messageTuple : ( String, String ) }
 
 
 type alias Mdl =
@@ -423,7 +418,7 @@ viewMain modelMdl =
                 Structure ->
                     renderStructure model.projectActive
     in
-        Options.div [ css "background" "url('assets/bg.png')" ]
+        Options.div [ Options.css "background" "url('assets/bg.png')" ]
             [ renderedContent
             , Button.render Mdl
                 [ 1 ]
@@ -440,114 +435,110 @@ viewMain modelMdl =
 renderOverview : ModelMdl -> Html Msg
 renderOverview modelMdl =
     let
-        lengthRecentProjects =
-            List.length modelMdl.model.projectsRecent
+        projectsRecent =
+            modelMdl.model.projectsRecent
+
+        lengthProjectsRecent =
+            List.length projectsRecent
+
+        polaroidCreateNew =
+            renderPolaroid modelMdl "assets/new.jpg" "Create a brand new project" Nothing 0
+
+        polaroidsProjectsRecent =
+            List.map2 (renderProjectLink modelMdl "assets/existing.jpg" "Click here to open.")
+                projectsRecent
+                [1..lengthProjectsRecent]
     in
-        Options.div ((boxed ( 100, 20 )) ++ [ css "height" "1024px" ])
+        Options.div (boxed ( 100, 20 ) |> and (Options.css "height" "1024px") ) 
             [ Options.div
-                [ css "display" "flex"
-                , css "flex-flow" "row wrap"
-                , css "align-items" "flex-start"
-                , css "width" "100%"
+                [ Options.css "display" "flex"
+                , Options.css "flex-flow" "row wrap"
+                , Options.css "align-items" "flex-start"
+                , Options.css "width" "100%"
                 ]
                 ([ Options.div
-                    [ css "min-width" "300px"
-                    , css "max-width" "300px"
-                    , css "width" "300px"
-                    , css "padding" "12px"
-                    , css "border-right" "2px dashed grey"
-                    , css "margin-right" "44px"
+                    [ Options.css "min-width" "300px"
+                    , Options.css "max-width" "300px"
+                    , Options.css "width" "300px"
+                    , Options.css "padding" "12px"
+                    , Options.css "border-right" "2px dashed grey"
+                    , Options.css "margin-right" "44px"
                     ]
-                    [ renderPolaroid modelMdl "assets/new.jpg" "Create a brand new project" Nothing 0 ]
+                    [ polaroidCreateNew ]
                  ]
-                    ++ (List.map2 (renderProjectLink modelMdl "assets/existing.jpg" "Click here to open.")
-                            modelMdl.model.projectsRecent [1..lengthRecentProjects])
+                    ++ polaroidsProjectsRecent
                 )
             ]
 
-
-createParams : Int -> ModelMdl -> Msg -> String -> ( String, String ) -> PolaroidParams
-createParams index modelMdl msg pathBackground messageTuple =
-    { index = index
-    , modelMdl = modelMdl
-    , onClick = msg
-    , pathBackground = pathBackground
-    , messageTuple = messageTuple
-    }
-
-
 renderProjectLink : ModelMdl -> String -> String -> Project -> Int -> Html Msg
-renderProjectLink modelMdl pathBackground userMessage project cardIndex  =
+renderProjectLink modelMdl pathBackground userMessage project cardIndex =
     Options.div
-        [ css "padding" "12px" ]
+        [ Options.css "padding" "12px" ]
         [ renderPolaroid modelMdl pathBackground userMessage (List.head [ project ]) cardIndex ]
 
+
 renderPolaroid : ModelMdl -> String -> String -> Maybe Project -> Int -> Html Msg
-renderPolaroid modelMdl pathBackground userMessage maybeProject cardIndex = 
-    let 
-      (onClick, title) = 
-          case maybeProject of 
-              Nothing -> (CreateNewProject, "New Project") 
+renderPolaroid modelMdl pathBackground userMessage maybeProject cardIndex =
+    let
+        ( onClick, title ) =
+            case maybeProject of
+                Nothing ->
+                    ( CreateNewProject, "New Project" )
 
-              Just project -> (OpenProject project, project.title)
+                Just project ->
+                    ( OpenProject project, project.title )
     in
-
-    Card.view
-        [ if modelMdl.model.raisedCard == cardIndex then
-            Elevation.e8
-          else
-            Elevation.e2
-        , Elevation.transition 250
-        , css "width" "256px"
-        , Options.attribute <| Html.onMouseEnter (Raise cardIndex)
-        , Options.attribute <| Html.onMouseLeave (Raise -1)
-        , Options.attribute <| Html.onClick onClick
-        , css "margin" "0"
-        , css "padding" "12px"
-        ]
-        [ Card.title
-            [ css "background" <| "url('" ++ pathBackground ++ "') center / cover"
-            , css "height" "256px"
-            , css "padding" "0"
+        Card.view
+            [ if modelMdl.model.raisedCard == cardIndex then
+                Elevation.e8
+              else
+                Elevation.e2
+            , Elevation.transition 250
+            , Options.css "width" "256px"
+            , Options.attribute <| Html.onMouseEnter (Raise cardIndex)
+            , Options.attribute <| Html.onMouseLeave (Raise -1)
+            , Options.attribute <| Html.onClick onClick
+            , Options.css "margin" "0"
+            , Options.css "padding" "12px"
             ]
-            [ Card.head
-                [ Color.text Color.white
-                , Options.scrim 0.6
-                , css "padding" "12px"
-                , css "width" "208px"
+            [ Card.title
+                [ Options.css "background" <| "url('" ++ pathBackground ++ "') center / cover"
+                , Options.css "height" "256px"
+                , Options.css "padding" "0"
                 ]
-                []
+                [ Card.head
+                    [ Color.text Color.white
+                    , Options.scrim 0.6
+                    , Options.css "padding" "12px"
+                    , Options.css "width" "208px"
+                    ]
+                    []
+                ]
+            , Card.text
+                [ Options.css "padding" "16px 0px 12px 0px"
+                , Options.css "font-family" "caveat"
+                , Options.css "font-weight" "700"
+                , Options.css "font-size" "24px"
+                , Options.css "width" "100%"
+                , Color.text Color.black
+                ]
+                [ text userMessage ]
             ]
-        , Card.text
-            [ css "padding" "16px 0px 12px 0px"
-            , css "font-family" "caveat"
-            , css "font-weight" "700"
-            , css "font-size" "24px"
-            , css "width" "100%"
-            , Color.text Color.black
-            ]
-            [ text userMessage ]
-        ]
 
 
 viewOverviewHeader : List (Html Msg)
 viewOverviewHeader =
     [ Layout.row
-        [ css "height" "320px"
-        , css "min-height" "320px"
-        , css "max-height" "320px"
-        , css "transition" "height 333ms ease-in-out 0s"
-        , css "padding" "24px"
+        [ Options.css "height" "320px"
+        , Options.css "min-height" "320px"
+        , Options.css "max-height" "320px"
+        , Options.css "transition" "height 333ms ease-in-out 0s"
+        , Options.css "padding" "24px"
         ]
         [ Options.div
-            [ css "display" "flex"
-            , css "flex-flow" "row wrap"
-            , css "justify-content" "space-between"
-            , css "align-items" "flex-start"
-            , css "width" "100%"
-            , Color.text Color.black
-            , css "font-size" "24px"
-            , css "padding-bottom" "200px"
+            [ Color.text Color.black
+            , Options.css "font-size" "24px"
+            , Options.css "padding-bottom" "200px"
             ]
             [ text "Welcome back to Calliope!" ]
         ]
@@ -556,7 +547,7 @@ viewOverviewHeader =
 
 viewDefaultHeader : ModelMdl -> List (Html Msg)
 viewDefaultHeader modelMdl =
-    [ Layout.row [ css "transition" "height 333ms ease-in-out 0s" ]
+    [ Layout.row [ Options.css "transition" "height 333ms ease-in-out 0s" ]
         [ renderProjectTitle modelMdl.model.projectActive ]
     ]
 
@@ -573,13 +564,13 @@ renderStructure project =
     in
         Options.div
             boxedDefault
-            [ grid
+            [ Grid.grid
                 ((boxed ( 12, 0 )) ++ [ Grid.noSpacing ])
               <|
                 List.append
                     (cellHeaders gridWidth project)
                     [ cellHeader gridWidth "Statistics" ]
-            , grid
+            , Grid.grid
                 ((boxed ( 12, 12 ))
                     ++ [ Grid.noSpacing
                        , Elevation.e6
@@ -602,8 +593,8 @@ cellHeaderFromTier gridWidth tier =
 
 cellHeader : Int -> String -> Grid.Cell a
 cellHeader gridWidth stHeader =
-    cell
-        [ Grid.size All gridWidth ]
+    Grid.cell
+        [ Grid.size Grid.All gridWidth ]
         [ Options.styled Html.h5
             [ Color.text Color.accent ]
             [ text stHeader ]
@@ -629,9 +620,9 @@ cells gridWidth project =
 
 cellFromTier : Int -> Tier -> Grid.Cell a
 cellFromTier gridWidth tier =
-    cell
-        [ Grid.size All gridWidth
-        , css "height" "200px"
+    Grid.cell
+        [ Grid.size Grid.All gridWidth
+        , Options.css "height" "200px"
         ]
         [ text <| "Description of " ++ tier.name ++ " goes here!." ]
 
@@ -646,8 +637,8 @@ renderDialog project refresh =
         (boxedDefault |> withMaxWidth 812)
         [ Options.div
             [ Elevation.e6
-            , css "height" "1024px"
-            , css "position" "relative"
+            , Options.css "height" "1024px"
+            , Options.css "position" "relative"
             , Color.background Color.white
             ]
             [ renderScript project.script refresh ]
@@ -686,7 +677,7 @@ renderProjectTitle project =
             , Textfield.onInput EditTitle
             , Textfield.onBlur <| TitleEditable False
             , Textfield.value project.title
-            , css "font-size" "24px"
+            , Options.css "font-size" "24px"
             ]
     else
         Options.div [ Options.attribute <| Html.onClick (TitleEditable True) ] [ text project.title ]
