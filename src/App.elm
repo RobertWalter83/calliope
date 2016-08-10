@@ -1,6 +1,7 @@
 module App exposing (main)
 
 import Array exposing (..)
+import Constants as Const exposing(..)
 import Date exposing (..)
 import Date.Extra.Config.Config_en_us exposing (config)
 import Date.Extra.Format as Format exposing (format)
@@ -169,7 +170,7 @@ update msg modelMdl =
                 updateProjectContent modelCurrent contentNew |> withMdl modelMdl
 
             EditorReady ->
-                ( modelMdl, configureAce "ace/theme/textmate" )
+                ( modelMdl, configureAce Const.aceTheme )
 
             TitleEditable projectMsg ->
                 withMdl modelMdl modelMdl.model
@@ -238,7 +239,7 @@ createProject timeNow =
             , (Date.fromTime timeNow |> format config config.format.time)
             )
     in
-        { title = "New Project"
+        { title = Const.newProject
         , refreshEditor = False
         , titleEditable = False
         , dateCreated = stringTime
@@ -412,7 +413,7 @@ viewMain modelMdl =
                     transformMaybe model.projectActive errorView ( \p -> renderStructure p )
                             
     in
-        Options.div [ Options.css "background" "url('assets/bg.png')" ]
+        Options.div [ Options.css "background" Const.pathBackground ]
             [ renderedContent
             , Button.render Mdl
                 [ 1 ]
@@ -422,12 +423,12 @@ viewMain modelMdl =
                 , Button.colored
                 , Button.onClick Save
                 ]
-                [ text "Save" ]
+                [ text Const.saveButton ]
             ]
-
+ 
 errorView : Html Msg
 errorView = 
-    text "Something went wrong, no project active"
+    text Const.messageError
 
 renderOverview : ModelMdl -> Html Msg
 renderOverview modelMdl =
@@ -436,15 +437,15 @@ renderOverview modelMdl =
             modelMdl.model.projectsRecent
 
         lengthProjectsRecent =
-            List.length projectsRecent
+            List.length projectsRecent 
 
         polaroidCreateNew =
-            renderPolaroid modelMdl "assets/new.jpg" "Create a brand new project" Nothing 0
+            renderPolaroid modelMdl Const.urlNewPolaroid Const.messageNewProject Nothing 0
 
         polaroidsProjectsRecent =
-            List.map2 (renderProjectLink modelMdl "assets/existing.jpg" "Click here to open.")
+            List.map2 (renderProjectLink modelMdl Const.urlOpenPolaroid Const.messageOpenProject )
                 projectsRecent
-                [1..lengthProjectsRecent]
+                [1..lengthProjectsRecent] 
     in
         Options.div (boxed ( 100, 20 ) |> and (Options.css "height" "1024px"))
             [ Options.div
@@ -469,17 +470,17 @@ renderOverview modelMdl =
 
 
 renderProjectLink : ModelMdl -> String -> String -> Project -> Int -> Html Msg
-renderProjectLink modelMdl pathBackground userMessage project cardIndex =
+renderProjectLink modelMdl urlBackground userMessage project cardIndex =
     Options.div
         [ Options.css "padding" "12px" ]
-        [ renderPolaroid modelMdl pathBackground userMessage (Just project) cardIndex ]
+        [ renderPolaroid modelMdl urlBackground userMessage (Just project) cardIndex ]
 
 
 renderPolaroid : ModelMdl -> String -> String -> Maybe Project -> Int -> Html Msg
-renderPolaroid modelMdl pathBackground userMessage maybeProject cardIndex =
+renderPolaroid modelMdl urlBackground userMessage maybeProject cardIndex =
     let
         ( onClick, title ) =
-            transformMaybe maybeProject ( AddNewProject, "New Project" ) (\p -> ( OpenProject p, p.title ) )
+            transformMaybe maybeProject ( AddNewProject, Const.newProject ) (\p -> ( OpenProject p, p.title ) )
     in
         Card.view
             [ if modelMdl.model.raisedCard == cardIndex then
@@ -495,7 +496,7 @@ renderPolaroid modelMdl pathBackground userMessage maybeProject cardIndex =
             , Options.css "padding" "12px"
             ]
             [ Card.title
-                [ Options.css "background" <| "url('" ++ pathBackground ++ "') center / cover"
+                [ Options.css "background" <| urlBackground ++ "center / cover"
                 , Options.css "height" "256px"
                 , Options.css "padding" "0"
                 ]
@@ -521,7 +522,7 @@ renderPolaroid modelMdl pathBackground userMessage maybeProject cardIndex =
 
 viewOverviewHeader : List (Html Msg)
 viewOverviewHeader =
-    [ Layout.row
+    [ Layout.row 
         [ Options.css "height" "320px"
         , Options.css "min-height" "320px"
         , Options.css "max-height" "320px"
@@ -533,7 +534,7 @@ viewOverviewHeader =
             , Options.css "font-size" "24px"
             , Options.css "padding-bottom" "200px"
             ]
-            [ text "Welcome back to Calliope!" ]
+            [ text Const.messageWelcome ]
         ]
     ]
 
