@@ -3716,6 +3716,17 @@ var _elm_lang$core$Array$repeat = F2(
 	});
 var _elm_lang$core$Array$Array = {ctor: 'Array'};
 
+var _RobertWalter83$calliope$Constants$messageWelcome = 'Welcome back to Calliope!';
+var _RobertWalter83$calliope$Constants$messageOpenProject = 'Click here to open.';
+var _RobertWalter83$calliope$Constants$messageNewProject = 'Create a brand new project';
+var _RobertWalter83$calliope$Constants$urlOpenPolaroid = 'url(\'assets/existing.jpg\')';
+var _RobertWalter83$calliope$Constants$urlNewPolaroid = 'url(\'assets/new.jpg\')';
+var _RobertWalter83$calliope$Constants$messageError = 'Something went wrong, no project active';
+var _RobertWalter83$calliope$Constants$saveButton = 'Save';
+var _RobertWalter83$calliope$Constants$pathBackground = 'url(\'assets/bg.png\')';
+var _RobertWalter83$calliope$Constants$newProject = 'New Project';
+var _RobertWalter83$calliope$Constants$aceTheme = 'ace/theme/textmate';
+
 //import Result //
 
 var _elm_lang$core$Native_Date = function() {
@@ -15068,11 +15079,11 @@ var _RobertWalter83$calliope$App$viewOverviewHeader = _elm_lang$core$Native_List
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('Welcome back to Calliope!')
+						_elm_lang$html$Html$text(_RobertWalter83$calliope$Constants$messageWelcome)
 					]))
 			]))
 	]);
-var _RobertWalter83$calliope$App$errorView = _elm_lang$html$Html$text('Something went wrong, no project active');
+var _RobertWalter83$calliope$App$errorView = _elm_lang$html$Html$text(_RobertWalter83$calliope$Constants$messageError);
 var _RobertWalter83$calliope$App$updateScript = F2(
 	function (script, contentNew) {
 		return _elm_lang$core$Native_Utils.update(
@@ -15220,7 +15231,7 @@ var _RobertWalter83$calliope$App$createProject = function (timeNow) {
 	var stringTime = _p2._0;
 	var stringDate = _p2._1;
 	return {
-		title: 'New Project',
+		title: _RobertWalter83$calliope$Constants$newProject,
 		refreshEditor: false,
 		titleEditable: false,
 		dateCreated: stringTime,
@@ -15276,12 +15287,14 @@ var _RobertWalter83$calliope$App$Tier = F2(
 	function (a, b) {
 		return {id: a, name: b};
 	});
-var _RobertWalter83$calliope$App$EditTitle = function (a) {
-	return {ctor: 'EditTitle', _0: a};
-};
-var _RobertWalter83$calliope$App$TitleEditable = function (a) {
-	return {ctor: 'TitleEditable', _0: a};
-};
+var _RobertWalter83$calliope$App$EditTitle = F2(
+	function (a, b) {
+		return {ctor: 'EditTitle', _0: a, _1: b};
+	});
+var _RobertWalter83$calliope$App$TitleEditable = F2(
+	function (a, b) {
+		return {ctor: 'TitleEditable', _0: a, _1: b};
+	});
 var _RobertWalter83$calliope$App$EditorReady = {ctor: 'EditorReady'};
 var _RobertWalter83$calliope$App$renderScript = F2(
 	function (script, refresh) {
@@ -15352,21 +15365,81 @@ var _RobertWalter83$calliope$App$OpenProject = function (a) {
 	return {ctor: 'OpenProject', _0: a};
 };
 var _RobertWalter83$calliope$App$AddNewProject = {ctor: 'AddNewProject'};
+var _RobertWalter83$calliope$App$Save = {ctor: 'Save'};
+var _RobertWalter83$calliope$App$SelectView = function (a) {
+	return {ctor: 'SelectView', _0: a};
+};
+var _RobertWalter83$calliope$App$Mdl = function (a) {
+	return {ctor: 'Mdl', _0: a};
+};
+var _RobertWalter83$calliope$App$init = function (maybeModel) {
+	var modelInit = A3(
+		_RobertWalter83$calliope$Util$transformMaybe,
+		maybeModel,
+		_RobertWalter83$calliope$App$defaultModel,
+		function (m) {
+			return _elm_lang$core$Native_Utils.update(
+				m,
+				{refreshEditorContent: true});
+		});
+	return {
+		ctor: '_Tuple2',
+		_0: {mdl: _debois$elm_mdl$Material$model, model: modelInit},
+		_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
+	};
+};
+var _RobertWalter83$calliope$App$renderProjectTitle = F3(
+	function (maybeProject, mdl, indexTextfield) {
+		var project = A2(
+			_elm_lang$core$Maybe$withDefault,
+			{
+				title: _RobertWalter83$calliope$Constants$newProject,
+				refreshEditor: false,
+				titleEditable: false,
+				dateCreated: '',
+				timeCreated: '',
+				script: {content: ''},
+				tierList: _RobertWalter83$calliope$App$defaultTierList
+			},
+			maybeProject);
+		return project.titleEditable ? A4(
+			_debois$elm_mdl$Material_Textfield$render,
+			_RobertWalter83$calliope$App$Mdl,
+			_elm_lang$core$Native_List.fromArray(
+				[indexTextfield]),
+			mdl,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_debois$elm_mdl$Material_Textfield$text$,
+					_debois$elm_mdl$Material_Textfield$onInput(
+					_RobertWalter83$calliope$App$EditTitle(project)),
+					_debois$elm_mdl$Material_Textfield$onBlur(
+					A2(_RobertWalter83$calliope$App$TitleEditable, project, false)),
+					_debois$elm_mdl$Material_Textfield$value(project.title),
+					A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px')
+				])) : A2(
+			_debois$elm_mdl$Material_Options$div,
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_debois$elm_mdl$Material_Options$attribute(
+					_elm_lang$html$Html_Events$onClick(
+						A2(_RobertWalter83$calliope$App$TitleEditable, project, true)))
+				]),
+			_elm_lang$core$Native_List.fromArray(
+				[
+					_elm_lang$html$Html$text(project.title)
+				]));
+	});
 var _RobertWalter83$calliope$App$renderPolaroid = F5(
-	function (modelMdl, pathBackground, userMessage, maybeProject, cardIndex) {
-		var _p4 = A3(
+	function (modelMdl, urlBackground, userMessage, maybeProject, cardIndex) {
+		var textHead = A3(_RobertWalter83$calliope$App$renderProjectTitle, maybeProject, modelMdl.mdl, cardIndex);
+		var onClick = A3(
 			_RobertWalter83$calliope$Util$transformMaybe,
 			maybeProject,
-			{ctor: '_Tuple2', _0: _RobertWalter83$calliope$App$AddNewProject, _1: 'New Project'},
+			_RobertWalter83$calliope$App$AddNewProject,
 			function (p) {
-				return {
-					ctor: '_Tuple2',
-					_0: _RobertWalter83$calliope$App$OpenProject(p),
-					_1: p.title
-				};
+				return _RobertWalter83$calliope$App$OpenProject(p);
 			});
-		var onClick = _p4._0;
-		var title = _p4._1;
 		return A2(
 			_debois$elm_mdl$Material_Card$view,
 			_elm_lang$core$Native_List.fromArray(
@@ -15394,10 +15467,7 @@ var _RobertWalter83$calliope$App$renderPolaroid = F5(
 							A2(
 							_debois$elm_mdl$Material_Options$css,
 							'background',
-							A2(
-								_elm_lang$core$Basics_ops['++'],
-								'url(\'',
-								A2(_elm_lang$core$Basics_ops['++'], pathBackground, '\') center / cover'))),
+							A2(_elm_lang$core$Basics_ops['++'], urlBackground, 'center / cover')),
 							A2(_debois$elm_mdl$Material_Options$css, 'height', '256px'),
 							A2(_debois$elm_mdl$Material_Options$css, 'padding', '0')
 						]),
@@ -15413,7 +15483,7 @@ var _RobertWalter83$calliope$App$renderPolaroid = F5(
 									A2(_debois$elm_mdl$Material_Options$css, 'width', '208px')
 								]),
 							_elm_lang$core$Native_List.fromArray(
-								[]))
+								[textHead]))
 						])),
 					A2(
 					_debois$elm_mdl$Material_Card$text,
@@ -15433,7 +15503,7 @@ var _RobertWalter83$calliope$App$renderPolaroid = F5(
 				]));
 	});
 var _RobertWalter83$calliope$App$renderProjectLink = F5(
-	function (modelMdl, pathBackground, userMessage, project, cardIndex) {
+	function (modelMdl, urlBackground, userMessage, project, cardIndex) {
 		return A2(
 			_debois$elm_mdl$Material_Options$div,
 			_elm_lang$core$Native_List.fromArray(
@@ -15445,19 +15515,19 @@ var _RobertWalter83$calliope$App$renderProjectLink = F5(
 					A5(
 					_RobertWalter83$calliope$App$renderPolaroid,
 					modelMdl,
-					pathBackground,
+					urlBackground,
 					userMessage,
 					_elm_lang$core$Maybe$Just(project),
 					cardIndex)
 				]));
 	});
 var _RobertWalter83$calliope$App$renderOverview = function (modelMdl) {
-	var polaroidCreateNew = A5(_RobertWalter83$calliope$App$renderPolaroid, modelMdl, 'assets/new.jpg', 'Create a brand new project', _elm_lang$core$Maybe$Nothing, 0);
+	var polaroidCreateNew = A5(_RobertWalter83$calliope$App$renderPolaroid, modelMdl, _RobertWalter83$calliope$Constants$urlNewPolaroid, _RobertWalter83$calliope$Constants$messageNewProject, _elm_lang$core$Maybe$Nothing, 0);
 	var projectsRecent = modelMdl.model.projectsRecent;
 	var lengthProjectsRecent = _elm_lang$core$List$length(projectsRecent);
 	var polaroidsProjectsRecent = A3(
 		_elm_lang$core$List$map2,
-		A3(_RobertWalter83$calliope$App$renderProjectLink, modelMdl, 'assets/existing.jpg', 'Click here to open.'),
+		A3(_RobertWalter83$calliope$App$renderProjectLink, modelMdl, _RobertWalter83$calliope$Constants$urlOpenPolaroid, _RobertWalter83$calliope$Constants$messageOpenProject),
 		projectsRecent,
 		_elm_lang$core$Native_List.range(1, lengthProjectsRecent));
 	return A2(
@@ -15499,63 +15569,6 @@ var _RobertWalter83$calliope$App$renderOverview = function (modelMdl) {
 					polaroidsProjectsRecent))
 			]));
 };
-var _RobertWalter83$calliope$App$Save = {ctor: 'Save'};
-var _RobertWalter83$calliope$App$SelectView = function (a) {
-	return {ctor: 'SelectView', _0: a};
-};
-var _RobertWalter83$calliope$App$Mdl = function (a) {
-	return {ctor: 'Mdl', _0: a};
-};
-var _RobertWalter83$calliope$App$init = function (maybeModel) {
-	var modelInit = A3(
-		_RobertWalter83$calliope$Util$transformMaybe,
-		maybeModel,
-		_RobertWalter83$calliope$App$defaultModel,
-		function (m) {
-			return _elm_lang$core$Native_Utils.update(
-				m,
-				{refreshEditorContent: true});
-		});
-	return {
-		ctor: '_Tuple2',
-		_0: {mdl: _debois$elm_mdl$Material$model, model: modelInit},
-		_1: _debois$elm_mdl$Material_Layout$sub0(_RobertWalter83$calliope$App$Mdl)
-	};
-};
-var _RobertWalter83$calliope$App$renderProjectTitle = function (project) {
-	return A3(
-		_RobertWalter83$calliope$Util$transformMaybe,
-		project,
-		_RobertWalter83$calliope$App$errorView,
-		function (p) {
-			return p.titleEditable ? A4(
-				_debois$elm_mdl$Material_Textfield$render,
-				_RobertWalter83$calliope$App$Mdl,
-				_elm_lang$core$Native_List.fromArray(
-					[13]),
-				_debois$elm_mdl$Material$model,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_debois$elm_mdl$Material_Textfield$text$,
-						_debois$elm_mdl$Material_Textfield$onInput(_RobertWalter83$calliope$App$EditTitle),
-						_debois$elm_mdl$Material_Textfield$onBlur(
-						_RobertWalter83$calliope$App$TitleEditable(false)),
-						_debois$elm_mdl$Material_Textfield$value(p.title),
-						A2(_debois$elm_mdl$Material_Options$css, 'font-size', '24px')
-					])) : A2(
-				_debois$elm_mdl$Material_Options$div,
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_debois$elm_mdl$Material_Options$attribute(
-						_elm_lang$html$Html_Events$onClick(
-							_RobertWalter83$calliope$App$TitleEditable(true)))
-					]),
-				_elm_lang$core$Native_List.fromArray(
-					[
-						_elm_lang$html$Html$text(p.title)
-					]));
-		});
-};
 var _RobertWalter83$calliope$App$viewDefaultHeader = function (modelMdl) {
 	return _elm_lang$core$Native_List.fromArray(
 		[
@@ -15567,7 +15580,7 @@ var _RobertWalter83$calliope$App$viewDefaultHeader = function (modelMdl) {
 				]),
 			_elm_lang$core$Native_List.fromArray(
 				[
-					_RobertWalter83$calliope$App$renderProjectTitle(modelMdl.model.projectActive)
+					A3(_RobertWalter83$calliope$App$renderProjectTitle, modelMdl.model.projectActive, modelMdl.mdl, 0)
 				]))
 		]);
 };
@@ -15608,30 +15621,30 @@ var _RobertWalter83$calliope$App$selectView = F2(
 var _RobertWalter83$calliope$App$update = F2(
 	function (msg, modelMdl) {
 		var modelCurrent = modelMdl.model;
-		var _p5 = msg;
-		switch (_p5.ctor) {
+		var _p4 = msg;
+		switch (_p4.ctor) {
 			case 'Mdl':
-				return A2(_debois$elm_mdl$Material$update, _p5._0, modelMdl);
+				return A2(_debois$elm_mdl$Material$update, _p4._0, modelMdl);
 			case 'Raise':
 				return A2(
 					_RobertWalter83$calliope$App$withMdl,
 					modelMdl,
-					A2(_RobertWalter83$calliope$App$raiseCard, modelCurrent, _p5._0));
+					A2(_RobertWalter83$calliope$App$raiseCard, modelCurrent, _p4._0));
 			case 'SelectView':
 				return A2(
 					_RobertWalter83$calliope$App$withMdl,
 					modelMdl,
-					A2(_RobertWalter83$calliope$App$selectView, modelCurrent, _p5._0));
+					A2(_RobertWalter83$calliope$App$selectView, modelCurrent, _p4._0));
 			case 'UpdateEditorContent':
 				return A2(
 					_RobertWalter83$calliope$App$withMdl,
 					modelMdl,
-					A2(_RobertWalter83$calliope$App$updateProjectContent, modelCurrent, _p5._0));
+					A2(_RobertWalter83$calliope$App$updateProjectContent, modelCurrent, _p4._0));
 			case 'EditorReady':
 				return {
 					ctor: '_Tuple2',
 					_0: modelMdl,
-					_1: _RobertWalter83$calliope$Ports$configureAce('ace/theme/textmate')
+					_1: _RobertWalter83$calliope$Ports$configureAce(_RobertWalter83$calliope$Constants$aceTheme)
 				};
 			case 'TitleEditable':
 				return A2(_RobertWalter83$calliope$App$withMdl, modelMdl, modelMdl.model);
@@ -15639,19 +15652,19 @@ var _RobertWalter83$calliope$App$update = F2(
 				return A2(
 					_RobertWalter83$calliope$App$withMdl,
 					modelMdl,
-					A2(_RobertWalter83$calliope$App$editTitle, modelCurrent, _p5._0));
+					A2(_RobertWalter83$calliope$App$editTitle, modelCurrent, _p4._1));
 			case 'AddNewProject':
 				return {ctor: '_Tuple2', _0: modelMdl, _1: _RobertWalter83$calliope$App$cmdTimeNow};
 			case 'AddNewProjectNow':
 				return A2(
 					_RobertWalter83$calliope$App$withMdl,
 					modelMdl,
-					A2(_RobertWalter83$calliope$App$addNewProject, modelCurrent, _p5._0));
+					A2(_RobertWalter83$calliope$App$addNewProject, modelCurrent, _p4._0));
 			case 'OpenProject':
 				return A2(
 					_RobertWalter83$calliope$App$withMdl,
 					modelMdl,
-					A2(_RobertWalter83$calliope$App$openProject, modelCurrent, _p5._0));
+					A2(_RobertWalter83$calliope$App$openProject, modelCurrent, _p4._0));
 			case 'Save':
 				return {
 					ctor: '_Tuple2',
@@ -15667,8 +15680,8 @@ var _RobertWalter83$calliope$App$viewMain = function (modelMdl) {
 	var model = modelMdl.model;
 	var viewSelected = _RobertWalter83$calliope$App$indexToView(model.viewSelected);
 	var renderedContent = function () {
-		var _p6 = viewSelected;
-		switch (_p6.ctor) {
+		var _p5 = viewSelected;
+		switch (_p5.ctor) {
 			case 'Overview':
 				return _RobertWalter83$calliope$App$renderOverview(modelMdl);
 			case 'Dialog':
@@ -15693,7 +15706,7 @@ var _RobertWalter83$calliope$App$viewMain = function (modelMdl) {
 		_debois$elm_mdl$Material_Options$div,
 		_elm_lang$core$Native_List.fromArray(
 			[
-				A2(_debois$elm_mdl$Material_Options$css, 'background', 'url(\'assets/bg.png\')')
+				A2(_debois$elm_mdl$Material_Options$css, 'background', _RobertWalter83$calliope$Constants$pathBackground)
 			]),
 		_elm_lang$core$Native_List.fromArray(
 			[
@@ -15713,7 +15726,7 @@ var _RobertWalter83$calliope$App$viewMain = function (modelMdl) {
 					]),
 				_elm_lang$core$Native_List.fromArray(
 					[
-						_elm_lang$html$Html$text('Save')
+						_elm_lang$html$Html$text(_RobertWalter83$calliope$Constants$saveButton)
 					]))
 			]));
 };

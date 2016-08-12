@@ -88,8 +88,8 @@ type Msg
     | NoOp
     | UpdateEditorContent String
     | EditorReady
-    | TitleEditable Bool
-    | EditTitle String
+    | TitleEditable Project Bool
+    | EditTitle Project String
 
 
 type View
@@ -172,10 +172,10 @@ update msg modelMdl =
             EditorReady ->
                 ( modelMdl, configureAce Const.aceTheme )
 
-            TitleEditable projectMsg ->
+            TitleEditable project isEditable ->
                 withMdl modelMdl modelMdl.model
 
-            EditTitle titleNew ->
+            EditTitle project titleNew ->
                 editTitle modelCurrent titleNew |> withMdl modelMdl
 
             AddNewProject ->
@@ -479,8 +479,11 @@ renderProjectLink modelMdl urlBackground userMessage project cardIndex =
 renderPolaroid : ModelMdl -> String -> String -> Maybe Project -> Int -> Html Msg
 renderPolaroid modelMdl urlBackground userMessage maybeProject cardIndex =
     let
-        ( onClick, title ) =
-            transformMaybe maybeProject ( AddNewProject, Const.newProject ) (\p -> ( OpenProject p, p.title ) )
+        onClick = transformMaybe maybeProject AddNewProject (\p -> ( OpenProject p ) )
+
+        textHead =
+            renderProjectTitle maybeProject modelMdl.mdl cardIndex
+            
     in
         Card.view
             [ if modelMdl.model.raisedCard == cardIndex then
@@ -506,7 +509,7 @@ renderPolaroid modelMdl urlBackground userMessage maybeProject cardIndex =
                     , Options.css "padding" "12px"
                     , Options.css "width" "208px"
                     ]
-                    []
+                    [ textHead ]
                 ]
             , Card.text
                 [ Options.css "padding" "16px 0px 12px 0px"
@@ -542,9 +545,37 @@ viewOverviewHeader =
 viewDefaultHeader : ModelMdl -> List (Html Msg)
 viewDefaultHeader modelMdl =
     [ Layout.row [ Options.css "transition" "height 333ms ease-in-out 0s" ]
-        [ renderProjectTitle modelMdl.model.projectActive ]
+        [ renderProjectTitle modelMdl.model.projectActive modelMdl.mdl 0 ]
     ]
 
+
+renderProjectTitle maybeProject mdl indexTextfield =
+    let 
+      project = Maybe.withDefault  
+            { title = Const.newProject
+            , refreshEditor = False
+            , titleEditable = False
+            , dateCreated = ""
+            , timeCreated = ""
+            , script = { content = "" }
+            , tierList = defaultTierList
+            } 
+            maybeProject
+    
+    in 
+        if ( project.titleEditable ) then
+              Textfield.render Mdl
+                  [ indexTextfield ]
+                  mdl
+                  [ Textfield.text'
+                  , Textfield.onInput <| EditTitle project
+                  , Textfield.onBlur <| TitleEditable project False
+                  , Textfield.value project.title
+                  , Options.css "font-size" "24px"
+                  ]
+          else
+              Options.div [ Options.attribute <| Html.onClick (TitleEditable project True) ] [ text project.title ]
+    
 
 
 -- RENDER STRUCTURE
@@ -655,30 +686,6 @@ title t =
     Options.styled Html.h1
         [ Color.text Color.primary ]
         [ text t ]
-
-
-
--- RENDER PROJECT TITLE
---renderProjectTitle : Project -> (Parts.Msg Material.Model App.Msg -> App.Msg) -> Material.Model -> Html App.Msg
-
-
-renderProjectTitle project =
-    transformMaybe project errorView
-        (\p -> 
-            if p.titleEditable then
-                Textfield.render Mdl
-                    [ 13 ]
-                    Material.model
-                    [ Textfield.text'
-                    , Textfield.onInput EditTitle
-                    , Textfield.onBlur <| TitleEditable False
-                    , Textfield.value p.title
-                    , Options.css "font-size" "24px"
-                    ]
-            else
-                Options.div [ Options.attribute <| Html.onClick (TitleEditable True) ] [ text p.title ]
-        )
-
 
 
 -- STYLING
