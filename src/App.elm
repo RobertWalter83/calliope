@@ -5,6 +5,7 @@ import Constants as Const exposing(..)
 import Date exposing (..)
 import Date.Extra.Config.Config_en_us exposing (config)
 import Date.Extra.Format as Format exposing (format)
+import Dict exposing (..)
 import Json.Decode exposing (..)
 import Json.Encode exposing (..)
 import Html exposing (..)
@@ -37,9 +38,9 @@ type alias ModelMdl =
 
 type alias Model =
     { viewSelected : Int
-    , projectActive : Maybe Project
-    , projectsAll : List Project
-    , projectsRecent : List Project
+    , projectActive : Int
+    , projectsAll : Dict Int Project
+    , projectsRecent : Dict Int Project
     , refreshEditorContent : Bool
     , raisedCard : Int
     }
@@ -82,14 +83,14 @@ type Msg
     | SelectView Int
     | Save
     | AddNewProject
-    | OpenProject Project
+    | OpenProject Int
     | AddNewProjectNow Time
     | Raise Int
     | NoOp
     | UpdateEditorContent String
     | EditorReady
-    | TitleEditable Project Bool
-    | EditTitle Project String
+    | TitleEditable Int Bool
+    | EditTitle Int String
 
 
 type View
@@ -102,9 +103,9 @@ type View
 -- MAIN
 
 
-main : Program (Maybe Model)
+main : Program Never -- (Maybe Model)
 main =
-    App.programWithFlags
+    App.program
         { init = init
         , view = view
         , update = update
@@ -116,21 +117,26 @@ main =
 -- INIT
 
 
+init : ( ModelMdl, Cmd Msg )
+init =
+    ( { mdl = Material.model, model = defaultModel }, Layout.sub0 Mdl )
+{- 
 init : Maybe Model -> ( ModelMdl, Cmd Msg )
-init maybeModel =
-    let
+init maybeModel =   
+   let
         modelInit =
             transformMaybe maybeModel defaultModel (\m -> { m | refreshEditorContent = True } )
     in
         ( { mdl = Material.model, model = modelInit }, Layout.sub0 Mdl )
+-}
 
 
 defaultModel : Model
 defaultModel =
     { viewSelected = 0
-    , projectActive = Nothing
-    , projectsAll = []
-    , projectsRecent = []
+    , projectActive = -1
+    , projectsAll = Dict.empty
+    , projectsRecent = Dict.empty
     , refreshEditorContent = False
     , raisedCard = -1
     }
@@ -172,11 +178,11 @@ update msg modelMdl =
             EditorReady ->
                 ( modelMdl, configureAce Const.aceTheme )
 
-            TitleEditable project isEditable ->
-                withMdl modelMdl modelMdl.model
+            TitleEditable index isEditable ->
+                titleEditable modelCurrent index isEditable |> withMdl modelMdl
 
-            EditTitle project titleNew ->
-                editTitle modelCurrent titleNew |> withMdl modelMdl
+            EditTitle index titleNew ->
+                editTitle modelCurrent index titleNew |> withMdl modelMdl
 
             AddNewProject ->
                 ( modelMdl, cmdTimeNow )
@@ -184,11 +190,12 @@ update msg modelMdl =
             AddNewProjectNow timeNow ->
                 addNewProject modelCurrent timeNow |> withMdl modelMdl
 
-            OpenProject project ->
-                openProject modelCurrent project |> withMdl modelMdl
+            OpenProject index ->
+                openProject modelCurrent index |> withMdl modelMdl
 
             Save ->
-                ( modelMdl, encodeAppState modelMdl.model |> save )
+                withMdl modelMdl modelMdl.model
+                --( modelMdl, encodeAppState modelMdl.model |> save )
 
             NoOp ->
                 withMdl modelMdl modelMdl.model
@@ -209,26 +216,24 @@ selectView modelCurrent index =
     { modelCurrent | viewSelected = index, refreshEditorContent = refreshEditorContent index }
 
 
-editTitle : Model -> String -> Model
-editTitle modelCurrent titleNew =
+titleEditable : Model -> Int -> Bool -> Model
+titleEditable model index isEditable =
     let
-        newProject =
-            updateProjectTitle modelCurrent.projectActive titleNew
-
-        ( filteredRecent, filteredAll ) =
-            transformMaybe 
-                modelCurrent.projectActive 
-                ( modelCurrent.projectsRecent, modelCurrent.projectsAll ) 
-                ( \p -> ( Util.filter modelCurrent.projectsRecent p, Util.filter modelCurrent.projectsAll p ) )
-            
-
-        ( projectsRecent, projectsAll ) =
-            transformMaybe 
-                newProject
-                ( modelCurrent.projectsRecent, modelCurrent.projectsAll )
-                ( \p -> (p :: filteredRecent, p :: filteredAll ))
+        projectsAll = Dict.update index (\maybeValue -> transformMaybe maybeValue Nothing (\p -> Just { p | titleEditable = isEditable }) ) model.projectsAll
+        projectsRecent = Dict.update index (\maybeValue -> transformMaybe maybeValue Nothing (\p -> Just { p | titleEditable = isEditable }) ) model.projectsRecent
+      
     in
-        { modelCurrent | projectActive = newProject, projectsRecent = projectsRecent, projectsAll = projectsAll }
+        { model | projectsRecent = projectsRecent, projectsAll = projectsAll }
+
+
+editTitle : Model -> Int -> String -> Model
+editTitle model index titleNew =
+    let
+        projectsAll = Dict.update index (\maybeValue -> transformMaybe maybeValue Nothing (\p -> Just { p | title = titleNew }) ) model.projectsAll
+        projectsRecent = Dict.update index (\maybeValue -> transformMaybe maybeValue Nothing (\p -> Just { p | title = titleNew }) ) model.projectsRecent
+      
+    in
+        { model | projectsRecent = projectsRecent, projectsAll = projectsAll }
 
 
 createProject : Time -> Project
@@ -250,12 +255,12 @@ createProject timeNow =
         }
 
 
-modelWithProject : Project -> Model
-modelWithProject project =
+modelWithProject : Int -> Model
+modelWithProject index =
     { viewSelected = 0
-    , projectActive = Just project
-    , projectsAll = []
-    , projectsRecent = []
+    , projectActive = index
+    , projectsAll = Dict.empty
+    , projectsRecent = Dict.empty
     , refreshEditorContent = False
     , raisedCard = -1
     }
@@ -264,28 +269,21 @@ modelWithProject project =
 addNewProject : Model -> Time -> Model
 addNewProject modelCurrent timeNow =
     let
-        newProject =
+        projectNew =
             createProject timeNow
 
-        projectsRecent =
-            newProject :: modelCurrent.projectsRecent
+        indexNew = Dict.values modelCurrent.projectsAll |> List.length 
 
-        projectsAll =
-            sortByTitle <| newProject :: modelCurrent.projectsAll
+        projectsRecent = Dict.insert indexNew projectNew modelCurrent.projectsRecent
+        projectsAll = Dict.insert indexNew projectNew modelCurrent.projectsAll
+
     in
-        { modelCurrent | projectActive = Just newProject, projectsRecent = projectsRecent, projectsAll = projectsAll }
+        { modelCurrent | projectActive = indexNew, projectsRecent = projectsRecent, projectsAll = projectsAll }
 
 
-openProject : Model -> Project -> Model
-openProject modelCurrent projectToOpen =
-    let
-        projectsRecent =
-            moveToHead projectToOpen modelCurrent.projectsRecent
-
-        projectsAll =
-            sortByTitle <| moveToHead projectToOpen modelCurrent.projectsAll
-    in
-        { modelCurrent | projectActive = Just projectToOpen, projectsRecent = projectsRecent, projectsAll = projectsAll, viewSelected = 1 }
+openProject : Model -> Int -> Model
+openProject modelCurrent index =
+    { modelCurrent | projectActive = index, viewSelected = 1 }
 
 
 updateProjectTitle : Maybe Project -> String -> Maybe Project
@@ -328,9 +326,11 @@ indexToView i =
 updateProjectContent : Model -> String -> Model
 updateProjectContent model contentNew =
     let
-        projectActive = transformMaybe model.projectActive Nothing (\p -> Just { p | script = updateScript p.script contentNew })
+        projectsAll = Dict.update model.projectActive (\maybeValue -> transformMaybe maybeValue Nothing (\p -> Just { p | script = updateScript p.script contentNew }) ) model.projectsAll
+        projectsRecent = Dict.update model.projectActive (\maybeValue -> transformMaybe maybeValue Nothing (\p -> Just { p | script = updateScript p.script contentNew }) ) model.projectsRecent
+        
     in
-        { model | projectActive = projectActive, refreshEditorContent = False }
+        { model | projectsAll = projectsAll, projectsRecent = projectsRecent, refreshEditorContent = False }
 
 
 updateScript : Script -> String -> Script
@@ -401,16 +401,18 @@ viewMain modelMdl =
         viewSelected =
             indexToView model.viewSelected
 
+        maybeProject = Dict.get model.projectActive model.projectsAll 
+
         renderedContent =
             case viewSelected of
                 Overview ->
                     renderOverview modelMdl
 
                 Dialog ->
-                    transformMaybe model.projectActive errorView ( \p -> renderDialog p model.refreshEditorContent )
+                    transformMaybe maybeProject errorView ( \p -> renderDialog p model.refreshEditorContent )
 
                 Structure ->
-                    transformMaybe model.projectActive errorView ( \p -> renderStructure p )
+                    transformMaybe maybeProject errorView ( \p -> renderStructure p )
                             
     in
         Options.div [ Options.css "background" Const.pathBackground ]
@@ -434,17 +436,19 @@ renderOverview : ModelMdl -> Html Msg
 renderOverview modelMdl =
     let
         projectsRecent =
-            modelMdl.model.projectsRecent
+            Dict.values modelMdl.model.projectsRecent
 
         lengthProjectsRecent =
             List.length projectsRecent 
 
         polaroidCreateNew =
-            renderPolaroid modelMdl Const.urlNewPolaroid Const.messageNewProject Nothing 0
+            renderPolaroid modelMdl Const.urlNewPolaroid Const.messageNewProject -1 0
+
+        keys = (Dict.keys modelMdl.model.projectsRecent)
 
         polaroidsProjectsRecent =
             List.map2 (renderProjectLink modelMdl Const.urlOpenPolaroid Const.messageOpenProject )
-                projectsRecent
+                keys
                 [1..lengthProjectsRecent] 
     in
         Options.div (boxed ( 100, 20 ) |> and (Options.css "height" "1024px"))
@@ -469,20 +473,22 @@ renderOverview modelMdl =
             ]
 
 
-renderProjectLink : ModelMdl -> String -> String -> Project -> Int -> Html Msg
-renderProjectLink modelMdl urlBackground userMessage project cardIndex =
+renderProjectLink : ModelMdl -> String -> String -> Int -> Int -> Html Msg
+renderProjectLink modelMdl urlBackground userMessage indexProject cardIndex =
     Options.div
         [ Options.css "padding" "12px" ]
-        [ renderPolaroid modelMdl urlBackground userMessage (Just project) cardIndex ]
+        [ renderPolaroid modelMdl urlBackground userMessage indexProject cardIndex ]
 
 
-renderPolaroid : ModelMdl -> String -> String -> Maybe Project -> Int -> Html Msg
-renderPolaroid modelMdl urlBackground userMessage maybeProject cardIndex =
+renderPolaroid : ModelMdl -> String -> String -> Int -> Int -> Html Msg
+renderPolaroid modelMdl urlBackground userMessage indexProject cardIndex =
     let
-        onClick = transformMaybe maybeProject AddNewProject (\p -> ( OpenProject p ) )
+        maybeProject = Dict.get indexProject modelMdl.model.projectsAll
 
+        (onClickView, onClickText) = if (indexProject < 0) then (AddNewProject, NoOp) else (NoOp, OpenProject indexProject)
+        
         textHead =
-            renderProjectTitle maybeProject modelMdl.mdl cardIndex
+            renderProjectTitle maybeProject indexProject modelMdl.mdl cardIndex
             
     in
         Card.view
@@ -494,7 +500,7 @@ renderPolaroid modelMdl urlBackground userMessage maybeProject cardIndex =
             , Options.css "width" "256px"
             , Options.attribute <| Html.onMouseEnter (Raise cardIndex)
             , Options.attribute <| Html.onMouseLeave (Raise -1)
-            , Options.attribute <| Html.onClick onClick
+            , Options.attribute <| Html.onClick onClickView
             , Options.css "margin" "0"
             , Options.css "padding" "12px"
             ]
@@ -517,6 +523,7 @@ renderPolaroid modelMdl urlBackground userMessage maybeProject cardIndex =
                 , Options.css "font-weight" "700"
                 , Options.css "font-size" "24px"
                 , Options.css "width" "100%"
+                , Options.attribute <| Html.onClick onClickText
                 , Color.text Color.black
                 ]
                 [ text userMessage ]
@@ -544,37 +551,32 @@ viewOverviewHeader =
 
 viewDefaultHeader : ModelMdl -> List (Html Msg)
 viewDefaultHeader modelMdl =
+    let
+      project = Dict.get modelMdl.model.projectActive modelMdl.model.projectsAll 
+    in
     [ Layout.row [ Options.css "transition" "height 333ms ease-in-out 0s" ]
-        [ renderProjectTitle modelMdl.model.projectActive modelMdl.mdl 0 ]
+        [ renderProjectTitle project modelMdl.model.projectActive modelMdl.mdl 0 ]
     ]
 
 
-renderProjectTitle maybeProject mdl indexTextfield =
+
+renderProjectTitle maybeProject indexProject mdl indexTextfield =
     let 
-      project = Maybe.withDefault  
-            { title = Const.newProject
-            , refreshEditor = False
-            , titleEditable = False
-            , dateCreated = ""
-            , timeCreated = ""
-            , script = { content = "" }
-            , tierList = defaultTierList
-            } 
-            maybeProject
-    
+      (title, titleEditable) = transformMaybe maybeProject (Const.newProject, False) (\p -> (p.title, p.titleEditable))
+      
     in 
-        if ( project.titleEditable ) then
+        if ( titleEditable ) then
               Textfield.render Mdl
                   [ indexTextfield ]
                   mdl
                   [ Textfield.text'
-                  , Textfield.onInput <| EditTitle project
-                  , Textfield.onBlur <| TitleEditable project False
-                  , Textfield.value project.title
+                  , Textfield.onInput <| EditTitle indexProject
+                  , Textfield.onBlur <| TitleEditable indexProject False
+                  , Textfield.value title
                   , Options.css "font-size" "24px"
                   ]
           else
-              Options.div [ Options.attribute <| Html.onClick (TitleEditable project True) ] [ text project.title ]
+              Options.div [ Options.attribute <| Html.onClick (TitleEditable indexProject True) ] [ text title ]
     
 
 
@@ -714,7 +716,7 @@ subscriptions modelMdl =
 
 -- ENCODE
 
-
+{-
 encodeAppState : Model -> Json.Encode.Value
 encodeAppState model =
     Json.Encode.object
@@ -757,3 +759,4 @@ encodeTier tier =
         [ ( "id", Json.Encode.string tier.id )
         , ( "name", Json.Encode.string tier.name )
         ]
+-}

@@ -34,7 +34,8 @@
     var calliopeAppState = localStorage.getItem('calliopeAppState');
     var startingState = calliopeAppState ? JSON.parse(calliopeAppState) : null;
 
-    var app = Elm.App.fullscreen(startingState);
+    //var app = Elm.App.fullscreen(startingState);
+    var app = Elm.App.fullscreen();
     setupPorts(app);
   </script>
 
