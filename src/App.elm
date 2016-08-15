@@ -230,13 +230,10 @@ cmdWithTimeNow msg =
 timeStamp : Model -> Time -> Model
 timeStamp model timeNow =
     let
-        key =
-            model.projectActive
-
         stringDate =
             Date.fromTime timeNow |> format config config.format.dateTime
     in
-        updateProject model key (\p -> Just { p | lastChange = stringDate })
+        updateProject model model.projectActive (\p -> Just { p | lastChange = stringDate })
 
 
 raiseCard : Model -> Int -> Model
@@ -278,16 +275,6 @@ createProject timeNow =
             { content = "" }
         , tierList = defaultTierList
         }
-
-
-modelWithProject : Int -> Model
-modelWithProject index =
-    { viewSelected = 0
-    , projectActive = index
-    , projectsAll = Dict.empty
-    , refreshEditorContent = False
-    , raisedCard = -1
-    }
 
 
 addNewProject : Model -> Time -> Model
