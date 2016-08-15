@@ -1,5 +1,5 @@
 # Calliope
-Experimental app written in Elm (0.17.0), run by Electron.
+Experimental app written in Elm (0.17.1), run by Electron.
 
 ## Steps to run the app
 If you want to try out this app, do the following:
@@ -13,7 +13,7 @@ SSH:
 ``` git clone git@github.com:RobertWalter83/calliope.git ```
 
 ### Install Elm (if not alread on your machine)
-Form [here](http://elm-lang.org/install) (app is written in Elm 0.17.0, might not work with newer versions)
+Form [here](http://elm-lang.org/install) (app is written in Elm 0.17.1, might not work with newer versions)
 
 ### Compile App
 * Open a terminal in the root folder of the app (by default this is "calliope")
