@@ -297,7 +297,6 @@ openProject modelCurrent index =
     { modelCurrent | projectActive = index, viewSelected = 1 }
 
 
-
 refreshEditorContent : Int -> Bool
 refreshEditorContent index =
     if ((indexToView index) == Dialog) then
@@ -435,7 +434,7 @@ renderOverview : ModelMdl -> Html Msg
 renderOverview modelMdl =
     let
         polaroidCreateNew =
-            renderPolaroid modelMdl Const.urlNewPolaroid Const.messageNewProject 0 -1
+            renderPolaroidCreateNew modelMdl Const.urlNewPolaroid Const.messageNewProject
 
         keys =
             Dict.keys modelMdl.model.projectsAll
@@ -443,7 +442,7 @@ renderOverview modelMdl =
         --sorted = List.sortBy .lastChange keys
         --recent = List.take 5 sorted
         polaroidsProjects =
-            List.indexedMap (renderPolaroid modelMdl Const.urlOpenPolaroid Const.messageOpenProject)
+            List.indexedMap (renderPolaroidProject modelMdl Const.urlOpenPolaroid Const.messageOpenProject)
                 keys
     in
         Options.div (boxed ( 100, 20 ) |> and (Options.css "height" "1024px"))
@@ -472,58 +471,66 @@ renderOverview modelMdl =
             ]
 
 
-renderPolaroid : ModelMdl -> String -> String -> Int -> Int -> Html Msg
-renderPolaroid modelMdl urlBackground userMessage cardIndex keyProject =
+renderPolaroidCreateNew : ModelMdl -> String -> String -> Html Msg
+renderPolaroidCreateNew modelMdl urlBackground userMessage =
     let
-        ( onClickView, onClickText ) =
-            if (keyProject < 0) then
-                ( AddNewProject, NoOp )
-            else
-                ( NoOp, OpenProject keyProject )
+        textHead =
+            Options.div [] [ text Const.newProject ]
+    in
+        renderPolaroid urlBackground userMessage ( modelMdl.model.raisedCard, 0 ) ( AddNewProject, NoOp ) textHead
 
+
+renderPolaroidProject : ModelMdl -> String -> String -> Int -> Int -> Html Msg
+renderPolaroidProject modelMdl urlBackground userMessage cardIndex keyProject =
+    let
         maybeProject =
             Dict.get keyProject modelMdl.model.projectsAll
 
         textHead =
-            renderProjectTitle maybeProject keyProject modelMdl.mdl cardIndex
+            renderProjectTitle modelMdl keyProject cardIndex
     in
-        Card.view
-            [ if modelMdl.model.raisedCard == cardIndex then
-                Elevation.e8
-              else
-                Elevation.e2
-            , Elevation.transition 250
-            , Options.css "width" "256px"
-            , Options.attribute <| Html.onMouseEnter (Raise cardIndex)
-            , Options.attribute <| Html.onMouseLeave (Raise -1)
-            , Options.attribute <| Html.onClick onClickView
-            , Options.css "margin" "0"
-            , Options.css "padding" "12px"
+        renderPolaroid urlBackground userMessage ( modelMdl.model.raisedCard, (cardIndex + 1) ) ( NoOp, (OpenProject keyProject) ) textHead
+
+
+renderPolaroid : String -> String -> ( Int, Int ) -> ( Msg, Msg ) -> Html Msg -> Html Msg
+renderPolaroid urlBackground userMessage ( raisedCardIndex, cardIndex ) ( onClickView, onClickText ) textHead =
+    Card.view
+        [ if raisedCardIndex == cardIndex then
+            Elevation.e8
+          else
+            Elevation.e2
+        , Elevation.transition 250
+        , Options.css "width" "256px"
+        , Options.attribute <| Html.onMouseEnter (Raise cardIndex)
+        , Options.attribute <| Html.onMouseLeave (Raise -1)
+        , Options.attribute <| Html.onClick onClickView
+        , Options.css "margin" "0"
+        , Options.css "padding" "12px"
+        ]
+        [ Card.title
+            [ Options.css "background" <| urlBackground ++ "center / cover"
+            , Options.css "height" "256px"
+            , Options.css "padding" "0"
             ]
-            [ Card.title
-                [ Options.css "background" <| urlBackground ++ "center / cover"
-                , Options.css "height" "256px"
-                , Options.css "padding" "0"
+            [ Card.head
+                [ Color.text Color.white
+                , Options.scrim 0.6
+                , Options.css "padding" "12px"
+                , Options.css "width" "208px"
                 ]
-                [ Card.head
-                    [ Color.text Color.white
-                    , Options.scrim 0.6
-                    , Options.css "padding" "12px"
-                    , Options.css "width" "208px"
-                    ]
-                    [ textHead ]
-                ]
-            , Card.text
-                [ Options.css "padding" "16px 0px 12px 0px"
-                , Options.css "font-family" "caveat"
-                , Options.css "font-weight" "700"
-                , Options.css "font-size" "24px"
-                , Options.css "width" "100%"
-                , Options.attribute <| Html.onClick onClickText
-                , Color.text Color.black
-                ]
-                [ text userMessage ]
+                [ textHead ]
             ]
+        , Card.text
+            [ Options.css "padding" "16px 0px 12px 0px"
+            , Options.css "font-family" "caveat"
+            , Options.css "font-weight" "700"
+            , Options.css "font-size" "24px"
+            , Options.css "width" "100%"
+            , Options.attribute <| Html.onClick onClickText
+            , Color.text Color.black
+            ]
+            [ text userMessage ]
+        ]
 
 
 viewOverviewHeader : List (Html Msg)
@@ -547,32 +554,32 @@ viewOverviewHeader =
 
 viewDefaultHeader : ModelMdl -> List (Html Msg)
 viewDefaultHeader modelMdl =
-    let
-        project =
-            Dict.get modelMdl.model.projectActive modelMdl.model.projectsAll
-    in
-        [ Layout.row [ Options.css "transition" "height 333ms ease-in-out 0s" ]
-            [ renderProjectTitle project modelMdl.model.projectActive modelMdl.mdl 0 ]
-        ]
+    [ Layout.row [ Options.css "transition" "height 333ms ease-in-out 0s" ]
+        [ renderProjectTitle modelMdl modelMdl.model.projectActive 0 ]
+    ]
 
 
-renderProjectTitle maybeProject indexProject mdl indexTextfield =
+renderProjectTitle : ModelMdl -> Int -> Int -> Html Msg
+renderProjectTitle modelMdl keyProject indexTextfield =
     let
+        maybeProject =
+            Dict.get keyProject modelMdl.model.projectsAll
+
         ( title, titleEditable ) =
             transformMaybe maybeProject ( Const.newProject, False ) (\p -> ( p.title, p.titleEditable ))
     in
         if (titleEditable) then
             Textfield.render Mdl
                 [ indexTextfield ]
-                mdl
+                modelMdl.mdl
                 [ Textfield.text'
-                , Textfield.onInput <| EditTitle indexProject
-                , Textfield.onBlur <| TitleEditable indexProject False
+                , Textfield.onInput <| EditTitle keyProject
+                , Textfield.onBlur <| TitleEditable keyProject False
                 , Textfield.value title
                 , Options.css "font-size" "24px"
                 ]
         else
-            Options.div [ Options.attribute <| Html.onClick (TitleEditable indexProject True) ] [ text title ]
+            Options.div [ Options.attribute <| Html.onClick (TitleEditable keyProject True) ] [ text title ]
 
 
 
