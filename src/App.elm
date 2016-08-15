@@ -297,24 +297,6 @@ openProject modelCurrent index =
     { modelCurrent | projectActive = index, viewSelected = 1 }
 
 
-updateProjectTitle : Maybe Project -> String -> Maybe Project
-updateProjectTitle projectOld titleNew =
-    transformMaybe projectOld Nothing (\p -> Just { p | title = titleNew })
-
-
-sortByTitle : List Project -> List Project
-sortByTitle input =
-    List.sortBy (\p -> p.title) input
-
-
-moveToHead : Project -> List Project -> List Project
-moveToHead projectToMove projectsCurrent =
-    let
-        filtered =
-            Util.filterOut projectsCurrent projectToMove
-    in
-        projectToMove :: filtered
-
 
 refreshEditorContent : Int -> Bool
 refreshEditorContent index =
