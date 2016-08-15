@@ -1,7 +1,7 @@
 module Util exposing (..)
 
 import Material.Options as Options exposing (css)
-
+import Dict as Dict exposing(Dict)
 
 boxed : (Int, Int) -> List (Options.Property a b)
 boxed (paddingSides, paddingTopBottom) =
@@ -39,6 +39,11 @@ transformMaybe maybe outputNothing outputJust =
 
         Just j -> outputJust j
 
-filter : List a -> a -> List a
-filter list item =
+filterOut : List a -> a -> List a
+filterOut list item =
     List.filter (\i -> i /= item) list
+
+
+updateItemInDict : Dict comparable b -> comparable -> (b -> Maybe b) -> Dict comparable b
+updateItemInDict dict key mapping =
+      Dict.update key (\maybeValue -> transformMaybe maybeValue Nothing mapping) dict

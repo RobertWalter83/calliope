@@ -14753,7 +14753,7 @@ var _RobertWalter83$calliope$Ports$save = _elm_lang$core$Native_Platform.outgoin
 	});
 var _RobertWalter83$calliope$Ports$updateEditorContent = _elm_lang$core$Native_Platform.incomingPort('updateEditorContent', _elm_lang$core$Json_Decode$string);
 
-var _RobertWalter83$calliope$Util$filter = F2(
+var _RobertWalter83$calliope$Util$filterOut = F2(
 	function (list, item) {
 		return A2(
 			_elm_lang$core$List$filter,
@@ -14770,6 +14770,16 @@ var _RobertWalter83$calliope$Util$transformMaybe = F3(
 		} else {
 			return outputJust(_p0._0);
 		}
+	});
+var _RobertWalter83$calliope$Util$updateItemInDict = F3(
+	function (dict, key, mapping) {
+		return A3(
+			_elm_lang$core$Dict$update,
+			key,
+			function (maybeValue) {
+				return A3(_RobertWalter83$calliope$Util$transformMaybe, maybeValue, _elm_lang$core$Maybe$Nothing, mapping);
+			},
+			dict);
 	});
 var _RobertWalter83$calliope$Util$and = F2(
 	function (property, listOld) {
@@ -14813,7 +14823,7 @@ var _RobertWalter83$calliope$Util$boxed = function (_p1) {
 var _RobertWalter83$calliope$Util$boxedDefault = _RobertWalter83$calliope$Util$boxed(
 	{ctor: '_Tuple2', _0: 80, _1: 20});
 
-var _RobertWalter83$calliope$App$stylesheetOverviewHeader = _debois$elm_mdl$Material_Options$stylesheet('\n  .mdl-layout__header--transparent {\n    background: url(\'assets/march.jpg\') 0 45% no-repeat;\n    background-size: 100% auto\n  }\n');
+var _RobertWalter83$calliope$App$stylesheetOverviewHeader = _debois$elm_mdl$Material_Options$stylesheet('\r\n  .mdl-layout__header--transparent {\r\n    background: url(\'assets/march.jpg\') 0 45% no-repeat;\r\n    background-size: 100% auto\r\n  }\r\n');
 var _RobertWalter83$calliope$App$title = function (t) {
 	return A3(
 		_debois$elm_mdl$Material_Options$styled,
@@ -14974,61 +14984,23 @@ var _RobertWalter83$calliope$App$updateScript = F2(
 			script,
 			{content: contentNew});
 	});
-var _RobertWalter83$calliope$App$updateProjectContent = F2(
-	function (model, contentNew) {
-		var projectsRecent = A3(
-			_elm_lang$core$Dict$update,
-			model.projectActive,
-			function (maybeValue) {
-				return A3(
-					_RobertWalter83$calliope$Util$transformMaybe,
-					maybeValue,
-					_elm_lang$core$Maybe$Nothing,
-					function (p) {
-						return _elm_lang$core$Maybe$Just(
-							_elm_lang$core$Native_Utils.update(
-								p,
-								{
-									script: A2(_RobertWalter83$calliope$App$updateScript, p.script, contentNew)
-								}));
-					});
-			},
-			model.projectsRecent);
-		var projectsAll = A3(
-			_elm_lang$core$Dict$update,
-			model.projectActive,
-			function (maybeValue) {
-				return A3(
-					_RobertWalter83$calliope$Util$transformMaybe,
-					maybeValue,
-					_elm_lang$core$Maybe$Nothing,
-					function (p) {
-						return _elm_lang$core$Maybe$Just(
-							_elm_lang$core$Native_Utils.update(
-								p,
-								{
-									script: A2(_RobertWalter83$calliope$App$updateScript, p.script, contentNew)
-								}));
-					});
-			},
-			model.projectsAll);
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{projectsAll: projectsAll, projectsRecent: projectsRecent, refreshEditorContent: false});
-	});
-var _RobertWalter83$calliope$App$withMdl = F2(
-	function (modelMdl, modelNew) {
+var _RobertWalter83$calliope$App$withMdlCmd = F3(
+	function (modelMdl, cmd, modelNew) {
 		return {
 			ctor: '_Tuple2',
 			_0: _elm_lang$core$Native_Utils.update(
 				modelMdl,
 				{model: modelNew}),
-			_1: _elm_lang$core$Platform_Cmd$none
+			_1: cmd
 		};
+	});
+var _RobertWalter83$calliope$App$withMdl = F2(
+	function (modelMdl, modelNew) {
+		return A3(_RobertWalter83$calliope$App$withMdlCmd, modelMdl, _elm_lang$core$Platform_Cmd$none, modelNew);
 	});
 var _RobertWalter83$calliope$App$moveToHead = F2(
 	function (projectToMove, projectsCurrent) {
-		var filtered = A2(_RobertWalter83$calliope$Util$filter, projectsCurrent, projectToMove);
+		var filtered = A2(_RobertWalter83$calliope$Util$filterOut, projectsCurrent, projectToMove);
 		return A2(_elm_lang$core$List_ops['::'], projectToMove, filtered);
 	});
 var _RobertWalter83$calliope$App$sortByTitle = function (input) {
@@ -15059,89 +15031,83 @@ var _RobertWalter83$calliope$App$openProject = F2(
 			{projectActive: index, viewSelected: 1});
 	});
 var _RobertWalter83$calliope$App$modelWithProject = function (index) {
-	return {viewSelected: 0, projectActive: index, projectsAll: _elm_lang$core$Dict$empty, projectsRecent: _elm_lang$core$Dict$empty, refreshEditorContent: false, raisedCard: -1};
+	return {viewSelected: 0, projectActive: index, projectsAll: _elm_lang$core$Dict$empty, refreshEditorContent: false, raisedCard: -1};
 };
-var _RobertWalter83$calliope$App$editTitle = F3(
-	function (model, index, titleNew) {
-		var projectsRecent = A3(
-			_elm_lang$core$Dict$update,
-			index,
-			function (maybeValue) {
-				return A3(
-					_RobertWalter83$calliope$Util$transformMaybe,
-					maybeValue,
-					_elm_lang$core$Maybe$Nothing,
-					function (p) {
-						return _elm_lang$core$Maybe$Just(
-							_elm_lang$core$Native_Utils.update(
-								p,
-								{title: titleNew}));
-					});
-			},
-			model.projectsRecent);
-		var projectsAll = A3(
-			_elm_lang$core$Dict$update,
-			index,
-			function (maybeValue) {
-				return A3(
-					_RobertWalter83$calliope$Util$transformMaybe,
-					maybeValue,
-					_elm_lang$core$Maybe$Nothing,
-					function (p) {
-						return _elm_lang$core$Maybe$Just(
-							_elm_lang$core$Native_Utils.update(
-								p,
-								{title: titleNew}));
-					});
-			},
-			model.projectsAll);
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{projectsRecent: projectsRecent, projectsAll: projectsAll});
-	});
-var _RobertWalter83$calliope$App$titleEditable = F3(
-	function (model, index, isEditable) {
-		var projectsRecent = A3(
-			_elm_lang$core$Dict$update,
-			index,
-			function (maybeValue) {
-				return A3(
-					_RobertWalter83$calliope$Util$transformMaybe,
-					maybeValue,
-					_elm_lang$core$Maybe$Nothing,
-					function (p) {
-						return _elm_lang$core$Maybe$Just(
-							_elm_lang$core$Native_Utils.update(
-								p,
-								{titleEditable: isEditable}));
-					});
-			},
-			model.projectsRecent);
-		var projectsAll = A3(
-			_elm_lang$core$Dict$update,
-			index,
-			function (maybeValue) {
-				return A3(
-					_RobertWalter83$calliope$Util$transformMaybe,
-					maybeValue,
-					_elm_lang$core$Maybe$Nothing,
-					function (p) {
-						return _elm_lang$core$Maybe$Just(
-							_elm_lang$core$Native_Utils.update(
-								p,
-								{titleEditable: isEditable}));
-					});
-			},
-			model.projectsAll);
-		return _elm_lang$core$Native_Utils.update(
-			model,
-			{projectsRecent: projectsRecent, projectsAll: projectsAll});
-	});
 var _RobertWalter83$calliope$App$raiseCard = F2(
 	function (modelCurrent, cardIndex) {
 		return _elm_lang$core$Native_Utils.update(
 			modelCurrent,
 			{raisedCard: cardIndex});
+	});
+var _RobertWalter83$calliope$App$updateProject = F3(
+	function (model, key, mapping) {
+		var projectsAll = A3(_RobertWalter83$calliope$Util$updateItemInDict, model.projectsAll, key, mapping);
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{projectsAll: projectsAll});
+	});
+var _RobertWalter83$calliope$App$timeStamp = F2(
+	function (model, timeNow) {
+		var stringDate = A3(
+			_rluiten$elm_date_extra$Date_Extra_Format$format,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.dateTime,
+			_elm_lang$core$Date$fromTime(timeNow));
+		var key = model.projectActive;
+		return A3(
+			_RobertWalter83$calliope$App$updateProject,
+			model,
+			key,
+			function (p) {
+				return _elm_lang$core$Maybe$Just(
+					_elm_lang$core$Native_Utils.update(
+						p,
+						{lastChange: stringDate}));
+			});
+	});
+var _RobertWalter83$calliope$App$titleEditable = F3(
+	function (model, key, isEditable) {
+		return A3(
+			_RobertWalter83$calliope$App$updateProject,
+			model,
+			key,
+			function (p) {
+				return _elm_lang$core$Maybe$Just(
+					_elm_lang$core$Native_Utils.update(
+						p,
+						{titleEditable: isEditable}));
+			});
+	});
+var _RobertWalter83$calliope$App$editTitle = F3(
+	function (model, key, titleNew) {
+		return A3(
+			_RobertWalter83$calliope$App$updateProject,
+			model,
+			key,
+			function (p) {
+				return _elm_lang$core$Maybe$Just(
+					_elm_lang$core$Native_Utils.update(
+						p,
+						{title: titleNew}));
+			});
+	});
+var _RobertWalter83$calliope$App$updateProjectContent = F2(
+	function (model, contentNew) {
+		var model = A3(
+			_RobertWalter83$calliope$App$updateProject,
+			model,
+			model.projectActive,
+			function (p) {
+				return _elm_lang$core$Maybe$Just(
+					_elm_lang$core$Native_Utils.update(
+						p,
+						{
+							script: A2(_RobertWalter83$calliope$App$updateScript, p.script, contentNew)
+						}));
+			});
+		return _elm_lang$core$Native_Utils.update(
+			model,
+			{refreshEditorContent: false});
 	});
 var _RobertWalter83$calliope$App$defaultTierList = _elm_lang$core$Native_List.fromArray(
 	[
@@ -15150,7 +15116,7 @@ var _RobertWalter83$calliope$App$defaultTierList = _elm_lang$core$Native_List.fr
 	]);
 var _RobertWalter83$calliope$App$createProject = function (timeNow) {
 	var _p0 = {
-		ctor: '_Tuple2',
+		ctor: '_Tuple3',
 		_0: A3(
 			_rluiten$elm_date_extra$Date_Extra_Format$format,
 			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
@@ -15160,16 +15126,23 @@ var _RobertWalter83$calliope$App$createProject = function (timeNow) {
 			_rluiten$elm_date_extra$Date_Extra_Format$format,
 			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
 			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.time,
+			_elm_lang$core$Date$fromTime(timeNow)),
+		_2: A3(
+			_rluiten$elm_date_extra$Date_Extra_Format$format,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config,
+			_rluiten$elm_date_extra$Date_Extra_Config_Config_en_us$config.format.dateTime,
 			_elm_lang$core$Date$fromTime(timeNow))
 	};
-	var stringTime = _p0._0;
-	var stringDate = _p0._1;
+	var stringDate = _p0._0;
+	var stringTime = _p0._1;
+	var stringDateTime = _p0._2;
 	return {
 		title: _RobertWalter83$calliope$Constants$newProject,
 		refreshEditor: false,
 		titleEditable: false,
-		dateCreated: stringTime,
-		timeCreated: stringDate,
+		lastChange: stringDateTime,
+		dateCreated: stringDate,
+		timeCreated: stringTime,
 		script: {content: ''},
 		tierList: _RobertWalter83$calliope$App$defaultTierList
 	};
@@ -15179,24 +15152,23 @@ var _RobertWalter83$calliope$App$addNewProject = F2(
 		var indexNew = _elm_lang$core$List$length(
 			_elm_lang$core$Dict$values(modelCurrent.projectsAll));
 		var projectNew = _RobertWalter83$calliope$App$createProject(timeNow);
-		var projectsRecent = A3(_elm_lang$core$Dict$insert, indexNew, projectNew, modelCurrent.projectsRecent);
 		var projectsAll = A3(_elm_lang$core$Dict$insert, indexNew, projectNew, modelCurrent.projectsAll);
 		return _elm_lang$core$Native_Utils.update(
 			modelCurrent,
-			{projectActive: indexNew, projectsRecent: projectsRecent, projectsAll: projectsAll});
+			{projectActive: indexNew, projectsAll: projectsAll});
 	});
-var _RobertWalter83$calliope$App$defaultModel = {viewSelected: 0, projectActive: -1, projectsAll: _elm_lang$core$Dict$empty, projectsRecent: _elm_lang$core$Dict$empty, refreshEditorContent: false, raisedCard: -1};
+var _RobertWalter83$calliope$App$defaultModel = {viewSelected: 0, projectActive: -1, projectsAll: _elm_lang$core$Dict$empty, refreshEditorContent: false, raisedCard: -1};
 var _RobertWalter83$calliope$App$ModelMdl = F2(
 	function (a, b) {
 		return {mdl: a, model: b};
 	});
-var _RobertWalter83$calliope$App$Model = F6(
-	function (a, b, c, d, e, f) {
-		return {viewSelected: a, projectActive: b, projectsAll: c, projectsRecent: d, refreshEditorContent: e, raisedCard: f};
+var _RobertWalter83$calliope$App$Model = F5(
+	function (a, b, c, d, e) {
+		return {viewSelected: a, projectActive: b, projectsAll: c, refreshEditorContent: d, raisedCard: e};
 	});
-var _RobertWalter83$calliope$App$Project = F7(
-	function (a, b, c, d, e, f, g) {
-		return {title: a, refreshEditor: b, titleEditable: c, dateCreated: d, timeCreated: e, script: f, tierList: g};
+var _RobertWalter83$calliope$App$Project = F8(
+	function (a, b, c, d, e, f, g, h) {
+		return {title: a, refreshEditor: b, titleEditable: c, dateCreated: d, timeCreated: e, lastChange: f, script: g, tierList: h};
 	});
 var _RobertWalter83$calliope$App$Script = function (a) {
 	return {content: a};
@@ -15270,19 +15242,24 @@ var _RobertWalter83$calliope$App$subscriptions = function (modelMdl) {
 			]));
 };
 var _RobertWalter83$calliope$App$NoOp = {ctor: 'NoOp'};
+var _RobertWalter83$calliope$App$cmdWithTimeNow = function (msg) {
+	return A3(
+		_elm_lang$core$Task$perform,
+		function (_p1) {
+			return _RobertWalter83$calliope$App$NoOp;
+		},
+		msg,
+		_elm_lang$core$Time$now);
+};
 var _RobertWalter83$calliope$App$Raise = function (a) {
 	return {ctor: 'Raise', _0: a};
+};
+var _RobertWalter83$calliope$App$TimeStamp = function (a) {
+	return {ctor: 'TimeStamp', _0: a};
 };
 var _RobertWalter83$calliope$App$AddNewProjectNow = function (a) {
 	return {ctor: 'AddNewProjectNow', _0: a};
 };
-var _RobertWalter83$calliope$App$cmdTimeNow = A3(
-	_elm_lang$core$Task$perform,
-	function (_p1) {
-		return _RobertWalter83$calliope$App$NoOp;
-	},
-	_RobertWalter83$calliope$App$AddNewProjectNow,
-	_elm_lang$core$Time$now);
 var _RobertWalter83$calliope$App$OpenProject = function (a) {
 	return {ctor: 'OpenProject', _0: a};
 };
@@ -15339,16 +15316,16 @@ var _RobertWalter83$calliope$App$renderProjectTitle = F4(
 				]));
 	});
 var _RobertWalter83$calliope$App$renderPolaroid = F5(
-	function (modelMdl, urlBackground, userMessage, indexProject, cardIndex) {
-		var _p3 = (_elm_lang$core$Native_Utils.cmp(indexProject, 0) < 0) ? {ctor: '_Tuple2', _0: _RobertWalter83$calliope$App$AddNewProject, _1: _RobertWalter83$calliope$App$NoOp} : {
+	function (modelMdl, urlBackground, userMessage, cardIndex, keyProject) {
+		var maybeProject = A2(_elm_lang$core$Dict$get, keyProject, modelMdl.model.projectsAll);
+		var textHead = A4(_RobertWalter83$calliope$App$renderProjectTitle, maybeProject, keyProject, modelMdl.mdl, cardIndex);
+		var _p3 = (_elm_lang$core$Native_Utils.cmp(keyProject, 0) < 0) ? {ctor: '_Tuple2', _0: _RobertWalter83$calliope$App$AddNewProject, _1: _RobertWalter83$calliope$App$NoOp} : {
 			ctor: '_Tuple2',
 			_0: _RobertWalter83$calliope$App$NoOp,
-			_1: _RobertWalter83$calliope$App$OpenProject(indexProject)
+			_1: _RobertWalter83$calliope$App$OpenProject(keyProject)
 		};
 		var onClickView = _p3._0;
 		var onClickText = _p3._1;
-		var maybeProject = A2(_elm_lang$core$Dict$get, indexProject, modelMdl.model.projectsAll);
-		var textHead = A4(_RobertWalter83$calliope$App$renderProjectTitle, maybeProject, indexProject, modelMdl.mdl, cardIndex);
 		return A2(
 			_debois$elm_mdl$Material_Card$view,
 			_elm_lang$core$Native_List.fromArray(
@@ -15413,29 +15390,13 @@ var _RobertWalter83$calliope$App$renderPolaroid = F5(
 						]))
 				]));
 	});
-var _RobertWalter83$calliope$App$renderProjectLink = F5(
-	function (modelMdl, urlBackground, userMessage, indexProject, cardIndex) {
-		return A2(
-			_debois$elm_mdl$Material_Options$div,
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px')
-				]),
-			_elm_lang$core$Native_List.fromArray(
-				[
-					A5(_RobertWalter83$calliope$App$renderPolaroid, modelMdl, urlBackground, userMessage, indexProject, cardIndex)
-				]));
-	});
 var _RobertWalter83$calliope$App$renderOverview = function (modelMdl) {
-	var keys = _elm_lang$core$Dict$keys(modelMdl.model.projectsRecent);
-	var polaroidCreateNew = A5(_RobertWalter83$calliope$App$renderPolaroid, modelMdl, _RobertWalter83$calliope$Constants$urlNewPolaroid, _RobertWalter83$calliope$Constants$messageNewProject, -1, 0);
-	var projectsRecent = _elm_lang$core$Dict$values(modelMdl.model.projectsRecent);
-	var lengthProjectsRecent = _elm_lang$core$List$length(projectsRecent);
-	var polaroidsProjectsRecent = A3(
-		_elm_lang$core$List$map2,
-		A3(_RobertWalter83$calliope$App$renderProjectLink, modelMdl, _RobertWalter83$calliope$Constants$urlOpenPolaroid, _RobertWalter83$calliope$Constants$messageOpenProject),
-		keys,
-		_elm_lang$core$Native_List.range(1, lengthProjectsRecent));
+	var keys = _elm_lang$core$Dict$keys(modelMdl.model.projectsAll);
+	var polaroidsProjects = A2(
+		_elm_lang$core$List$indexedMap,
+		A3(_RobertWalter83$calliope$App$renderPolaroid, modelMdl, _RobertWalter83$calliope$Constants$urlOpenPolaroid, _RobertWalter83$calliope$Constants$messageOpenProject),
+		keys);
+	var polaroidCreateNew = A5(_RobertWalter83$calliope$App$renderPolaroid, modelMdl, _RobertWalter83$calliope$Constants$urlNewPolaroid, _RobertWalter83$calliope$Constants$messageNewProject, 0, -1);
 	return A2(
 		_debois$elm_mdl$Material_Options$div,
 		A2(
@@ -15472,7 +15433,16 @@ var _RobertWalter83$calliope$App$renderOverview = function (modelMdl) {
 							_elm_lang$core$Native_List.fromArray(
 								[polaroidCreateNew]))
 						]),
-					polaroidsProjectsRecent))
+					_elm_lang$core$Native_List.fromArray(
+						[
+							A2(
+							_debois$elm_mdl$Material_Options$div,
+							_elm_lang$core$Native_List.fromArray(
+								[
+									A2(_debois$elm_mdl$Material_Options$css, 'padding', '12px')
+								]),
+							polaroidsProjects)
+						])))
 			]));
 };
 var _RobertWalter83$calliope$App$viewDefaultHeader = function (modelMdl) {
@@ -15517,12 +15487,12 @@ var _RobertWalter83$calliope$App$refreshEditorContent = function (index) {
 		_RobertWalter83$calliope$App$Dialog) ? true : false;
 };
 var _RobertWalter83$calliope$App$selectView = F2(
-	function (modelCurrent, index) {
+	function (modelCurrent, key) {
 		return _elm_lang$core$Native_Utils.update(
 			modelCurrent,
 			{
-				viewSelected: index,
-				refreshEditorContent: _RobertWalter83$calliope$App$refreshEditorContent(index)
+				viewSelected: key,
+				refreshEditorContent: _RobertWalter83$calliope$App$refreshEditorContent(key)
 			});
 	});
 var _RobertWalter83$calliope$App$update = F2(
@@ -15564,17 +15534,27 @@ var _RobertWalter83$calliope$App$update = F2(
 					modelMdl,
 					A3(_RobertWalter83$calliope$App$editTitle, modelCurrent, _p4._0, _p4._1));
 			case 'AddNewProject':
-				return {ctor: '_Tuple2', _0: modelMdl, _1: _RobertWalter83$calliope$App$cmdTimeNow};
+				return {
+					ctor: '_Tuple2',
+					_0: modelMdl,
+					_1: _RobertWalter83$calliope$App$cmdWithTimeNow(_RobertWalter83$calliope$App$AddNewProjectNow)
+				};
 			case 'AddNewProjectNow':
 				return A2(
 					_RobertWalter83$calliope$App$withMdl,
 					modelMdl,
 					A2(_RobertWalter83$calliope$App$addNewProject, modelCurrent, _p4._0));
 			case 'OpenProject':
+				return A3(
+					_RobertWalter83$calliope$App$withMdlCmd,
+					modelMdl,
+					_RobertWalter83$calliope$App$cmdWithTimeNow(_RobertWalter83$calliope$App$TimeStamp),
+					A2(_RobertWalter83$calliope$App$openProject, modelCurrent, _p4._0));
+			case 'TimeStamp':
 				return A2(
 					_RobertWalter83$calliope$App$withMdl,
 					modelMdl,
-					A2(_RobertWalter83$calliope$App$openProject, modelCurrent, _p4._0));
+					A2(_RobertWalter83$calliope$App$timeStamp, modelCurrent, _p4._0));
 			case 'Save':
 				return A2(_RobertWalter83$calliope$App$withMdl, modelMdl, modelMdl.model);
 			default:
