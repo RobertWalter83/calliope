@@ -1,3 +1,5 @@
+(video showing the app: https://www.youtube.com/watch?v=B5eK1bEBE3c)
+
 # Calliope
 Experimental app written in Elm (0.17.1), run by Electron.
 
